@@ -8,6 +8,22 @@ In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file
 
     snakemake
 
+Build and run tests:
+
+    snakemake test
+
+Clean:
+
+    snakemake clean
+
+Build with clang instead of gcc:
+
+    snakemake clang
+
+Debug build:
+
+    snakemake debug
+
 ## Requirements
 
 * Scons
