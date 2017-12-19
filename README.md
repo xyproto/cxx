@@ -39,6 +39,10 @@ In a package:
 
 `make PREFIX="$pkgdir" install`
 
+# Optional symlink
+
+`sudo ln -s /usr/bin/snakemake /usr/bin/sm`
+
 ## Uninstallation
 
 `sudo make uninstall`
@@ -48,3 +52,7 @@ In a package:
 * Include files are expected to be found in `../include`.
 * Common `.cpp` files (the corresponding code to header files in ../include) are expected to be found in `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
+
+## Liceense
+
+MIT
