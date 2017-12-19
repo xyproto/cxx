@@ -2,6 +2,12 @@
 
 Opinionated build system that uses Python (Python2 in Scons) together with Make for compiling C++17 code
 
+## Usage
+
+In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, just:
+
+    snakemake
+
 ## Requirements
 
 * Scons
@@ -20,12 +26,6 @@ In a package:
 ## Uninstallation
 
 `sudo make uninstall`
-
-## Usage
-
-In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, just:
-
-    snakemake
 
 ## Opinionated opinions
 
