@@ -192,7 +192,7 @@ The ideal is that every executable and small-ish project written in C++17 should
 
 ## Awards for you project
 
-If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
+If your project can be built with `sakemake`, and if you want to, you can include this badge in your `README.md` file, using this Markdown code:
 
 ### Large badge
 
