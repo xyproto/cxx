@@ -4,6 +4,7 @@ Opinionated build system that uses Python (Python2 in Scons) together with Make 
 
 No configuration needed.
 
+
 ## Usage
 
 In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, just:
@@ -29,6 +30,11 @@ Build with clang instead of gcc:
 Debug build:
 
     snakemake debug
+
+Building a specific directory (`snakemake` takes the same options as `make`):
+
+    snakemake -C example/hello
+
 
 ## Features and limitations
 
