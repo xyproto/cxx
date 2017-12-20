@@ -64,21 +64,23 @@ For a "Hello, World!" program that places the text-generation in a `std::string 
 
 
 ```
-hello/main.cpp
-hello/include/hello.h
-hello/include/test.h
-hello/common/hello.cpp
-hello/common/hello_test.cpp
+.
+├── hello/main.cpp
+├── hello/include/hello.h
+├── hello/include/test.h
+├── hello/common/hello.cpp
+└── hello/common/hello_test.cpp
 ```
 
 #### --- or if you prefer a `src` directory ---
 
 ```
-hello/src/main.cpp
-hello/include/hello.h
-hello/include/test.h
-hello/common/hello.cpp
-hello/common/hello_test.cpp
+.
+└── hello/src/main.cpp
+└── hello/include/hello.h
+└── hello/include/test.h
+└── hello/common/hello.cpp
+└── hello/common/hello_test.cpp
 ```
 
 **main.cpp**
