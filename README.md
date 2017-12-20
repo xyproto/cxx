@@ -44,17 +44,18 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 
 ## Features and limitations
 
-* Auto-detect of include, define and libarary flags, based on which files are included from `/usr/include`, using `pkg-config`.
 * **No configuration needed**, as long as the *sakemake* directory structure is followed.
+* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
-* Does not use a `build` directory, it's okay that the `main` executable ends up in the same directory as `main.cpp`. Additional source files can be placed in other directories to avoid clutter.
-* All filenames must be in lowercase.
+* Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
 * Only tested on Linux, but should work on any UNIX-like system that has the required dependencies.
-* Include files are expected to be found in `../include`.
-* Common `.cpp` files (the corresponding code to header files in ../include) are expected to be found in `../common`.
+* All source filenames must be lowercase.
+* Your include files are expected to be placed in `./include` or `../include`.
+* Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
-* For now, `sakemake` is meant to be able to build executables, but not libraries.
+* For now, `sakemake` is meant to be able to build executables, not libraries.
+* See the `hello` example in the `example` directory for the suggested directory structure.
 
 
 ## Suggested directory structure
