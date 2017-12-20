@@ -218,5 +218,5 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 ## General info
 
 * License: MIT
-* Version: 0.2
+* Version: 0.3
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
