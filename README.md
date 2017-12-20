@@ -1,8 +1,14 @@
 # :sake: sake make
 
-Simple and modern way to structure, build and test C++17 code. Uses Scons and Make under the hood.
+`sakemake` is a small program that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files.
 
-No configuration needed.
+It uses SCons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
+
+Dependencies, like for example SDL2, are discovered automatically and the correct flags are given to the C++ compiler. The latest versions of both GCC (g++) and Clang (clang++) are supported.
+
+No configuration files are needed! No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake`, `Makefile.in` or other acrobatics.
+
+If you are building a library, `sakemake` is not for you yet. If you are looking for a configuration-free build system for C++17 on Linux, `snakemake` might be for you. You can give it a go and see if it works for what you are trying to achieve.
 
 
 ## Usage
