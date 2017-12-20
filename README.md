@@ -58,6 +58,8 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 
 [![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
 
+---
+
 :cat:
 
 ## Suggested directory structure
