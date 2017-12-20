@@ -1,0 +1,3 @@
+#!/bin/sh
+SAKEMAKE_DIR="/usr/share/sakemake"
+make -f "$SAKEMAKE_DIR/Makefile" "$@"

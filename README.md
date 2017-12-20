@@ -1,4 +1,4 @@
-# snakemake
+# :sake: sake make
 
 Opinionated build system that uses Python (Python2 in Scons) together with Make for compiling C++17 code.
 
@@ -9,36 +9,36 @@ No configuration needed.
 
 In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, just:
 
-    snakemake
+    sakemake
 
 Build and run:
 
-    snakemake run
+    sakemake run
 
 Build and run tests in a directory with files ending with `_test.cpp`:
 
-    snakemake test
+    sakemake test
 
 Clean:
 
-    snakemake clean
+    sakemake clean
 
 Build with clang instead of gcc:
 
-    snakemake clang
+    sakemake clang
 
 Debug build:
 
-    snakemake debug
+    sakemake debug
 
-Building a specific directory (`snakemake` takes the same options as `make`):
+Building a specific directory (`sakemake` takes the same options as `make`):
 
-    snakemake -C example/hello
+    sakemake -C example/hello
 
 
 ## Features and limitations
 
-* **No configuration needed**, as long as the *snakemake* directory structure is followed.
+* **No configuration needed**, as long as the *sakemake* directory structure is followed.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the same directory as `main.cpp`. Additional source files can be placed in other directories to avoid clutter.
@@ -167,7 +167,7 @@ In a package:
 
 # Optional symlink
 
-`sudo ln -s /usr/bin/snakemake /usr/bin/sm`
+`sudo ln -s /usr/bin/sakemake /usr/bin/sm`
 
 ## Uninstallation
 

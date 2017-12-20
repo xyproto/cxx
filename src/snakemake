@@ -1,3 +1,0 @@
-#!/bin/sh
-SNAKEMAKE_DIR="/usr/share/snakemake"
-make -f "$SNAKEMAKE_DIR/Makefile" "$@"
