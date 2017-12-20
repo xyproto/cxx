@@ -9,3 +9,4 @@
 * Support projects that include:
  * `#include "SDL/SDL.h"`.
  * `#include <stdio.h>`.
+* If there is only one `.cpp` file in a directory, consider that one to be the "main.cpp" file.
