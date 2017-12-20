@@ -7,7 +7,7 @@ No configuration needed.
 
 ## Usage
 
-In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, just:
+In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, building is as simple as:
 
     sakemake
 
