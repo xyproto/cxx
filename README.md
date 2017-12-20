@@ -52,13 +52,13 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 
 ## Badge for you project
 
-If your project can be built with `sakemake`, you can include this image on your project page:
+If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
+
+    [![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
 
 [![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
 
-By using this Markdown code:
-
-    [![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
+:cat:
 
 ## Suggested directory structure
 
