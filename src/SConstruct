@@ -15,9 +15,11 @@ TEST_SUFFIX = "_test.cpp"
 LOCAL_INCLUDE_PATHS = ["include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 
+
 def which(program):
     """Check if a program exists in PATH"""
     import os
+
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
     fpath, fname = os.path.split(program)
@@ -30,6 +32,7 @@ def which(program):
             if is_exe(exe_file):
                 return exe_file
     return None
+
 
 def split_cflags(cflags):
     """Split a list of flags into includes (-I...), defines (-D...) and linking (-l...)"""
@@ -47,6 +50,7 @@ def split_cflags(cflags):
             # Only includes, defines and libs are supported
             continue
     return includeflags.strip(), defineflags.strip(), libflags.strip()
+
 
 def get_cflags_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
     """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs"""
@@ -79,7 +83,8 @@ def get_cflags_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
             if glob.glob(include_path):
-                cmd = 'pkg-config --cflags --libs $(LC_ALL=C pacman -Qo ' + include_path + ' | cut -d" " -f5)'
+                cmd = 'pkg-config --cflags --libs $(LC_ALL=C pacman -Qo ' + \
+                    include_path + ' | cut -d" " -f5)'
                 # Return the CFLAGS as defined by pkg-config
                 data = os.popen2(cmd)[1].read()
                 if data:
@@ -90,18 +95,21 @@ def get_cflags_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
     # CFLAGS, defines and libs not found
     return "", "", ""
 
+
 # Test ELF-files to be generated
 test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
 
 # Custom command line targets
-if 'clean' in COMMAND_LINE_TARGETS: # Clean built executables and object files
+if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
     # Replace the "clean" argument with "-c", and list all targets
     cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + ["main"] + test_elves
     # Clean
     status, output = commands.getstatusoutput(" ".join(cmd))
-    print(os.linesep.join(output.split(os.linesep)[1:-1]))
+    output = os.linesep.join(output.split(os.linesep)[0:-1])
+    if output:
+        print(output)
     sys.exit(status)
-elif 'testbuild' in COMMAND_LINE_TARGETS: # Build and run tests
+elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
     if not test_elves:
         print("Nothing to build")
         sys.exit(0)
@@ -111,7 +119,7 @@ elif 'testbuild' in COMMAND_LINE_TARGETS: # Build and run tests
     status, output = commands.getstatusoutput(" ".join(cmd))
     print(os.linesep.join(output.split(os.linesep)[1:-1]))
     sys.exit(status)
-elif 'test' in COMMAND_LINE_TARGETS: # Build and run tests
+elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     if not test_elves:
         print("Nothing to build")
         sys.exit(0)
@@ -128,17 +136,17 @@ elif 'test' in COMMAND_LINE_TARGETS: # Build and run tests
         if status != 0:
             sys.exit(status)
     sys.exit(0)
-elif 'run' in COMMAND_LINE_TARGETS: # Build and run main
+elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
-  cmd = [x for x in sys.argv if x != "run"] + ["main"]
-  # Build main
-  output = subprocess.check_output(cmd)
-  print(os.linesep.join(output.split(os.linesep)[1:-1]))
-  # Run main
-  ELF = "main"
-  status, output = commands.getstatusoutput(os.path.join(".", ELF))
-  print(output)
-  sys.exit(status)
+    cmd = [x for x in sys.argv if x != "run"] + ["main"]
+    # Build main
+    output = subprocess.check_output(cmd)
+    print(os.linesep.join(output.split(os.linesep)[1:-1]))
+    # Run main
+    ELF = "main"
+    status, output = commands.getstatusoutput(os.path.join(".", ELF))
+    print(output)
+    sys.exit(status)
 
 # Set the number of jobs to the number of CPUs
 SetOption('num_jobs', multiprocessing.cpu_count())
@@ -190,7 +198,8 @@ if glob.glob(MAIN_SOURCE):
                     continue
                 examined.append(filename)
                 if glob.glob(filename):
-                    new_includes = [line.split("\"")[1] for line in open(filename).read().split(os.linesep)[:-1] if line.strip().startswith("#include \"")]
+                    new_includes = [line.split("\"")[1] for line in open(filename).read().split(
+                        os.linesep)[:-1] if line.strip().startswith("#include \"")]
                 else:
                     continue
                 for new_include in new_includes:
