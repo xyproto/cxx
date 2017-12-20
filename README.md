@@ -211,7 +211,9 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 
 [:sake:](https://github.com/xyproto/sakemake)
 
+## Feedback
 
+The ideal is that every executable and small-ish project written in C++17 should be able to build with `sakemake` on a modern Linux distro, without any additional configuration. If you have a project that _almost_ builds with `sakemake`, please create an issue and include a link to your repository.
 
 ## Version
 
@@ -220,3 +222,11 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 ## License
 
 MIT
+
+## Author
+
+* Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
+
+## A cat
+
+:cat:
