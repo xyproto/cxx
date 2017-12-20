@@ -1,19 +1,32 @@
 .PHONY: uninstall
 
-PREFIX ?=
+DESTDIR ?=
+
+# macOS detection
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+  PREFIX ?= /usr/local
+else
+  PREFIX ?= /usr
+endif
 
 all:
-	@echo 'Usage: PREFIX=/ make install'
+	@sed "s,@@PREFIX@@,${PREFIX},g" src/sakemake.in > src/sakemake
 
 install:
-	install -Dm755 src/sakemake ${PREFIX}/usr/bin/sakemake
-	install -Dm644 src/Makefile ${PREFIX}/usr/share/sakemake/Makefile
-	install -Dm644 src/SConstruct ${PREFIX}/usr/share/sakemake/SConstruct
-	ln -sf /usr/bin/sakemake ${PREFIX}/usr/bin/sm
+	@install -d "${DESTDIR}${PREFIX}/bin"
+	@install -m755 src/sakemake "${DESTDIR}${PREFIX}/bin/sakemake"
+	@ln -sf ${PREFIX}/bin/sakemake "${DESTDIR}${PREFIX}/bin/sm"
+	@install -d "${DESTDIR}${PREFIX}/share/sakemake"
+	@install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
+	@install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
 
 uninstall:
-	-rm "${PREFIX}/usr/bin/sakemake"
-	-rm "${PREFIX}/usr/bin/sm"
-	-rm "${PREFIX}/usr/share/sakemake/Makefile"
-	-rm "${PREFIX}/usr/share/sakemake/SConstruct"
-	-rmdir "${PREFIX}/usr/share/sakemake"
+	@-rm "${DESTDIR}${PREFIX}/bin/sakemake"
+	@-rm "${DESTDIR}${PREFIX}/bin/sm"
+	@-rm "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
+	@-rm "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
+	@-rmdir "${DESTDIR}${PREFIX}/share/sakemake"
+
+clean:
+	@-rm src/sakemake
