@@ -38,6 +38,7 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 
 ## Features and limitations
 
+* Auto-detect of include, define and libarary flags, based on which files are included from `/usr/include`, using `pkg-config`.
 * **No configuration needed**, as long as the *sakemake* directory structure is followed.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
@@ -47,20 +48,36 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 * Include files are expected to be found in `../include`.
 * Common `.cpp` files (the corresponding code to header files in ../include) are expected to be found in `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
-* Auto-detect of include, define and libarary flags, based on which files are included from `/usr/include`.
 * For now, `sakemake` is meant to be able to build executables, but not libraries.
 
 ## Badge for you project
 
 If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
 
-    [![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
+### Large badge
 
-[![sakemake approved](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_approved.png)](https://github.com/xyproto/sakemake))
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake))
 
----
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake)
 
-:cat:
+### Medium badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake)
+
+### Small badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake)
+
+### Tiny badge
+
+    [:sake:](https://github.com/xyproto/sakemake))
+
+[:sake:](https://github.com/xyproto/sakemake))
+
 
 ## Suggested directory structure
 
@@ -165,8 +182,9 @@ void equal(T a, T b) {
 
 ## Requirements
 
-* Scons
+* SCons
 * Make
+* pkg-config
 
 ## Installation
 
