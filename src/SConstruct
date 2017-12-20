@@ -10,44 +10,46 @@ import os.path
 import subprocess
 import sys
 
-INCLUDE_PATH = "../include"
-COMMON_PATH = "../common"
-TEST_SUFFIX = "_test.cpp"
 MAIN_SOURCE = "main.cpp"
+TEST_SUFFIX = "_test.cpp"
+LOCAL_INCLUDE_PATHS = ["include", "../include"]
+LOCAL_COMMON_PATHS = ["common", "../common"]
 
-test_exes = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
+# Test ELF-files to be generated
+test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
 
 # Custom command line targets
 if 'clean' in COMMAND_LINE_TARGETS: # Clean built executables and object files
   # Replace the "clean" argument with "-c", and list all targets
-  cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + ["main"] + test_exes
+  cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + ["main"] + test_elves
   # Clean
   status, output = commands.getstatusoutput(" ".join(cmd))
   print(os.linesep.join(output.split(os.linesep)[1:-1]))
   sys.exit(status)
 elif 'testbuild' in COMMAND_LINE_TARGETS: # Build and run tests
-  if not test_exes:
+  if not test_elves:
     print("Nothing to build")
     sys.exit(0)
   # Remove the "test" argument, and list all test-executable targets
-  cmd = [x for x in sys.argv if x != "testbuild"] + test_exes
+  cmd = [x for x in sys.argv if x != "testbuild"] + test_elves
   # Build the tests
   status, output = commands.getstatusoutput(" ".join(cmd))
   print(os.linesep.join(output.split(os.linesep)[1:-1]))
   sys.exit(status)
 elif 'test' in COMMAND_LINE_TARGETS: # Build and run tests
-  if not test_exes:
+  if not test_elves:
     print("Nothing to build")
     sys.exit(0)
   # Remove the "test" argument, and list all test-executable targets
-  cmd = [x for x in sys.argv if x != "test"] + test_exes
+  cmd = [x for x in sys.argv if x != "test"] + test_elves
   # Build the tests
   output = subprocess.check_output(cmd)
   print(os.linesep.join(output.split(os.linesep)[1:-1]))
   # Run the tests
-  for exe in test_exes:
-    status, output = commands.getstatusoutput("./" + exe)
+  for ELF in test_elves:
+    status, output = commands.getstatusoutput(os.path.join(".", ELF))
     print(output)
+    # Exit on error
     if status != 0:
       sys.exit(status)
   sys.exit(0)
@@ -58,7 +60,8 @@ elif 'run' in COMMAND_LINE_TARGETS: # Build and run main
   output = subprocess.check_output(cmd)
   print(os.linesep.join(output.split(os.linesep)[1:-1]))
   # Run main
-  status, output = commands.getstatusoutput("./main")
+  ELF = "main"
+  status, output = commands.getstatusoutput(os.path.join(".", ELF))
   print(output)
   sys.exit(status)
 
@@ -97,7 +100,7 @@ if int(ARGUMENTS.get('extra', 0)):
 dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE]
 
 # add path to the include files
-env.Append(CPPPATH=INCLUDE_PATH)
+env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
 
 # Find all included header files in ../include, then check if there are corresponding .cpp files in ../common and add them to dep_src, if there is a main source file
 if glob.glob(MAIN_SOURCE):
@@ -106,33 +109,32 @@ if glob.glob(MAIN_SOURCE):
   examined = []
   while has_new_include:
     has_new_include = False
-    for filename in dep_src + [MAIN_SOURCE] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
-      if filename in examined:
-        continue
-      examined.append(filename)
-      if glob.glob(filename):
-        #if COMMON_PATH in filename:
-        #  print("using " + filename)
-        #print("FILENAME", filename)
-        new_includes = [line.split("\"")[1] for line in open(filename).read().split("\n")[:-1] if line.strip().startswith("#include \"")]
-      else:
-        continue
-      for new_include in new_includes:
-        if new_include not in includes:
-          has_new_include = True
-          includes.append(new_include)
-    for include in includes:
-      source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cpp")
-      if glob.glob(source_filename):
-        if source_filename not in dep_src:
-          dep_src.append(source_filename)
+    for INCLUDE_PATH in LOCAL_INCLUDE_PATHS:
+      for filename in dep_src + [MAIN_SOURCE] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
+        if filename in examined:
+          continue
+        examined.append(filename)
+        if glob.glob(filename):
+          new_includes = [line.split("\"")[1] for line in open(filename).read().split(os.linesep)[:-1] if line.strip().startswith("#include \"")]
+        else:
+          continue
+        for new_include in new_includes:
+          if new_include not in includes:
+            has_new_include = True
+            includes.append(new_include)
+      for include in includes:
+        for COMMON_PATH in LOCAL_COMMON_PATHS:
+          source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cpp")
+          if glob.glob(source_filename):
+            if source_filename not in dep_src:
+              dep_src.append(source_filename)
 
 # Build main executable
 main = env.Program("main", [MAIN_SOURCE] + dep_src)
 
 # Set up non-default targets for all the test executables (based on *_test.cpp)
-for exe in test_exes:
-  env.Program(exe, [exe + ".cpp"] + dep_src)
+for ELF in test_elves:
+  env.Program(ELF, [ELF + ".cpp"] + dep_src)
 
 # Only main is the default target
 Default(main)
