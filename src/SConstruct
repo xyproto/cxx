@@ -10,6 +10,7 @@ import os.path
 import subprocess
 import sys
 
+MAIN_EXECUTABLE = "main"
 MAIN_SOURCE = "main.cpp"
 TEST_SUFFIX = "_test.cpp"
 LOCAL_INCLUDE_PATHS = ["include", "../include"]
@@ -106,7 +107,7 @@ test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
 # Custom command line targets
 if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
     # Replace the "clean" argument with "-c", and list all targets
-    cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + ["main"] + test_elves
+    cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + [MAIN_EXECUTABLE] + test_elves
     # Clean
     status, output = commands.getstatusoutput(" ".join(cmd))
     output = output.strip()
@@ -121,7 +122,9 @@ elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
     cmd = [x for x in sys.argv if x != "testbuild"] + test_elves
     # Build the tests
     status, output = commands.getstatusoutput(" ".join(cmd))
-    print(os.linesep.join(output.split(os.linesep)[1:-1]))
+    output = output.strip()
+    if output:
+        print(output)
     sys.exit(status)
 elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     if not test_elves:
@@ -131,25 +134,34 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     cmd = [x for x in sys.argv if x != "test"] + test_elves
     # Build the tests
     output = subprocess.check_output(cmd)
-    print(os.linesep.join(output.split(os.linesep)[1:-1]))
+    output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
+    if output:
+        print(output)
     # Run the tests
     for ELF in test_elves:
         status, output = commands.getstatusoutput(os.path.join(".", ELF))
-        print(output)
+        print(output.strip())
         # Exit on error
         if status != 0:
             sys.exit(status)
     sys.exit(0)
 elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
-    cmd = [x for x in sys.argv if x != "run"] + ["main"]
+    cmd = [x for x in sys.argv if x != "run"] + [MAIN_EXECUTABLE]
+    # Check if main.cpp exists
+    if not glob.glob(MAIN_SOURCE):
+        print("Nothing to run (no " + MAIN_SOURCE + ")")
+        sys.exit(0)
     # Build main
     output = subprocess.check_output(cmd)
-    print(os.linesep.join(output.split(os.linesep)[1:-1]))
+    output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
+    if output:
+        print(output)
     # Run main
-    ELF = "main"
-    status, output = commands.getstatusoutput(os.path.join(".", ELF))
-    print(output)
+    status, output = commands.getstatusoutput(os.path.join(".", MAIN_EXECUTABLE))
+    output = output.strip()
+    if output:
+        print(output)
     sys.exit(status)
 
 # Set the number of jobs to the number of CPUs
@@ -229,7 +241,7 @@ if not env.GetOption('clean'):
             env.Append(LIBS=libs)
 
 # Build main executable
-main = env.Program("main", [MAIN_SOURCE] + dep_src)
+main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
 
 # Find extra CFLAGS for the test sources, if not cleaning
 if not env.GetOption('clean'):
