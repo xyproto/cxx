@@ -127,6 +127,8 @@ string hello() {
 #include "test.h"
 #include "hello.h"
 
+using namespace std::literals;
+
 void hello_test() {
   equal(hello(), "Hello, World!"s);
 }
@@ -147,7 +149,6 @@ int main() {
 
 using std::cout;
 using std::endl;
-using namespace std::literals;
 
 template<typename T>
 void equal(T a, T b) {
