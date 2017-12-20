@@ -8,7 +8,7 @@ Dependencies, like for example SDL2, are discovered automatically and the correc
 
 No configuration files are needed! No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake`, `Makefile.in` or other acrobatics.
 
-If you are building a library, `sakemake` is not for you yet. If you are looking for a configuration-free build system for C++17 on Linux, `snakemake` might be for you. You can give it a go and see if it works for what you are trying to achieve.
+If you are building a library, `sakemake` is not for you yet. If you are looking for a configuration-free build system for C++17 on Linux, `sakemake` might be for you. You can give it a go and see if it works for what you are trying to achieve.
 
 
 ## Usage
