@@ -83,7 +83,7 @@ hello/common/hello_test.cpp
 
 **main.cpp**
 
-```
+```c++
 #include <iostream>
 #include "hello.h"
 
@@ -98,7 +98,7 @@ int main() {
 
 **hello.h**
 
-```
+```c++
 #pragma once
 
 #include <string>
@@ -111,7 +111,7 @@ string hello();
 
 **hello.cpp**
 
-```
+```c++
 #include "hello.h"
 
 string hello() {
@@ -121,7 +121,7 @@ string hello() {
 
 **hello_test.cpp**
 
-```
+```c++
 #include "test.h"
 #include "hello.h"
 
@@ -137,7 +137,7 @@ int main() {
 
 **test.h**
 
-```
+```c++
 #pragma once
 
 #include <iostream>
