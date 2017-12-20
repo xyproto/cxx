@@ -54,7 +54,11 @@ def split_cflags(cflags):
 
 def get_cflags_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
     """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs"""
-    lines = open(cppfilename).read().split("\n")[:-1]
+    try:
+        lines = open(cppfilename).read().split("\n")[:-1]
+    except:
+        #print("COULD NOT READ " + cppfilename)
+        return "", "", ""
     includes = []
     for line in lines:
         if line.strip().startswith("#include"):
