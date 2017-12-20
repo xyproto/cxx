@@ -1,3 +1,22 @@
 #!/bin/sh
 SAKEMAKE_DIR="/usr/share/sakemake"
+if [ "$1" == "--help" ]; then
+  cat <<dog
+sakemake
+
+sm test         - build and run tests
+sm run          - build and run
+sm debug        - debug build
+sm extra        - stricter build
+sm opt          - build with -O3
+sm testbuild    - build tests
+sm clang        - build using clang
+sm clangextra   - more strict debug build, using clang
+sm clangdebug   - debug build, using clang
+sm clean        - remove built files
+
+make flags are also supported:
+
+dog
+fi
 make -f "$SAKEMAKE_DIR/Makefile" "$@"
