@@ -183,6 +183,10 @@ In a package:
 
 `sudo make uninstall`
 
+## Feedback
+
+The ideal is that every executable and small-ish project written in C++17 should be able to build with `sakemake` on a modern Linux distro, without any additional configuration. If you have a project that _almost_ builds with `sakemake`, please create an issue and include a link to your repository.
+
 ## Awards for you project
 
 If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
@@ -211,22 +215,8 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 
 [:sake:](https://github.com/xyproto/sakemake)
 
-## Feedback
+## General info
 
-The ideal is that every executable and small-ish project written in C++17 should be able to build with `sakemake` on a modern Linux distro, without any additional configuration. If you have a project that _almost_ builds with `sakemake`, please create an issue and include a link to your repository.
-
-## Version
-
-0.2
-
-## License
-
-MIT
-
-## Author
-
-* Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
-
-## A cat
-
-:cat:
+* License: MIT
+* Version: 0.2
+* Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
