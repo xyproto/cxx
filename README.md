@@ -223,3 +223,7 @@ If your project can be built with `sakemake`, and if you want to, you are allowe
 * License: MIT
 * Version: 0.5
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
+
+## Cat
+
+:cat:
