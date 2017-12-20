@@ -50,34 +50,6 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * For now, `sakemake` is meant to be able to build executables, but not libraries.
 
-## Badge for you project
-
-If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
-
-### Large badge
-
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake))
-
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake)
-
-### Medium badge
-
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake))
-
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake)
-
-### Small badge
-
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake))
-
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake)
-
-### Tiny badge
-
-    [:sake:](https://github.com/xyproto/sakemake))
-
-[:sake:](https://github.com/xyproto/sakemake))
-
 
 ## Suggested directory structure
 
@@ -204,9 +176,39 @@ In a package:
 
 `sudo make uninstall`
 
+## Awards for you project
+
+If your project can be built with `sakemake`, and if you want to, you are allowed to include this badge in your `README.md` file, using this Markdown code:
+
+### Large badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake)
+
+### Medium badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake)
+
+### Small badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake)
+
+### Tiny badge
+
+    [:sake:](https://github.com/xyproto/sakemake)
+
+[:sake:](https://github.com/xyproto/sakemake)
+
+
+
 ## Version
 
-0.1
+0.2
 
 ## License
 
