@@ -60,7 +60,7 @@ Building a specific directory (`sakemake` takes the same options as `make`):
 
 ## Suggested directory structure
 
-For a "Hello, World!" program that places the text-generation in a `std::string hello()` function:
+For a "Hello, World!" program that places the text-generation in a `std::string hello()` function, this is one way to structure the files:
 
 
 ```
