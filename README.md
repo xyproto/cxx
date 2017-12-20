@@ -62,7 +62,7 @@ hello/common/hello.cpp
 hello/common/hello_test.cpp
 ```
 
-** --- or if you prefer a `src` directory --- **
+#### --- or if you prefer a `src` directory ---
 
 ```
 hello/src/main.cpp
@@ -72,7 +72,7 @@ hello/common/hello.cpp
 hello/common/hello_test.cpp
 ```
 
-** main.cpp **
+**main.cpp**
 
 ```
 #include <iostream>
@@ -87,7 +87,7 @@ int main() {
 }
 ```
 
-** hello.h **
+**hello.h**
 
 ```
 #pragma once
@@ -100,7 +100,7 @@ using namespace std::literals;
 string hello();
 ```
 
-** hello.cpp **
+**hello.cpp**
 
 ```
 #include "hello.h"
@@ -110,7 +110,7 @@ string hello() {
 }
 ```
 
-** hello_test.cpp **
+**hello_test.cpp**
 
 ```
 #include "test.h"
@@ -126,7 +126,7 @@ int main() {
 }
 ```
 
-** test.h **
+**test.h**
 
 ```
 #pragma once
