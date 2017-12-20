@@ -1,0 +1,7 @@
+*.dblite
+*.o
+hello_test
+main
+*.bak
+*.swp
+*~
