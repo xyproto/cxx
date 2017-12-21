@@ -11,3 +11,4 @@
 * Implement `sakemake install` for installing on the system (/usr/bin for Linux, /usr/local/bin for macOS)
 * Implement `sakemake package <directory>` for installing to a given directory (DESTDIR) with PREFIX set to /usr or /usr/local. Package should also install the LICENSE or COPYTING file, if available.
 * Implement `sakemake export` for placing Makefile and SConstruct in the current directory.
+* Rename to "cfmake" and change the badge to "Configuration-free C++ Project".
