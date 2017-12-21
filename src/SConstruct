@@ -193,7 +193,7 @@ env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
 
 # extra=1, even more warnings
 if int(ARGUMENTS.get('extra', 0)):
-    env.Append(CXXFLAGS=' -Wextra')
+    env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
 # Find all .cpp files that are not main.cpp and not *_test.cpp
 dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE]
@@ -234,7 +234,6 @@ if not env.GetOption('clean'):
     for src_file in [MAIN_SOURCE] + dep_src:
         includes, defines, libs = get_includes_defines_and_libs(src_file)
         if includes:
-            print("INCLUDES A", includes)
             env.Append(CPPPATH=includes)
         if defines:
             env.Append(CPPDEFINES=defines)
@@ -249,7 +248,6 @@ if not env.GetOption('clean'):
     for ELF in test_elves:
         includes, defines, libs = get_includes_defines_and_libs(ELF + ".cpp")
         if includes:
-            print("INCLUDES B", includes)
             env.Append(CPPPATH=includes)
         if defines:
             env.Append(CPPDEFINES=defines)
