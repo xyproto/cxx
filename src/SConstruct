@@ -180,7 +180,7 @@ SetOption('random', 1)
 
 # Compiler and compiler flags
 env = Environment(CXX="g++",
-                  CXXFLAGS='-std=c++14')
+                  CXXFLAGS='-std=c++17')
 
 # debug=1
 if int(ARGUMENTS.get('debug', 0)):
