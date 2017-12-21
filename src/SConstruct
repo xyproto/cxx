@@ -182,6 +182,11 @@ SetOption('random', 1)
 env = Environment(CXX="g++",
                   CXXFLAGS='-std=c++17')
 
+# macos=1
+if int(ARGUMENTS.get('macos', 0)):
+    env = Environment(CXX="clang++",
+                      CXXFLAGS='-std=c++14')
+
 # debug=1
 if int(ARGUMENTS.get('debug', 0)):
     env.Append(CXXFLAGS=' -O1 -g')
