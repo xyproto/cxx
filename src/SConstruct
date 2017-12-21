@@ -36,24 +36,24 @@ def which(program):
 
 
 def split_cflags(cflags):
-    """Split a list of flags into includes (-I...), defines (-D...) and linking (-l...)"""
-    includeflags = ""
-    defineflags = ""
-    libflags = ""
+    """Split a list of flags into includes (-I...), defines (-D...) and libs (-l...)"""
+    includes = ""
+    defines = ""
+    libs = ""
     for flag in cflags.split(" "):
         if flag.strip().startswith("-I"):
-            includeflags += flag.strip() + " "
+            includes += flag.strip()[2:] + " "
         elif flag.strip().startswith("-D"):
-            defineflags += flag.strip()[2:] + " "
+            defines += flag.strip()[2:] + " "
         elif flag.strip().startswith("-l"):
-            libflags += flag.strip()[2:] + " "
+            libs += flag.strip()[2:] + " "
         else:
             # Only includes, defines and libs are supported
             continue
-    return includeflags.strip(), defineflags.strip(), libflags.strip()
+    return includes.strip(), defines.strip(), libs.strip()
 
 
-def get_cflags_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
+def get_includes_defines_and_libs(cppfilename, system_include_dir="/usr/include"):
     """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs"""
     try:
         lines = open(cppfilename).read().split("\n")[:-1]
@@ -218,7 +218,7 @@ if glob.glob(MAIN_SOURCE):
                         os.linesep)[:-1] if line.strip().startswith("#include \"")]
                 else:
                     continue
-                for new_include in new_includes:
+                for new_include in [os.path.relpath(x) for x in new_includes]:
                     if new_include not in includes:
                         has_new_include = True
                         includes.append(new_include)
@@ -232,9 +232,10 @@ if glob.glob(MAIN_SOURCE):
 # Find extra CFLAGS for the sources, if not cleaning
 if not env.GetOption('clean'):
     for src_file in [MAIN_SOURCE] + dep_src:
-        cflags, defines, libs = get_cflags_defines_and_libs(src_file)
-        if cflags:
-            env.Append(CXXFLAGS=' ' + cflags)
+        includes, defines, libs = get_includes_defines_and_libs(src_file)
+        if includes:
+            print("INCLUDES A", includes)
+            env.Append(CPPPATH=includes)
         if defines:
             env.Append(CPPDEFINES=defines)
         if libs:
@@ -246,13 +247,38 @@ main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
 # Find extra CFLAGS for the test sources, if not cleaning
 if not env.GetOption('clean'):
     for ELF in test_elves:
-        cflags, defines, libs = get_cflags_defines_and_libs(ELF + ".cpp")
-        if cflags:
-            env.Append(CXXFLAGS=' ' + cflags)
+        includes, defines, libs = get_includes_defines_and_libs(ELF + ".cpp")
+        if includes:
+            print("INCLUDES B", includes)
+            env.Append(CPPPATH=includes)
         if defines:
             env.Append(CPPDEFINES=defines)
         if libs:
             env.Append(LIBS=libs)
+
+## Remove non-existing includes
+includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
+# Remove duplicate includes (in terms of pointing to the same directory)
+includemap = {}
+for include in includes:
+    key = os.path.normpath(include)
+    if key in includemap:
+        # use the shortest includepath, if several are specified for the same directory
+        if len(include) < len(includemap[key]):
+            if len(os.path.relpath(include)) < len(include):
+                includemap[key] = os.path.relpath(include)
+            else:
+                includemap[key] = include
+    else:
+        if len(os.path.relpath(include)) < len(include):
+            includemap[key] = os.path.relpath(include)
+        else:
+            includemap[key] = include
+new_includes = includemap.values()
+env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes]))
+env.Replace(CPPPATH=[])
+# This also work for adding includes, but SConstruct changes them to longer versions
+#env.Replace(CPPPATH=new_includes)
 
 # Set up non-default targets for all the test executables (based on *_test.cpp)
 for ELF in test_elves:

@@ -1,4 +1,4 @@
-.PHONY: uninstall
+.PHONY: all clean uninstall
 
 DESTDIR ?=
 
@@ -10,23 +10,25 @@ else
   PREFIX ?= /usr
 endif
 
-all:
-	@sed "s,@@PREFIX@@,${PREFIX},g" src/sakemake.in > src/sakemake
+all: src/sakemake
 
-install:
-	@install -d "${DESTDIR}${PREFIX}/bin"
-	@install -m755 src/sakemake "${DESTDIR}${PREFIX}/bin/sakemake"
-	@ln -sf ${PREFIX}/bin/sakemake "${DESTDIR}${PREFIX}/bin/sm"
-	@install -d "${DESTDIR}${PREFIX}/share/sakemake"
-	@install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
-	@install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
+src/sakemake: src/sakemake.in
+	sed "s,@@PREFIX@@,${PREFIX},g" $< > $@
+
+install: src/sakemake
+	install -d "${DESTDIR}${PREFIX}/bin"
+	install -m755 src/sakemake "${DESTDIR}${PREFIX}/bin/sakemake"
+	ln -sf ${PREFIX}/bin/sakemake "${DESTDIR}${PREFIX}/bin/sm"
+	install -d "${DESTDIR}${PREFIX}/share/sakemake"
+	install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
+	install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
 
 uninstall:
-	@-rm "${DESTDIR}${PREFIX}/bin/sakemake"
-	@-rm "${DESTDIR}${PREFIX}/bin/sm"
-	@-rm "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
-	@-rm "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
-	@-rmdir "${DESTDIR}${PREFIX}/share/sakemake"
+	-rm "${DESTDIR}${PREFIX}/bin/sakemake"
+	-rm "${DESTDIR}${PREFIX}/bin/sm"
+	-rm "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
+	-rm "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
+	-rmdir "${DESTDIR}${PREFIX}/share/sakemake"
 
 clean:
-	@-rm src/sakemake
+	-rm src/sakemake
