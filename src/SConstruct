@@ -178,14 +178,15 @@ SetOption('num_jobs', multiprocessing.cpu_count())
 # Random build-order, for the possiblity of using the cache better
 SetOption('random', 1)
 
-# Compiler and compiler flags
-env = Environment(CXX="g++",
-                  CXXFLAGS='-std=c++17')
+# Create an environment
+env = Environment()
 
 # macos=1
 if int(ARGUMENTS.get('macos', 0)):
-    env = Environment(CXX="clang++",
-                      CXXFLAGS='-std=c++14')
+    # NOTE: TEMPORARY, FOR TESTING
+    env.Append(CXXFLAGS=' -std=c++14')
+else:
+    env.Append(CXXFLAGS=' -std=c++17')
 
 # debug=1
 if int(ARGUMENTS.get('debug', 0)):
