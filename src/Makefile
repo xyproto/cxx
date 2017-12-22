@@ -1,4 +1,4 @@
-.PHONY: all build opt strict sloppy testbuild test clang clangstrict clangsloppy clangdebug debug run clean rebuild
+.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug opt rebuild run sloppy strict test testbuild version
 
 clang ?= 0
 strict ?= 0
@@ -21,6 +21,9 @@ NAME ?= $(shell basename $(CURDIR))
 THIS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 all: build
+
+version:
+	@echo sakemake 0.9
 
 build:
 	@test -f main.cpp \

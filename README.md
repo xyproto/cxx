@@ -65,6 +65,10 @@ The name of the current directory will be used as the executable name.
 
     sakemake sloppy
 
+#### Get the current version:
+
+    sakemake version
+
 ## Features and limitations
 
 * **No configuration needed**, as long as the *sakemake* directory structure is followed.
@@ -243,7 +247,7 @@ If your project can be built with `sakemake`, and if you want to, you can includ
 ## General info
 
 * License: MIT
-* Version: 0.8
+* Version: 0.9
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
 
 ## A cat
