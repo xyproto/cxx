@@ -218,7 +218,7 @@ The ideal is that every executable and small-ish project written in C++17 should
 
 ## Awards for you project
 
-If your project can be built with `sakemake`, and if you want to, you can include this badge in your `README.md` file, using this Markdown code:
+If your project can be built with `sakemake`, you may include this badge in your `README.md`, using one of these Markdown snippets:
 
 ### Large badge
 
@@ -249,7 +249,3 @@ If your project can be built with `sakemake`, and if you want to, you can includ
 * License: MIT
 * Version: 0.9
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
-
-## A cat
-
-:cat:
