@@ -24,6 +24,8 @@ all: build
 
 version:
 	@echo sakemake 0.9
+	@make --version | head -1
+	@scons --version | head -2
 
 build:
 	@test -f main.cpp \
