@@ -1,4 +1,4 @@
-.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug opt rebuild run sloppy strict test testbuild version
+.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug export opt rebuild run sloppy strict test testbuild version
 
 clang ?= 0
 strict ?= 0
@@ -26,7 +26,7 @@ pkgdir ?= pkg
 all: build
 
 version:
-	@echo sakemake 1.1
+	@echo sakemake 1.3
 	@make --version | head -1
 	@scons --version | head -2
 
@@ -109,3 +109,7 @@ install: main
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR := ${pkgdir}
 pkg: install
+
+export:
+	@cp -i -v "${THIS_DIR}/Makefile" .
+	@cp -i -v "${THIS_DIR}/SConstruct" .

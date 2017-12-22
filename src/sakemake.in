@@ -2,7 +2,7 @@
 SAKEMAKE_DIR="@@PREFIX@@/share/sakemake"
 if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   cat <<dog
-sakemake 1.1
+sakemake 1.3
 
 sm test         - build and run tests
 sm run          - build and run
@@ -18,6 +18,7 @@ sm clean        - remove built files
 sm install      - install the project on the system
 sm pkg          - package the project
 sm rebuild      - clean and build
+sm export       - export build files for users without sakemake
 
 --- make flags are also supported ---
 
