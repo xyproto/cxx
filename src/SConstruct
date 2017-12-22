@@ -181,12 +181,8 @@ SetOption('random', 1)
 # Create an environment
 env = Environment()
 
-# macos=1
-if int(ARGUMENTS.get('macos', 0)):
-    # NOTE: TEMPORARY, FOR TESTING
-    env.Append(CXXFLAGS=' -std=c++14')
-else:
-    env.Append(CXXFLAGS=' -std=c++17')
+# Use the latest C++ standard (C++17)
+env.Append(CXXFLAGS=' -std=c++17')
 
 # debug=1
 if int(ARGUMENTS.get('debug', 0)):
