@@ -1,6 +1,6 @@
 # :sake: sakemake
 
-`sakemake` is a small program that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files.
+`sakemake` is a small program that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux distro packagers to package your project, and for users to build and install it.
 
 It uses SCons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
@@ -17,58 +17,61 @@ In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file
 
     sakemake
 
-Build and run:
+#### Build and run:
 
     sakemake run
 
-Build and run tests in a directory with files ending with `_test.cpp`:
+#### Build and run tests in a directory with files ending with `_test.cpp`:
 
     sakemake test
 
-Clean:
+#### Clean:
 
     sakemake clean
 
-Build with clang instead of gcc:
+#### Build with clang instead of gcc:
 
     sakemake clang
 
-Debug build:
+#### Debug build:
 
     sakemake debug
 
-Building a specific directory (`sakemake` can take the same flags as `make`):
+#### Building a specific directory (`sakemake` can take the same flags as `make`):
 
     sakemake -C example/hello
 
-Cleaning and building:
+#### Cleaning and building:
 
     sakemake rebuild
 
-Installing on the local system, using sudo:
+#### Installing on the local system, using sudo:
 
     sudo PREFIX=/usr sakemake install
 
-Packaging a project into $pkgdir:
+The name of the current directory will be used as the executable name.
+
+#### Packaging a project into $pkgdir:
 
     DESTDIR="$pkgdir" PREFIX=/usr sakemake install
 
+The name of the current directory will be used as the executable name.
 
 ## Features and limitations
 
 * **No configuration needed**, as long as the *sakemake* directory structure is followed.
-* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**.
+* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
+* Auto-detection of SDL2 is always supported.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
-* Only tested on Linux, but should work on any UNIX-like system that has the required dependencies.
+* Only tested on Linux and macOS, but should work on any UNIX-like system.
 * All source filenames must be lowercase.
 * Your include files are expected to be placed in `./include` or `../include`.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * For now, `sakemake` is meant to be able to build executables, not libraries.
 * See the `hello` example in the `example` directory for the suggested directory structure.
-
 
 ## Suggested directory structure
 
@@ -191,10 +194,6 @@ System-wide, using sudo:
 When creating a package:
 
 `DESTDIR="$pkgdir" make install`
-
-# Optional symlink
-
-`sudo ln -s /usr/bin/sakemake /usr/bin/sm`
 
 ## Uninstallation
 
