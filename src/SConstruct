@@ -34,22 +34,26 @@ def which(program):
     return None
 
 
-def split_cflags(cflags):
-    """Split a list of flags into includes (-I...), defines (-D...) and libs (-l...)"""
+def split_cflags(given_cflags):
+    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...) and ignored"""
     includes = ""
     defines = ""
     libs = ""
-    for flag in cflags.split(" "):
+    libpaths = ""
+    for flag in given_cflags.split(" "):
         if flag.strip().startswith("-I"):
             includes += flag.strip()[2:] + " "
         elif flag.strip().startswith("-D"):
             defines += flag.strip()[2:] + " "
         elif flag.strip().startswith("-l"):
             libs += flag.strip()[2:] + " "
+        elif flag.strip().startswith("-L"):
+            libpaths += flag.strip() + " "
         else:
-            # Only includes, defines and libs are supported
+            # Only includes, defines, libraries and library paths are supported
+            print("WARNING: Unsupported flag: " + flag)
             continue
-    return includes.strip(), defines.strip(), libs.strip(), ""
+    return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), ""
 
 
 def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_dir="/usr/include"):
@@ -61,10 +65,13 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
     includes = []
     for line in lines:
         if line.strip().startswith("#include"):
-            try:
+            if line.count("<") == 1 and line.count(">") == 1:
                 includes.append(line.strip().split("<")[1].split(">")[0])
-            except IndexError:
-                continue
+            elif line.count("\"") == 2:
+                includes.append(line.strip().split("\"")[1].split("\"")[0])
+
+    skiplist = ["assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h"]
+    includes = [x for x in includes if x not in skiplist]
 
     if os.path.exists("/Library/Frameworks"):
         # on macOS, prefer not to use pkg-config
@@ -74,6 +81,7 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 first_word = include.split("/")[0].lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
+                #print("Found " + first_word)
                 return "", "", "", "", "-F/Library/Frameworks -framework " + first_word
 
     if not which("pkg-config"):
@@ -86,21 +94,23 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
             first_word = include.lower()
             if "/" in include:
                 first_word = include.split("/")[0].lower()
-            cmd = "pkg-config --cflags --libs " + first_word
+            cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
             data = os.popen2(cmd)[1].read()
             if data:
+                #print("Found " + first_word)
                 return split_cflags(data)
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
     if which("pacman") and which("pkg-config") and which("cut"):
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
-            if glob.glob(include_path):
+            if os.path.exists(include_path):
                 cmd = 'pkg-config --cflags --libs $(LC_ALL=C pacman -Qo ' + \
-                    include_path + ' | cut -d" " -f5)'
+                    include_path + ' | cut -d" " -f5) 2>/dev/null'
                 # Return the CFLAGS as defined by pkg-config
                 data = os.popen2(cmd)[1].read()
                 if data:
+                    #print("Found " + first_word)
                     return split_cflags(data)
 
     # TODO: Add Debian support here
@@ -109,7 +119,7 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
     return "", "", "", "", ""
 
 
-# Test ELF-files to be generated
+# Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
 test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
 
 # Custom command line targets
@@ -157,7 +167,7 @@ elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
     cmd = [x for x in sys.argv if x != "run"] + [MAIN_EXECUTABLE]
     # Check if main.cpp exists
-    if not glob.glob(MAIN_SOURCE):
+    if not os.path.exists(MAIN_SOURCE):
         print("Nothing to run (no " + MAIN_SOURCE + ")")
         sys.exit(0)
     # Build main
@@ -201,18 +211,22 @@ if int(ARGUMENTS.get('clang', 0)):
 # Warnings and fail at first error
 env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
 
-# extra=1, even more warnings
-if int(ARGUMENTS.get('extra', 0)):
+# strict=1, even more warnings
+if int(ARGUMENTS.get('strict', 0)):
     env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
-# Find all .cpp files that are not main.cpp and not *_test.cpp
-dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE]
+# sloppy=1, just try to build the damn thing
+if int(ARGUMENTS.get('sloppy', 0)):
+    env.Append(CXXFLAGS=' -fpermissive -w')
+
+# Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
+dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE and fn != "test.cpp"]
 
 # add path to the include files
 env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
 
 # Find all included header files in ../include, then check if there are corresponding .cpp files in ../common and add them to dep_src, if there is a main source file
-if glob.glob(MAIN_SOURCE):
+if os.path.exists(MAIN_SOURCE):
     includes = []
     has_new_include = True
     examined = []
@@ -223,7 +237,7 @@ if glob.glob(MAIN_SOURCE):
                 if filename in examined:
                     continue
                 examined.append(filename)
-                if glob.glob(filename):
+                if os.path.exists(filename):
                     new_includes = [line.split("\"")[1] for line in open(filename).read().split(
                         os.linesep)[:-1] if line.strip().startswith("#include \"")]
                 else:
@@ -235,7 +249,7 @@ if glob.glob(MAIN_SOURCE):
             for include in includes:
                 for COMMON_PATH in LOCAL_COMMON_PATHS:
                     source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cpp")
-                    if glob.glob(source_filename):
+                    if os.path.exists(source_filename):
                         if source_filename not in dep_src:
                             dep_src.append(source_filename)
 
@@ -246,9 +260,10 @@ if not env.GetOption('clean'):
         if includes:
             env.Append(CPPPATH=includes)
         if defines:
-            env.Append(CPPDEFINES=defines)
+            for define in defines.split(" "):
+                env.Append(CPPDEFINES=define)
         if libs:
-            env.Append(LIBS=libs)
+            env.Append(LIBS=libs.split(" "))
         if linkflags:
             env.Append(LINKFLAGS=linkflags)
         if cflags:
@@ -264,9 +279,10 @@ if not env.GetOption('clean'):
         if includes:
             env.Append(CPPPATH=includes)
         if defines:
-            env.Append(CPPDEFINES=defines)
+            for define in defines.split(" "):
+                env.Append(CPPDEFINES=define)
         if libs:
-            env.Append(LIBS=libs)
+            env.Append(LIBS=libs.split(" "))
         if linkflags:
             env.Append(LINKFLAGS=linkflags)
         if cflags:

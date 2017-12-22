@@ -57,6 +57,14 @@ The name of the current directory will be used as the executable name.
 
 The name of the current directory will be used as the executable name.
 
+#### Strict compilation flags (complains about all things):
+
+    sakemake strict
+
+#### Sloppy compilation flags (will ignore all warnings):
+
+    sakemake sloppy
+
 ## Features and limitations
 
 * **No configuration needed**, as long as the *sakemake* directory structure is followed.
@@ -234,7 +242,7 @@ If your project can be built with `sakemake`, and if you want to, you can includ
 ## General info
 
 * License: MIT
-* Version: 0.7
+* Version: 0.8
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
 
 ## A cat
