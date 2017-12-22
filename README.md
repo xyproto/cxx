@@ -1,79 +1,84 @@
 # :sake: sakemake
 
-`sakemake` is a small program that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux distro packagers to package your project, and for users to build and install it.
+*Sakemake* is a build system that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux distro packagers to package your project, and for users to build and install it.
 
-It uses SCons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
+It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
-Dependencies, like for example SDL2, are discovered automatically and the correct flags are given to the C++ compiler. The latest versions of both GCC (g++) and Clang (clang++) are supported.
+Dependencies, like SDL2 for example, are discovered automatically and the correct flags are given to the C++ compiler. The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
-No configuration files are needed! No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake`, `Makefile.in` or other acrobatics.
+**No configuration files needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake`, `Makefile.in` or other acrobatics.
 
-If you are building a library, `sakemake` is not for you yet. If you are looking for a configuration-free build system for C++17 on Linux, `sakemake` might be for you. You can give it a go and see if it works for what you are trying to achieve.
+If you are building a library, *Sakemake* is not for you, yet. If you are looking for a configuration-free build system for C++17 on Linux, *Sakemake* might be for you.
+
+Give it a spin and see if it behaves as expected?
 
 
 ## Usage
 
 In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, building is as simple as:
 
-    sakemake
+    sm
 
 #### Build and run:
 
-    sakemake run
+    sm run
 
 #### Build and run tests in a directory with files ending with `_test.cpp`:
 
-    sakemake test
+    sm test
 
 #### Clean:
 
-    sakemake clean
+    sm clean
 
 #### Build with clang instead of gcc:
 
-    sakemake clang
+    sm clang
 
 #### Debug build:
 
-    sakemake debug
+    sm debug
 
-#### Building a specific directory (`sakemake` can take the same flags as `make`):
+#### Building a specific directory (`sm` can take the same flags as `make`):
 
-    sakemake -C example/hello
+    sm -C example/hello
 
 #### Cleaning and building:
 
-    sakemake rebuild
+    sm rebuild
 
 #### Installing on the local system, using sudo:
 
-    sudo PREFIX=/usr sakemake install
+    sudo PREFIX=/usr sm install
 
 The name of the current directory will be used as the executable name.
 
 #### Packaging a project into $pkgdir:
 
-    DESTDIR="$pkgdir" PREFIX=/usr sakemake install
+    DESTDIR="$pkgdir" PREFIX=/usr sm install
+
+--- or just ---
+
+    sm pkg
 
 The name of the current directory will be used as the executable name.
 
 #### Strict compilation flags (complains about all things):
 
-    sakemake strict
+    sm strict
 
 #### Sloppy compilation flags (will ignore all warnings):
 
-    sakemake sloppy
+    sm sloppy
 
 #### Get the current version:
 
-    sakemake version
+    sm version
 
 ## Features and limitations
 
-* **No configuration needed**, as long as the *sakemake* directory structure is followed.
+* **No configuration needed**, as long as the *Sakemake* directory structure is followed.
 * **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
-* Auto-detection of SDL2 is always supported.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
@@ -82,7 +87,7 @@ The name of the current directory will be used as the executable name.
 * Your include files are expected to be placed in `./include` or `../include`.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
-* For now, `sakemake` is meant to be able to build executables, not libraries.
+* For now, *Sakemake* is only meant to be able to build executables, not libraries.
 * See the `hello` example in the `example` directory for the suggested directory structure.
 
 ## Suggested directory structure
@@ -192,21 +197,17 @@ void equal(T a, T b) {
 
 ## Requirements
 
-* SCons
-* Make
+* scons
+* make
 * pkg-config
 
 ## Installation
 
-Prefer to install sakemake with your distro package manager, if possible.
+If possible, install *Sakemake* with the package manager that comes with your distro.
 
-System-wide, using sudo:
+Manual installation with `make` and `sudo`:
 
 `sudo make install`
-
-When creating a package:
-
-`DESTDIR="$pkgdir" make install`
 
 ## Uninstallation
 
@@ -216,9 +217,9 @@ When creating a package:
 
 The ideal is that every executable and small-ish project written in C++17 should be able to build with `sakemake` on a modern Linux distro, without any additional configuration. If you have a project that _almost_ builds with `sakemake`, please create an issue and include a link to your repository.
 
-## Awards for you project
+## A badge for your project
 
-If your project can be built with `sakemake`, you may include this badge in your `README.md`, using one of these Markdown snippets:
+If your project can be built with `sakemake`, you are hereby awarded this badge that you may include in the `README.md` file:
 
 ### Large badge
 
@@ -247,5 +248,5 @@ If your project can be built with `sakemake`, you may include this badge in your
 ## General info
 
 * License: MIT
-* Version: 0.9
+* Version: 1.0
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;

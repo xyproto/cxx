@@ -20,6 +20,9 @@ NAME ?= $(shell basename $(CURDIR))
 # the directory of this Makefile
 THIS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
+# used by the "pkg" target
+pkgdir ?= pkg
+
 all: build
 
 version:
@@ -100,4 +103,9 @@ install: main
 	@test -d share && cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -f COPYING && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
 	@test -f LICENSE && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
-	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
+	@-rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share/${NAME}"
+	@-rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share"
+
+# like install, but override DESTDIR in order to place everything in "${pkgdir}"
+pkg: DESTDIR := ${pkgdir}
+pkg: install
