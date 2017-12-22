@@ -11,6 +11,9 @@ else
   PREFIX ?= /usr
 endif
 
+# used by the "pkg" target
+pkgdir ?= pkg
+
 all: src/${NAME}
 
 src/${NAME}: src/${NAME}.in
@@ -38,3 +41,7 @@ uninstall:
 
 clean:
 	-rm "src/${NAME}"
+
+# like install, but override DESTDIR in order to place everything in "${pkgdir}"
+pkg: DESTDIR := ${pkgdir}
+pkg: install

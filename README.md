@@ -248,5 +248,5 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 ## General info
 
 * License: MIT
-* Version: 1.0
+* Version: 1.1
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;

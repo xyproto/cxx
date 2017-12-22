@@ -2,20 +2,24 @@
 SAKEMAKE_DIR="@@PREFIX@@/share/sakemake"
 if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   cat <<dog
-sakemake
+sakemake 1.1
 
 sm test         - build and run tests
 sm run          - build and run
 sm debug        - debug build
-sm extra        - stricter build
-sm opt          - build with -O3
+sm strict       - build with strict build flags
+sm sloppy       - build with sloppy build flags
+sm opt          - optimized build
 sm testbuild    - build tests
 sm clang        - build using clang
-sm clangextra   - more strict debug build, using clang
-sm clangdebug   - debug build, using clang
+sm clangstrict  - use clang and strict build flags
+sm clangdebug   - debug build using clang
 sm clean        - remove built files
+sm install      - install the project on the system
+sm pkg          - package the project
+sm rebuild      - clean and build
 
-make flags are also supported:
+--- make flags are also supported ---
 
 dog
 fi
