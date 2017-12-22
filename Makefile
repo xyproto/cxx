@@ -23,8 +23,8 @@ install: src/${NAME}
 	install -d "${DESTDIR}${PREFIX}/share/${NAME}"
 	install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
 	install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
-	install -d "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}"
-	install -m644 LICENSE "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/LICENSE"
+	install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
+	install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
 
 uninstall:
 	-rm "${DESTDIR}${PREFIX}/bin/${NAME}"
@@ -33,8 +33,8 @@ uninstall:
 	-rm "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
 	-rm "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
-	-rm "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/LICENSE"
-	-rmdir "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}"
+	-rm "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 
 clean:
 	-rm "src/${NAME}"

@@ -82,6 +82,6 @@ install: main
 	@test -d img && cp -r img/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -d resources && cp -r resources/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -d share && cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
-	@test -f COPYING && install -d "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}" && install -m644 COPYING "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/COPYING" || true
-	@test -f LICENSE && install -d "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}" && install -m644 LICENSE "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/LICENSE" || true
+	@test -f COPYING && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
+	@test -f LICENSE && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
 	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
