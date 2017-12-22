@@ -95,11 +95,12 @@ For a "Hello, World!" program that places the text-generation in a `std::string 
 └── hello/common/hello_test.cpp
 ```
 
-#### --- or if you prefer a `src` directory ---
+#### --- or if you prefer a directory per executable ---
 
 ```
 .
-└── hello/src/main.cpp
+└── hello/hello1/main.cpp
+└── hello/hello2/main.cpp
 └── hello/include/hello.h
 └── hello/include/test.h
 └── hello/common/hello.cpp

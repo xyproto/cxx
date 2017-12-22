@@ -70,7 +70,9 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
             elif line.count("\"") == 2:
                 includes.append(line.strip().split("\"")[1].split("\"")[0])
 
-    skiplist = ["assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h"]
+    # Skip C99, C++, C++20 and deprecated C++ headers
+    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt")
+
     includes = [x for x in includes if x not in skiplist]
 
     if os.path.exists("/Library/Frameworks"):
@@ -103,6 +105,7 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
     # Using the include_lines, find the correct CFLAGS on Arch Linux
     if which("pacman") and which("pkg-config") and which("cut"):
         for include in includes:
+            print("TRYING ARCH METHOD FOR " + include)
             include_path = os.path.join(system_include_dir, include)
             if os.path.exists(include_path):
                 cmd = 'pkg-config --cflags --libs $(LC_ALL=C pacman -Qo ' + \
