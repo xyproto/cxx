@@ -1,6 +1,7 @@
 .PHONY: all clean uninstall
 
-DESTDIR ?=
+NAME := sakemake
+ALIAS := sm
 
 # macOS detection
 UNAME_S := $(shell uname -s)
@@ -10,25 +11,30 @@ else
   PREFIX ?= /usr
 endif
 
-all: src/sakemake
+all: src/${NAME}
 
-src/sakemake: src/sakemake.in
+src/${NAME}: src/${NAME}.in
 	sed "s,@@PREFIX@@,${PREFIX},g" $< > $@
 
-install: src/sakemake
+install: src/${NAME}
 	install -d "${DESTDIR}${PREFIX}/bin"
-	install -m755 src/sakemake "${DESTDIR}${PREFIX}/bin/sakemake"
-	ln -sf ${PREFIX}/bin/sakemake "${DESTDIR}${PREFIX}/bin/sm"
-	install -d "${DESTDIR}${PREFIX}/share/sakemake"
-	install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
-	install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
+	install -m755 src/${NAME} "${DESTDIR}${PREFIX}/bin/${NAME}"
+	ln -sf ${PREFIX}/bin/${NAME} "${DESTDIR}${PREFIX}/bin/${ALIAS}"
+	install -d "${DESTDIR}${PREFIX}/share/${NAME}"
+	install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
+	install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
+	install -d "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}"
+	install -m644 LICENSE "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/LICENSE"
 
 uninstall:
-	-rm "${DESTDIR}${PREFIX}/bin/sakemake"
-	-rm "${DESTDIR}${PREFIX}/bin/sm"
-	-rm "${DESTDIR}${PREFIX}/share/sakemake/Makefile"
-	-rm "${DESTDIR}${PREFIX}/share/sakemake/SConstruct"
-	-rmdir "${DESTDIR}${PREFIX}/share/sakemake"
+	-rm "${DESTDIR}${PREFIX}/bin/${NAME}"
+	-rm "${DESTDIR}${PREFIX}/bin/${ALIAS}"
+	-rmdir "${DESTDIR}${PREFIX}/bin"
+	-rm "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
+	-rm "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
+	-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
+	-rm "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}/LICENSE"
+	-rmdir "${DESTDIR}${PREFIX}/usr/share/licenses/${NAME}"
 
 clean:
-	-rm src/sakemake
+	-rm "src/${NAME}"

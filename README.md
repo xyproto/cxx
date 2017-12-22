@@ -1,4 +1,4 @@
-# :sake: sake make
+# :sake: sakemake
 
 `sakemake` is a small program that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files.
 
@@ -37,9 +37,21 @@ Debug build:
 
     sakemake debug
 
-Building a specific directory (`sakemake` takes the same options as `make`):
+Building a specific directory (`sakemake` can take the same flags as `make`):
 
     sakemake -C example/hello
+
+Cleaning and building:
+
+    sakemake rebuild
+
+Installing on the local system, using sudo:
+
+    sudo PREFIX=/usr sakemake install
+
+Packaging a project into $pkgdir:
+
+    DESTDIR="$pkgdir" PREFIX=/usr sakemake install
 
 
 ## Features and limitations
