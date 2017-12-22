@@ -83,7 +83,6 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 first_word = include.split("/")[0].lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
-                #print("Found " + first_word)
                 return "", "", "", "", "-F/Library/Frameworks -framework " + first_word
 
     if not which("pkg-config"):
@@ -99,22 +98,37 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
             cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
             data = os.popen2(cmd)[1].read()
             if data:
-                #print("Found " + first_word)
                 return split_cflags(data)
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
-    if which("pacman") and which("pkg-config") and which("cut"):
+    if which("pacman") and which("pkg-config") and which("cut") and which("grep"):
         for include in includes:
-            print("TRYING ARCH METHOD FOR " + include)
             include_path = os.path.join(system_include_dir, include)
             if os.path.exists(include_path):
-                cmd = 'pkg-config --cflags --libs $(LC_ALL=C pacman -Qo ' + \
-                    include_path + ' | cut -d" " -f5) 2>/dev/null'
-                # Return the CFLAGS as defined by pkg-config
-                data = os.popen2(cmd)[1].read()
-                if data:
-                    #print("Found " + first_word)
-                    return split_cflags(data)
+                # Find the package that owns the include directory in question
+                cmd = 'LC_ALL=C pacman -Qo ' + include_path + ' | cut -d" " -f5'
+                package = os.popen2(cmd)[1].read().strip()
+                if not package:
+                    print("ERROR: No package owns: " + include_path)
+                    sys.exit(1)
+                cmd = 'pacman -Ql ' + package + ' | grep "\.pc$" | cut -d" " -f2-'
+                pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+                if not pc_files:
+                    print("WARNING: No pkg-config files for: " + package)
+                    continue
+                all_cxxflags = ""
+                # TODO: Consider interpreting the .pc files directly, for speed
+                for pc_file in pc_files:
+                    pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+                    cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+                    # Get the cxxflags as defined by pkg-config
+                    cxxflags = os.popen2(cmd)[1].read().strip()
+                    if cxxflags:
+                        for cxxflag in cxxflags.split(" "):
+                            if cxxflag not in all_cxxflags.split(" "):
+                                all_cxxflags += " " + cxxflag
+                if all_cxxflags:
+                    return split_cflags(all_cxxflags.strip())
 
     # TODO: Add Debian support here
 
