@@ -170,13 +170,15 @@ void equal(T a, T b) {
 
 ## Installation
 
-With your distro package manager, or with sudo:
+Prefer to install sakemake with your distro package manager, if possible.
+
+System-wide, using sudo:
 
 `sudo make install`
 
-In a package:
+When creating a package:
 
-`make PREFIX="$pkgdir" install`
+`DESTDIR="$pkgdir" make install`
 
 # Optional symlink
 
