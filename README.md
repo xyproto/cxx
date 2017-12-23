@@ -200,6 +200,28 @@ void equal(T a, T b) {
 * scons
 * make
 * pkg-config
+* g++ with support for c++17
+* clang++ with support for c++17
+
+## C++17 on macOS
+
+For installing a recent enough version of ++ on macOS, installing GCC with Homebrew and the `--HEAD` flag, is one possible approach:
+
+    brew install gcc --HEAD
+
+The other requirements can be installed with:
+
+    brew install scons make pkg-config
+
+## C++17 on Arch Linux
+
+g++ with support for C++17 should already be installed. If not, try installing base-devel:
+
+    pacman -S base-devel
+
+The only other requirement, scons, can be installed with:
+
+    pacman -S scons
 
 ## Installation
 
