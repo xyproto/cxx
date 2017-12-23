@@ -225,6 +225,10 @@ if int(ARGUMENTS.get('opt', 0)):
 if int(ARGUMENTS.get('clang', 0)):
     env.Replace(CXX='clang++')
 
+# Use the HEAD version of GCC as installed with Homebrew, if available
+if env["CXX"] == "g++" and which("g++-HEAD"):
+    env.Replace(CXX="g++-HEAD")
+
 # Warnings and fail at first error
 env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
 
