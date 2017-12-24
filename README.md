@@ -1,16 +1,16 @@
 # :sake: sakemake
 
-*Sakemake* is a build system that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux distro packagers to package your project, and for users to build and install it.
+*Sakemake* is a build system that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
-Dependencies, like SDL2 for example, are discovered automatically and the correct flags are given to the C++ compiler. The latest versions of both GCC (g++) and Clang (clang++) are supported.
+**No configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`.
 
-**No configuration files needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake`, `Makefile.in` or other acrobatics.
+Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is **Sakemake**-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
-If you are building a library, *Sakemake* is not for you, yet. If you are looking for a configuration-free build system for C++17 on Linux, *Sakemake* might be for you.
+The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
-Give it a spin and see if it behaves as expected?
+If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system for C++17 on Linux or macOS, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
 
 
 ## Usage
@@ -77,8 +77,8 @@ The name of the current directory will be used as the executable name.
 
 ## Features and limitations
 
-* **No configuration needed**, as long as the *Sakemake* directory structure is followed.
-* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
+* **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
+* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
@@ -92,7 +92,7 @@ The name of the current directory will be used as the executable name.
 
 ## Suggested directory structure
 
-For a "Hello, World!" program that places the text-generation in a `std::string hello()` function, this is one way to structure the files:
+For a "Hello, World!" program that places the text-generation in a `string hello()` function, this is one way to structure the files:
 
 
 ```
