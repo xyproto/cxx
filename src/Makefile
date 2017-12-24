@@ -7,8 +7,7 @@ opt ?= 0
 sloppy ?= 0
 
 # macOS detection, for setting the default PREFIX
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(shell uname -s),Darwin)
   PREFIX ?= /usr/local
 else
   PREFIX ?= /usr
@@ -26,7 +25,7 @@ pkgdir ?= pkg
 all: build
 
 version:
-	@echo sakemake 1.4
+	@echo sakemake 1.5
 	@make --version | head -1
 	@scons --version | head -2
 
@@ -37,18 +36,18 @@ build:
 
 opt:
 	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q opt=1 \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q opt=1
+	  && scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang} \
+	  || scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang}
 
 strict:
 	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q strict=1 \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild strict=1
+	  && scons --file="${THIS_DIR}/SConstruct" -Q strict=1 clang=${clang} \
+	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild strict=1 clang=${clang}
 
 sloppy:
 	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q sloppy=1 \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild sloppy=1
+	  && scons --file="${THIS_DIR}/SConstruct" -Q sloppy=1 clang=${clang} \
+	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild sloppy=1 clang=${clang}
 
 testbuild:
 	@scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy}
@@ -78,8 +77,8 @@ clangdebug:
 
 debug:
 	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q debug=1 \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild debug=1
+	  && scons --file="${THIS_DIR}/SConstruct" -Q debug=1 clang=${clang} \
+	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild debug=1 clang=${clang}
 
 run:
 	@scons --file="${THIS_DIR}/SConstruct" -Q run clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy}

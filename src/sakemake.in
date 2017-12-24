@@ -2,7 +2,7 @@
 SAKEMAKE_DIR="@@PREFIX@@/share/sakemake"
 if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   cat <<dog
-sakemake 1.4
+sakemake 1.5
 
 sm test         - build and run tests
 sm run          - build and run

@@ -213,7 +213,8 @@ env.Append(CXXFLAGS=' -std=c++17')
 
 # debug=1
 if int(ARGUMENTS.get('debug', 0)):
-    env.Append(CXXFLAGS=' -O1 -g')
+    env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
+    env.Append(LINKFLAGS=' -fsanitize=address')
 else:
     env.Append(CXXFLAGS=' -O2')
 
