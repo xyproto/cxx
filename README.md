@@ -6,7 +6,7 @@ It uses scons, make and pkg-config under the hood, while providing a tool that a
 
 **No configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`.
 
-Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is **Sakemake**-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
+Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *Sakemake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
 The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
