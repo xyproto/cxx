@@ -208,21 +208,29 @@ SetOption('random', 1)
 # Create an environment
 env = Environment()
 
-# Use the latest C++ standard (C++17)
-env.Append(CXXFLAGS=' -std=c++17')
+# std is not set, use the latest C++ standard
+if not ARGUMENTS.get('std', ''):
+    # Use C++17
+    env.Append(CXXFLAGS=' -std=c++17')
+else:
+# if std is something else, use that
+    args = []
+    for key, value in ARGLIST:
+        if key == 'std':
+            env.Append(CXXFLAGS=' -std=' + value)
 
-# debug=1
+# debug is set?
 if int(ARGUMENTS.get('debug', 0)):
     env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
     env.Append(LINKFLAGS=' -fsanitize=address')
 else:
     env.Append(CXXFLAGS=' -O2')
 
-# opt=1
+# opt is set?
 if int(ARGUMENTS.get('opt', 0)):
     env.Append(CXXFLAGS=' -O3')
 
-# clang=1
+# clang is set?
 if int(ARGUMENTS.get('clang', 0)):
     env.Replace(CXX='clang++')
 
@@ -233,11 +241,11 @@ if env["CXX"] == "g++" and which("g++-HEAD"):
 # Warnings and fail at first error
 env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
 
-# strict=1, even more warnings
+# if strict is set, enable even more warnings
 if int(ARGUMENTS.get('strict', 0)):
     env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
-# sloppy=1, just try to build the damn thing
+# if sloppy is set, just try to build the damn thing
 if int(ARGUMENTS.get('sloppy', 0)):
     env.Append(CXXFLAGS=' -fpermissive -w')
 
