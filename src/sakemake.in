@@ -1,6 +1,6 @@
 #!/bin/sh
 SAKEMAKE_DIR="@@PREFIX@@/share/sakemake"
-if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
   cat <<dog
 sakemake 1.5
 
