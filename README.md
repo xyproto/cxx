@@ -10,7 +10,7 @@ Dependencies are discovered automatically, and the correct flags are given to th
 
 The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
-If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system for C++17 on Linux or macOS, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
+If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux or macOS, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
 
 
 ## Usage
