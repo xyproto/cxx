@@ -78,7 +78,7 @@ The name of the current directory will be used as the executable name.
 ## Features and limitations
 
 * **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
-* **Auto-detection** of include, define and libarary flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
+* **Auto-detection** of include, define and library flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
@@ -205,7 +205,7 @@ void equal(T a, T b) {
 
 ## C++17 on macOS
 
-For installing a recent enough version of ++ on macOS, installing GCC with Homebrew and the `--HEAD` flag, is one possible approach:
+For installing a recent enough version of C++ on macOS, installing GCC with Homebrew and the `--HEAD` flag is one possible approach:
 
     brew install gcc --HEAD
 
@@ -225,11 +225,11 @@ The only other requirement, scons, can be installed with:
 
 ## C++17 on Debian or Ubuntu
 
-Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repostitory, or from a PPA.
+Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repository, or from a PPA.
 
 Install build-essential, scons and git:
 
-    apt install build-essential scons git
+    apt install build-essential scons
 
 ## Installation
 
