@@ -130,7 +130,35 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 if all_cxxflags:
                     return split_cflags(all_cxxflags.strip())
 
-    # TODO: Add Debian support here
+    # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
+    if which("dpkg-query") and which("cut") and which("grep"):
+        for include in includes:
+            include_path = os.path.join(system_include_dir, include)
+            if os.path.exists(include_path):
+                # Find the package that owns the include directory in question
+                cmd = 'LC_ALL=C dpkg-query -S ' + include_path + ' | cut -d" " -f2-'
+                package = os.popen2(cmd)[1].read().strip()
+                if not package:
+                    print("ERROR: No package owns: " + include_path)
+                    sys.exit(1)
+                cmd = 'dpkg-query -L ' + package + ' | grep "\.pc$"'
+                pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+                if not pc_files:
+                    print("WARNING: No pkg-config files for: " + package)
+                    continue
+                all_cxxflags = ""
+                # TODO: Consider interpreting the .pc files directly, for speed
+                for pc_file in pc_files:
+                    pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+                    cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+                    # Get the cxxflags as defined by pkg-config
+                    cxxflags = os.popen2(cmd)[1].read().strip()
+                    if cxxflags:
+                        for cxxflag in cxxflags.split(" "):
+                            if cxxflag not in all_cxxflags.split(" "):
+                                all_cxxflags += " " + cxxflag
+                if all_cxxflags:
+                    return split_cflags(all_cxxflags.strip())
 
     # CFLAGS, defines and libs not found
     return "", "", "", "", ""
