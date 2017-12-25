@@ -223,6 +223,14 @@ The only other requirement, scons, can be installed with:
 
     pacman -S scons
 
+## C++17 on Debian or Ubuntu
+
+Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repostitory, or from a PPA.
+
+Install build-essential, scons and git:
+
+    apt install build-essential scons git
+
 ## Installation
 
 If possible, install *Sakemake* with the package manager that comes with your distro.
