@@ -63,6 +63,10 @@ The name of the current directory will be used as the executable name.
 
 The name of the current directory will be used as the executable name.
 
+#### Build a smaller executable:
+
+    sm small
+
 #### Strict compilation flags (complains about all things):
 
     sm strict
@@ -104,7 +108,7 @@ For a "Hello, World!" program that places the text-generation in a `string hello
 └── hello/common/hello_test.cpp
 ```
 
-#### --- or if you prefer a directory per executable ---
+#### --- or if you prefer one directory per executable ---
 
 ```
 .
@@ -285,6 +289,6 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ## General info
 
-* Version: 1.9
+* Version: 1.10
 * License: MIT
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
