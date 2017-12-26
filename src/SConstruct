@@ -307,16 +307,18 @@ if int(ARGUMENTS.get('clang', 0)):
 if env["CXX"] == "g++" and which("g++-HEAD"):
     env.Replace(CXX="g++-HEAD")
 
-# Warnings and fail at first error
-env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
-
-# if strict is set, enable even more warnings
-if int(ARGUMENTS.get('strict', 0)):
-    env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
-
 # if sloppy is set, just try to build the damn thing
 if int(ARGUMENTS.get('sloppy', 0)):
     env.Append(CXXFLAGS=' -fpermissive -w')
+else:
+    # if sloppy is not set, add various warnings:
+
+    # pretty strict + fail at first error
+    env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
+
+    # if strict is set, enable even more warnings
+    if int(ARGUMENTS.get('strict', 0)):
+        env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
 # Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
 dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE and fn != "test.cpp"]
