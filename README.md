@@ -277,12 +277,14 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ### Emoji badge
 
+[:sake:](https://github.com/xyproto/sakemake)
+
     [:sake:](https://github.com/xyproto/sakemake)
 
-[:sake:](https://github.com/xyproto/sakemake)
+---
 
 ## General info
 
 * Version: 1.7
-* Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
 * License: MIT
+* Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
