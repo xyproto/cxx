@@ -17,9 +17,11 @@ LOCAL_INCLUDE_PATHS = ["include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
+
 def exe(fpath):
     """Check if the given path/filename both exists and is executable."""
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
 
 def which(program):
     """Check if a program exists in PATH"""
@@ -34,6 +36,7 @@ def which(program):
             if exe(exe_file):
                 return exe_file
     return None
+
 
 def split_cxxflags(given_cxxflags):
     """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...) and linkflags (-Wl,)"""
@@ -59,6 +62,7 @@ def split_cxxflags(given_cxxflags):
             continue
     # Other CXXFLAGS can be returned as the final value here
     return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), ""
+
 
 def arch_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
@@ -89,6 +93,7 @@ def arch_include_path_to_cxxflags(include_path):
                     all_cxxflags += " " + cxxflag
     return all_cxxflags.strip()
 
+
 def ubuntu_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
@@ -117,6 +122,7 @@ def ubuntu_include_path_to_cxxflags(include_path):
                 if cxxflag not in all_cxxflags.split(" "):
                     all_cxxflags += " " + cxxflag
     return all_cxxflags.strip()
+
 
 def brew_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
@@ -207,7 +213,8 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
         # Try the same with dpkg-query, but now using find to search deeper in /usr/include
         for include in includes:
             # Search /usr/include
-            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + include + '" | /usr/bin/sort | /usr/bin/tail -1'
+            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + \
+                include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             all_cxxflags = ubuntu_include_path_to_cxxflags(include_path)
             if all_cxxflags:
@@ -223,7 +230,8 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
         # Try the same with pacman, but now using find to search deeper in /usr/include
         for include in includes:
             # Search /usr/include
-            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + include + '" | /usr/bin/sort | /usr/bin/tail -1'
+            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + \
+                include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             all_cxxflags = arch_include_path_to_cxxflags(include_path)
             if all_cxxflags:
