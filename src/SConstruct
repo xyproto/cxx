@@ -34,34 +34,38 @@ def which(program):
     return None
 
 
-def split_cflags(given_cflags):
-    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...) and ignored"""
+def split_cxxflags(given_cxxflags):
+    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...), linkflags (-Wl,) and other cxxflags"""
     includes = ""
     defines = ""
     libs = ""
     libpaths = ""
-    for flag in given_cflags.split(" "):
-        if flag.strip().startswith("-I"):
-            includes += flag.strip()[2:] + " "
-        elif flag.strip().startswith("-D"):
-            defines += flag.strip()[2:] + " "
-        elif flag.strip().startswith("-l"):
-            libs += flag.strip()[2:] + " "
-        elif flag.strip().startswith("-L"):
-            libpaths += flag.strip() + " "
+    linkflags = ""
+    for flag in [f.strip() for f in given_cxxflags.split(" ")]:
+        if flag.startswith("-I"):
+            includes += flag[2:] + " "
+        elif flag.startswith("-D"):
+            defines += flag[2:] + " "
+        elif flag.startswith("-l"):
+            libs += flag[2:] + " "
+        elif flag.startswith("-L"):
+            libpaths += flag + " "
+        elif flag.startswith("-Wl,"):
+            linkflags += flag + " "
         else:
             # Only includes, defines, libraries and library paths are supported
             print("WARNING: Unsupported flag: " + flag)
             continue
-    return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), ""
+    return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), ""
 
 
-def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_dir="/usr/include"):
-    """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs"""
+def get_buildflags(cppfilename, system_include_dir="/usr/include"):
+    """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
+    Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
     try:
         lines = open(cppfilename).read().split(os.linesep)[:-1]
     except:
-        return "", "", "", "", ""
+        return "", "", "", "", "", ""
     includes = []
     for line in lines:
         if line.strip().startswith("#include"):
@@ -83,11 +87,11 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 first_word = include.split("/")[0].lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
-                return "", "", "", "", "-F/Library/Frameworks -framework " + first_word
+                return "", "", "", "", "", "-F/Library/Frameworks -framework " + first_word
 
     if not which("pkg-config"):
         print("NOTE: pkg-config must be installed for library-detection to work")
-        return "", "", "", "", ""
+        return "", "", "", "", "", ""
 
     # If the include exists in /usr/include, what is the first word, in lowercase?
     for include in includes:
@@ -98,10 +102,12 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
             cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
             data = os.popen2(cmd)[1].read()
             if data:
-                return split_cflags(data)
+                return split_cxxflags(data)
+
+    has_common = bool(which("pkg-config")) # and bool(which("cut")) and bool(which("grep")) and bool(which("find"))
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
-    if which("pacman") and which("pkg-config") and which("cut") and which("grep"):
+    if which("pacman") and has_common:
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
             if os.path.exists(include_path):
@@ -116,8 +122,8 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 if not pc_files:
                     print("WARNING: No pkg-config files for: " + package)
                     continue
-                all_cxxflags = ""
                 # TODO: Consider interpreting the .pc files directly, for speed
+                all_cxxflags = ""
                 for pc_file in pc_files:
                     pc_name = os.path.splitext(os.path.basename(pc_file))[0]
                     cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
@@ -128,10 +134,10 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                             if cxxflag not in all_cxxflags.split(" "):
                                 all_cxxflags += " " + cxxflag
                 if all_cxxflags:
-                    return split_cflags(all_cxxflags.strip())
+                    return split_cxxflags(all_cxxflags.strip())
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
-    if which("dpkg-query") and which("cut") and which("grep"):
+    if which("dpkg-query") and has_common:
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
             if os.path.exists(include_path):
@@ -146,8 +152,8 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                 if not pc_files:
                     print("WARNING: No pkg-config files for: " + package)
                     continue
-                all_cxxflags = ""
                 # TODO: Consider interpreting the .pc files directly, for speed
+                all_cxxflags = ""
                 for pc_file in pc_files:
                     pc_name = os.path.splitext(os.path.basename(pc_file))[0]
                     cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
@@ -158,10 +164,43 @@ def get_includes_defines_libs_linkflags_and_cflags(cppfilename, system_include_d
                             if cxxflag not in all_cxxflags.split(" "):
                                 all_cxxflags += " " + cxxflag
                 if all_cxxflags:
-                    return split_cflags(all_cxxflags.strip())
+                    return split_cxxflags(all_cxxflags.strip())
+
+    # Using the include_lines, find the correct CFLAGS on macOS with Homebrew and pkg-config installed
+    if which("brew") and has_common:
+        for include in includes:
+            # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
+            cmd = 'find -s -L /usr/local/include -type f -wholename "*' + include + '" | tail -1'
+            result = os.popen2(cmd)[1].read().strip()
+            realpath = os.path.realpath(result)
+            # If the path now starts with "/usr/local/Cellar/", then success
+            if realpath.startswith("/usr/local/Cellar/") and realpath.count("/") > 4:
+                # Strip away "/usr/local/Cellar/" from the start of the path
+                package = realpath[18:].split("/")[0]
+                # Get all .pc files that belong to the same package
+                cmd = 'brew ls --verbose ' + package + ' | grep "\.pc$"'
+                result = os.popen2(cmd)[1].read().strip()
+                if result:
+                    pc_files = result.split(os.linesep)
+                    if not pc_files:
+                        print("WARNING: No pkg-config files for: " + package)
+                        continue
+                    # TODO: Consider interpreting the .pc files directly, for speed
+                    all_cxxflags = ""
+                    for pc_file in pc_files:
+                        pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+                        cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+                        # Get the cxxflags as defined by pkg-config
+                        cxxflags = os.popen2(cmd)[1].read().strip()
+                        if cxxflags:
+                            for cxxflag in cxxflags.split(" "):
+                                if cxxflag not in all_cxxflags.split(" "):
+                                    all_cxxflags += " " + cxxflag
+                    if all_cxxflags:
+                        return split_cxxflags(all_cxxflags.strip())
 
     # CFLAGS, defines and libs not found
-    return "", "", "", "", ""
+    return "", "", "", "", "", ""
 
 
 # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
@@ -203,7 +242,9 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     # Run the tests
     for ELF in test_elves:
         status, output = commands.getstatusoutput(os.path.join(".", ELF))
-        print(output.strip())
+        output = output.strip()
+        if output:
+            print(output)
         # Exit on error
         if status != 0:
             sys.exit(status)
@@ -314,37 +355,43 @@ if os.path.exists(MAIN_SOURCE):
 # Find extra CFLAGS for the sources, if not cleaning
 if not env.GetOption('clean'):
     for src_file in [MAIN_SOURCE] + dep_src:
-        includes, defines, libs, linkflags, cflags = get_includes_defines_libs_linkflags_and_cflags(src_file)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file)
         if includes:
-            env.Append(CPPPATH=includes)
+            for include in includes.split(" "):
+                env.Append(CPPPATH=include)
         if defines:
             for define in defines.split(" "):
                 env.Append(CPPDEFINES=define)
         if libs:
             env.Append(LIBS=libs.split(" "))
+        if libpaths:
+            env.Append(LINKFLAGS=libpaths)
         if linkflags:
             env.Append(LINKFLAGS=linkflags)
-        if cflags:
-            env.Append(CPPFLAGS=cflags)
+        if other_cxxflags:
+            env.Append(CXXFLAGS=other_cxxflags)
 
 # Build main executable
 main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
 
 # Find extra CFLAGS for the test sources, if not cleaning
 if not env.GetOption('clean'):
-    for ELF in test_elves:
-        includes, defines, libs, linkflags, cflags = get_includes_defines_libs_linkflags_and_cflags(ELF + ".cpp")
+    for src_file in [ELF + ".cpp" for ELF in test_elves]:
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file)
         if includes:
-            env.Append(CPPPATH=includes)
+            for include in includes.split(" "):
+                env.Append(CPPPATH=include)
         if defines:
             for define in defines.split(" "):
                 env.Append(CPPDEFINES=define)
         if libs:
             env.Append(LIBS=libs.split(" "))
+        if libpaths:
+            env.Append(LINKFLAGS=libpaths)
         if linkflags:
             env.Append(LINKFLAGS=linkflags)
-        if cflags:
-            env.Append(CPPFLAGS=cflags)
+        if other_cxxflags:
+            env.Append(CXXFLAGS=other_cxxflags)
 
 ## Remove non-existing includes
 includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
