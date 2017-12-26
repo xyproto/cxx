@@ -10,8 +10,8 @@ import os.path
 import subprocess
 import sys
 
-MAIN_EXECUTABLE = "main"
 MAIN_SOURCE = "main.cpp"
+MAIN_EXECUTABLE = os.path.splitext(MAIN_SOURCE)[0]
 TEST_SUFFIX = "_test.cpp"
 LOCAL_INCLUDE_PATHS = ["include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
@@ -257,6 +257,17 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
 # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
 test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
 
+# Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
+dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX)
+           and fn != MAIN_SOURCE and fn != "test.cpp"]
+
+# If there is only one .cpp file, and it@s not a test file and not main.cpp,
+# consider that one to be the main source file from now on.
+if len(dep_src) == 1:
+    MAIN_SOURCE = dep_src[0]
+    MAIN_EXECUTABLE = os.path.splitext(MAIN_SOURCE)[0]
+    dep_src = []
+
 # Custom command line targets
 if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
     # Replace the "clean" argument with "-c", and list all targets
@@ -330,6 +341,10 @@ SetOption('random', 1)
 # Create an environment
 env = Environment()
 
+# Use the given CXX as the default value for the C++ compiler
+if 'CXX' in ARGUMENTS:
+    env.Replace(CXX=ARGUMENTS['CXX'])
+
 # std is not set, use the latest C++ standard
 if not ARGUMENTS.get('std', ''):
     # Use C++17
@@ -352,13 +367,16 @@ else:
 if int(ARGUMENTS.get('opt', 0)):
     env.Append(CXXFLAGS=' -O3')
 
-# clang is set?
-if int(ARGUMENTS.get('clang', 0)):
-    env.Replace(CXX='clang++')
-
-# Use the HEAD version of GCC as installed with Homebrew, if available
-if env["CXX"] == "g++" and which("g++-HEAD"):
-    env.Replace(CXX="g++-HEAD")
+# Check if a particular C++ compiler is given, or not
+if env["CXX"] == "c++":
+    # Use the HEAD version of GCC as installed with Homebrew, if available
+    if which("g++-HEAD"):
+        env.Replace(CXX="g++-HEAD")
+    else:
+        env.Replace(CXX="g++")
+    # clang is set?
+    if int(ARGUMENTS.get('clang', 0)):
+        env.Replace(CXX='clang++')
 
 # if sloppy is set, just try to build the damn thing
 if int(ARGUMENTS.get('sloppy', 0)):
@@ -373,9 +391,9 @@ else:
     if int(ARGUMENTS.get('strict', 0)):
         env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
-# Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
-dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX)
-           and fn != MAIN_SOURCE and fn != "test.cpp"]
+# Append any given CXXFLAGS after the other flags, to be able to override them
+if 'CXXFLAGS' in ARGUMENTS:
+    env.Append(CXXFLAGS=ARGUMENTS['CXXFLAGS'])
 
 # add path to the include files
 env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
