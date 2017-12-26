@@ -219,7 +219,7 @@ g++ with support for C++17 should already be installed. If not, try installing b
 
     pacman -S base-devel
 
-The only other requirement, scons, can be installed with:
+The only other requirement that then needs to be installed is scons:
 
     pacman -S scons
 
@@ -227,9 +227,9 @@ The only other requirement, scons, can be installed with:
 
 Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repository, or from a PPA.
 
-Install build-essential, scons and git:
+Install build-essential, scons and pkg-config:
 
-    apt install build-essential scons
+    apt install build-essential scons pkg-config
 
 ## Installation
 
