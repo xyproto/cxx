@@ -257,6 +257,7 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_256.png)](https://github.com/xyproto/sakemake)
 
+---
 
 ### Medium badge
 
@@ -264,13 +265,17 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_128.png)](https://github.com/xyproto/sakemake)
 
+---
+
 ### Small badge
 
     [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake))
 
 [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake)
 
-### Tiny badge
+---
+
+### Emoji badge
 
     [:sake:](https://github.com/xyproto/sakemake)
 
