@@ -16,6 +16,7 @@ TEST_SUFFIX = "_test.cpp"
 LOCAL_INCLUDE_PATHS = ["include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 
+
 def which(program):
     """Check if a program exists in PATH"""
     import os
@@ -59,6 +60,36 @@ def split_cxxflags(given_cxxflags):
     return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), ""
 
 
+def arch_include_path_to_cxxflags(include_path):
+    """Takes a path to a header file and returns cxxflags, or an empty string.
+    For Arch Linux."""
+    if not os.path.exists(include_path):
+        return ""
+    # Find the package that owns the include directory in question
+    cmd = 'LC_ALL=C pacman -Qo ' + include_path + ' | cut -d" " -f5'
+    package = os.popen2(cmd)[1].read().strip()
+    if not package:
+        print("ERROR: No package owns: " + include_path)
+        sys.exit(1)
+    cmd = 'pacman -Ql ' + package + ' | grep "\.pc$" | cut -d" " -f2-'
+    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+    if not pc_files:
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
+    # TODO: Consider interpreting the .pc files directly, for speed
+    all_cxxflags = ""
+    for pc_file in pc_files:
+        pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+        cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+        # Get the cxxflags as defined by pkg-config
+        cxxflags = os.popen2(cmd)[1].read().strip()
+        if cxxflags:
+            for cxxflag in cxxflags.split(" "):
+                if cxxflag not in all_cxxflags.split(" "):
+                    all_cxxflags += " " + cxxflag
+    return all_cxxflags.strip()
+
+
 def get_buildflags(cppfilename, system_include_dir="/usr/include"):
     """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
@@ -75,7 +106,8 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
                 includes.append(line.strip().split("\"")[1].split("\"")[0])
 
     # Skip C99, C++, C++20 and deprecated C++ headers + more
-    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc")
+    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits",
+                "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc")
 
     includes = [x for x in includes if x not in skiplist]
 
@@ -104,40 +136,24 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
             if data:
                 return split_cxxflags(data)
 
-    has_common = bool(which("pkg-config")) # and bool(which("cut")) and bool(which("grep")) and bool(which("find"))
-
     # Using the include_lines, find the correct CFLAGS on Arch Linux
-    if which("pacman") and has_common:
+    if which("pacman"):
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
-            if os.path.exists(include_path):
-                # Find the package that owns the include directory in question
-                cmd = 'LC_ALL=C pacman -Qo ' + include_path + ' | cut -d" " -f5'
-                package = os.popen2(cmd)[1].read().strip()
-                if not package:
-                    print("ERROR: No package owns: " + include_path)
-                    sys.exit(1)
-                cmd = 'pacman -Ql ' + package + ' | grep "\.pc$" | cut -d" " -f2-'
-                pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
-                if not pc_files:
-                    print("WARNING: No pkg-config files for: " + package)
-                    continue
-                # TODO: Consider interpreting the .pc files directly, for speed
-                all_cxxflags = ""
-                for pc_file in pc_files:
-                    pc_name = os.path.splitext(os.path.basename(pc_file))[0]
-                    cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
-                    # Get the cxxflags as defined by pkg-config
-                    cxxflags = os.popen2(cmd)[1].read().strip()
-                    if cxxflags:
-                        for cxxflag in cxxflags.split(" "):
-                            if cxxflag not in all_cxxflags.split(" "):
-                                all_cxxflags += " " + cxxflag
-                if all_cxxflags:
-                    return split_cxxflags(all_cxxflags.strip())
+            all_cxxflags = arch_include_path_to_cxxflags(include_path)
+            if all_cxxflags:
+                return split_cxxflags(all_cxxflags)
+        # Now try the same with pacman, but now using find to search deeper in /usr/include
+        for include in includes:
+            # Search /usr/include
+            cmd = 'find /usr/include -type f -wholename "*' + include + '" | tail -1'
+            include_path = os.popen2(cmd)[1].read().strip()
+            all_cxxflags = arch_include_path_to_cxxflags(include_path)
+            if all_cxxflags:
+                return split_cxxflags(all_cxxflags)
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
-    if which("dpkg-query") and has_common:
+    if which("dpkg-query"):
         for include in includes:
             include_path = os.path.join(system_include_dir, include)
             if os.path.exists(include_path):
@@ -167,7 +183,7 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
                     return split_cxxflags(all_cxxflags.strip())
 
     # Using the include_lines, find the correct CFLAGS on macOS with Homebrew and pkg-config installed
-    if which("brew") and has_common:
+    if which("brew"):
         for include in includes:
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
             cmd = 'find -s -L /usr/local/include -type f -wholename "*' + include + '" | tail -1'
@@ -236,7 +252,8 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     cmd = [x for x in sys.argv if x != "test"] + test_elves
     # Build the tests
     output = subprocess.check_output(cmd)
-    output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
+    output = os.linesep.join([line for line in output.split(
+        os.linesep) if not "up to date" in line]).strip()
     if output:
         print(output)
     # Run the tests
@@ -258,7 +275,8 @@ elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
         sys.exit(0)
     # Build main
     output = subprocess.check_output(cmd)
-    output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
+    output = os.linesep.join([line for line in output.split(
+        os.linesep) if not "up to date" in line]).strip()
     if output:
         print(output)
     # Run main
@@ -282,7 +300,7 @@ if not ARGUMENTS.get('std', ''):
     # Use C++17
     env.Append(CXXFLAGS=' -std=c++17')
 else:
-# if std is something else, use that
+    # if std is something else, use that
     args = []
     for key, value in ARGLIST:
         if key == 'std':
@@ -321,7 +339,8 @@ else:
         env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
 
 # Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
-dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX) and fn != MAIN_SOURCE and fn != "test.cpp"]
+dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX)
+           and fn != MAIN_SOURCE and fn != "test.cpp"]
 
 # add path to the include files
 env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
@@ -395,7 +414,7 @@ if not env.GetOption('clean'):
         if other_cxxflags:
             env.Append(CXXFLAGS=other_cxxflags)
 
-## Remove non-existing includes
+# Remove non-existing includes
 includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
 # Remove duplicate includes (in terms of pointing to the same directory)
 includemap = {}
@@ -417,7 +436,7 @@ new_includes = includemap.values()
 env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes]))
 env.Replace(CPPPATH=[])
 # This also work for adding includes, but SConstruct changes them to longer versions
-#env.Replace(CPPPATH=new_includes)
+# env.Replace(CPPPATH=new_includes)
 
 # Set up non-default targets for all the test executables (based on *_test.cpp)
 for ELF in test_elves:
