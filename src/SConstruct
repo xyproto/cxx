@@ -200,7 +200,8 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
                 first_word = include.split("/")[0].lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
-                return "", "", "", "", "", "-F/Library/Frameworks -framework " + first_word
+                framework_flags = "-F/Library/Frameworks -framework " + first_word
+                return "", "", "", "", framework_flags, framework_flags
 
     # Nothing more to do if pkg-config is missing
     if not which("pkg-config"):
