@@ -88,7 +88,7 @@ int main() {
         return 1;
     }
 
-    auto file = SDL_RWFromFile("img/boxes.bmp", "rb");
+    auto file = SDL_RWFromFile("img/sake.bmp", "rb");
     if (file == nullptr) {
         cout << "Error reading file: " << SDL_GetError() << endl;
         return 1;
@@ -106,11 +106,11 @@ int main() {
         return 1;
     }
 
-    for (auto i=0; i < 20; ++i) {
+    for (auto i=0; i < 100; ++i) {
         SDL_RenderClear(ren.get());
         SDL_RenderCopy(ren.get(), tex.get(), nullptr, nullptr);
         SDL_RenderPresent(ren.get());
-        SDL_Delay(100);
+        SDL_Delay(50);
     }
 
     return 0;
