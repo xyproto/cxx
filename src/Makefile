@@ -27,7 +27,7 @@ pkgdir ?= pkg
 all: build
 
 version:
-	@echo sakemake 1.8
+	@echo sakemake 1.9
 	@make --version | head -1
 	@scons --version | head -2
 
