@@ -89,7 +89,11 @@ def arch_include_path_to_cxxflags(include_path):
         pc_name = os.path.splitext(os.path.basename(pc_file))[0]
         cmd = '/usr/bin/pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
         # Get the cxxflags as defined by pkg-config
-        cxxflags = os.popen2(cmd)[1].read().strip()
+        cxxflags = ""
+        try:
+            cxxflags = os.popen2(cmd)[1].read().strip()
+        except OSError:
+            pass
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -119,7 +123,11 @@ def ubuntu_include_path_to_cxxflags(include_path):
         pc_name = os.path.splitext(os.path.basename(pc_file))[0]
         cmd = '/usr/bin/pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
         # Get the cxxflags as defined by pkg-config
-        cxxflags = os.popen2(cmd)[1].read().strip()
+        cxxflags = ""
+        try:
+            cxxflags = os.popen2(cmd)[1].read().strip()
+        except OSError:
+            pass
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -149,7 +157,11 @@ def brew_include_path_to_cxxflags(include_path):
         pc_name = os.path.splitext(os.path.basename(pc_file))[0]
         cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
         # Get the cxxflags as defined by pkg-config
-        cxxflags = os.popen2(cmd)[1].read().strip()
+        cxxflags = ""
+        try:
+            cxxflags = os.popen2(cmd)[1].read().strip()
+        except OSError:
+            pass
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -360,12 +372,16 @@ else:
 if int(ARGUMENTS.get('debug', 0)):
     env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
     env.Append(LINKFLAGS=' -fsanitize=address')
+# small is set?
+elif int(ARGUMENTS.get('small', 0)):
+    env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
+    env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
+# opt is set?
+elif int(ARGUMENTS.get('opt', 0)):
+    env.Append(CXXFLAGS=' -O3')
+# default optimization level
 else:
     env.Append(CXXFLAGS=' -O2')
-
-# opt is set?
-if int(ARGUMENTS.get('opt', 0)):
-    env.Append(CXXFLAGS=' -O3')
 
 # Check if a particular C++ compiler is given, or not
 if env["CXX"] == "c++":

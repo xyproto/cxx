@@ -6,7 +6,6 @@ debug ?= 0
 opt ?= 0
 sloppy ?= 0
 std ?= c++17
-CXX ?=
 
 # macOS detection, for setting the default PREFIX
 ifeq ($(shell uname -s),Darwin)
@@ -40,6 +39,11 @@ opt:
 	@test -f main.cpp \
 	  && scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} \
 	  || scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS}
+
+small:
+	@test -f main.cpp \
+	  && scons --file="${THIS_DIR}/SConstruct" -Q small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} \
+	  || scons --file="${THIS_DIR}/SConstruct" -Q small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS}
 
 strict:
 	@test -f main.cpp \

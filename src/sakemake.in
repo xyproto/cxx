@@ -19,6 +19,7 @@ sm install      - install the project on the system
 sm pkg          - package the project
 sm rebuild      - clean and build
 sm export       - export build files for users without sakemake
+sm small        - build a smaller executable
 
 --- make flags are also supported ---
 
