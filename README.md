@@ -1,4 +1,4 @@
-# :sake: sakemake
+# [:sake:](https://github.com/xyproto/sakemake) Sakemake
 
 *Sakemake* is a build system that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
