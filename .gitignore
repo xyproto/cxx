@@ -5,3 +5,4 @@ main
 *.bak
 *.swp
 *~
+src/sakemake
