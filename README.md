@@ -253,23 +253,30 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ### Large badge
 
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake))
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_512.png)](https://github.com/xyproto/sakemake))
 
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award.png)](https://github.com/xyproto/sakemake)
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_512.png)](https://github.com/xyproto/sakemake)
 
 ### Medium badge
 
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake))
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_256.png)](https://github.com/xyproto/sakemake))
 
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_128x128.png)](https://github.com/xyproto/sakemake)
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_256.png)](https://github.com/xyproto/sakemake)
+
 
 ### Small badge
 
-    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake))
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_128x128.png)](https://github.com/xyproto/sakemake))
 
-[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/sakemake_award_72x72.png)](https://github.com/xyproto/sakemake)
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_128x128.png)](https://github.com/xyproto/sakemake)
 
 ### Tiny badge
+
+    [![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72x72.png)](https://github.com/xyproto/sakemake))
+
+[![sakemake award](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72x72.png)](https://github.com/xyproto/sakemake)
+
+### Really tiny badge
 
     [:sake:](https://github.com/xyproto/sakemake)
 
