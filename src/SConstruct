@@ -39,12 +39,13 @@ def which(program):
 
 
 def split_cxxflags(given_cxxflags):
-    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...) and linkflags (-Wl,)"""
+    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...), linkflags (-Wl,) and other flags (-p)"""
     includes = ""
     defines = ""
     libs = ""
     libpaths = ""
     linkflags = ""
+    other = ""
     for flag in [f.strip() for f in given_cxxflags.split(" ")]:
         if flag.startswith("-I"):
             includes += flag[2:] + " "
@@ -56,12 +57,14 @@ def split_cxxflags(given_cxxflags):
             libpaths += flag + " "
         elif flag.startswith("-Wl,"):
             linkflags += flag + " "
+        elif flag.startswith("-p"):
+            other += flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
             print("WARNING: Unsupported flag: " + flag)
             continue
     # Other CXXFLAGS can be returned as the final value here
-    return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), ""
+    return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), other.strip()
 
 
 def arch_include_path_to_cxxflags(include_path):
