@@ -201,7 +201,7 @@ void equal(T a, T b) {
 * make
 * pkg-config
 * g++ with support for c++17
-* clang++ with support for c++17
+* (clang++ with support for c++17)
 
 ## C++17 on macOS
 
