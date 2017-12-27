@@ -10,7 +10,7 @@ Dependencies are discovered automatically, and the correct flags are given to th
 
 The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
-If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux or macOS, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
+If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
 
 
 ## Usage
@@ -86,7 +86,7 @@ The name of the current directory will be used as the executable name.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
-* Only tested on Linux and macOS, but should work on any UNIX-like system.
+* Only tested on Linux, FreeBSD and macOS. Should be easy to port to other systems that also has a package manager and pkg-config (or equivalent way to discover build flags).
 * All source filenames must be lowercase.
 * Your include files are expected to be placed in `./include` or `../include`.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
@@ -219,13 +219,11 @@ The other requirements can be installed with:
 
 ## C++17 on Arch Linux
 
-g++ with support for C++17 should already be installed. If not, try installing base-devel:
+g++ with support for C++17 should already be installed.
 
-    pacman -S base-devel
+Install scons and base-devel, if needed:
 
-The only other requirement is scons:
-
-    pacman -S scons
+    pacman -S scons base-devel --needed
 
 ## C++17 on Debian or Ubuntu
 
@@ -235,13 +233,19 @@ Install build-essential, scons and pkg-config:
 
     apt install build-essential scons pkg-config
 
+## C++17 on FreeBSD
+
+    pkg install gcc7 pkgconf scons gmake
+
 ## Installation
 
 Manual installation with `make` and `sudo`:
 
 `sudo make install`
 
-If possible, install *Sakemake* with the package manager that comes with your distro instead.
+On FreeBSD, use `gmake` instead of `make`.
+
+If possible, install *Sakemake* with the package manager that comes with your OS/distro instead.
 
 ## Uninstallation
 
@@ -249,7 +253,9 @@ If possible, install *Sakemake* with the package manager that comes with your di
 
 ## Feedback
 
-The ideal is that every executable and small-ish project written in C++17 should be able to build with `sakemake` on a modern Linux distro, without any additional configuration. If you have a project that _almost_ builds with `sakemake`, please create an issue and include a link to your repository.
+The ideal is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with homebrew), without any additional configuration.
+
+If you have a project written in C++17 that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
 ## A badge for your project
 
