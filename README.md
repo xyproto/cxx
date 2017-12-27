@@ -223,7 +223,7 @@ g++ with support for C++17 should already be installed. If not, try installing b
 
     pacman -S base-devel
 
-The only other requirement that then needs to be installed is scons:
+The only other requirement is scons:
 
     pacman -S scons
 
@@ -237,11 +237,11 @@ Install build-essential, scons and pkg-config:
 
 ## Installation
 
-If possible, install *Sakemake* with the package manager that comes with your distro.
-
 Manual installation with `make` and `sudo`:
 
 `sudo make install`
+
+If possible, install *Sakemake* with the package manager that comes with your distro instead.
 
 ## Uninstallation
 
