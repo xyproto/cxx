@@ -1,5 +1,7 @@
 language: cpp
 
+sudo: required
+
 matrix:
   include:
     - os: linux
@@ -8,9 +10,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6 scons make pkg-config build-essential
+            - g++-6 scons make pkg-config build-essential sdl2
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="CXX=g++-6"
 
     - os: linux
       addons:
@@ -18,18 +20,18 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7 scons make pkg-config build-essential
+            - g++-7 scons make pkg-config build-essential sdl2
       env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="CXX=g++-7"
 
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew install gcc pkg-config make scons && CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="brew update; brew upgrade; brew install pkg-config make scons sdl2; brew install gcc --HEAD"
 
     - os: freebsd
       env:
-        - MATRIX_EVAL="pkg install pkgconf gmake scons gcc"
+        - MATRIX_EVAL="pkg install pkgconf gmake scons gcc sdl2"
 
     - os: linux
       addons:
@@ -37,14 +39,14 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
-            - clang-5.0
+            - clang-5.0 scons make pkg-config build-essential sdl2
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CXX=clang++-5.0"
 
 before_install:
     - eval "${MATRIX_EVAL}"
 
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then make; sudo make install; sm -C examples/hello; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then make; sudo make install; sm -C examples/hello; fi
-- if [ $TRAVIS_OS_NAME == freebsd ]; then make; sudo gmake install; sm -C examples/hello; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then make; sudo make install; sm -C examples/sdl2 CXX="$CXX"; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then make; sudo make install; sm -C examples/sdl2 CXX="$CXX"; fi
+- if [ $TRAVIS_OS_NAME == freebsd ]; then make; sudo gmake install; sm -C examples/sdl2 CXX="$CXX"; fi
