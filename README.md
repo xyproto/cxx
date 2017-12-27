@@ -263,7 +263,7 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 ## A badge for your project
 
-If your project can be built with `sakemake`, you are hereby awarded this badge that you may include in the `README.md` file:
+If your project can be built with `sakemake`, you are hereby awarded this badge that you may include in your `README.md` file:
 
 ### Large badge
 
