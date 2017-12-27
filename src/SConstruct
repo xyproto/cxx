@@ -101,6 +101,40 @@ def arch_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
+def freebsd_include_path_to_cxxflags(include_path):
+    """Takes a path to a header file and returns cxxflags, or an empty string.
+    For FreeBSD."""
+    if not os.path.exists(include_path):
+        return ""
+    # Find the package that owns the include directory in question
+    cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1'
+    package = os.popen2(cmd)[1].read().strip()
+    if not package:
+        print("ERROR: No package owns: " + include_path)
+        sys.exit(1)
+    cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
+    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+    if not pc_files:
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
+    # TODO: Consider interpreting the .pc files directly, for speed
+    all_cxxflags = ""
+    for pc_file in pc_files:
+        pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+        cmd = '/usr/local/bin/pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+        # Get the cxxflags as defined by pkg-config
+        cxxflags = ""
+        try:
+            cxxflags = os.popen2(cmd)[1].read().strip()
+        except OSError:
+            pass
+        if cxxflags:
+            for cxxflag in cxxflags.split(" "):
+                if cxxflag not in all_cxxflags.split(" "):
+                    all_cxxflags += " " + cxxflag
+    return all_cxxflags.strip()
+
+
 def ubuntu_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
@@ -169,7 +203,7 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(cppfilename, system_include_dir="/usr/include"):
+def get_buildflags(cppfilename, system_include_dir):
     """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
     try:
@@ -226,10 +260,10 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
             all_cxxflags = ubuntu_include_path_to_cxxflags(include_path)
             if all_cxxflags:
                 return split_cxxflags(all_cxxflags)
-        # Try the same with dpkg-query, but now using find to search deeper in /usr/include
+        # Try the same with dpkg-query, but now using find to search deeper in system_include_dir
         for include in includes:
-            # Search /usr/include
-            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + \
+            # Search system_include_dir
+            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             all_cxxflags = ubuntu_include_path_to_cxxflags(include_path)
@@ -246,10 +280,27 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
         # Try the same with pacman, but now using find to search deeper in /usr/include
         for include in includes:
             # Search /usr/include
-            cmd = '/usr/bin/find /usr/include -type f -wholename "*' + \
+            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             all_cxxflags = arch_include_path_to_cxxflags(include_path)
+            if all_cxxflags:
+                return split_cxxflags(all_cxxflags)
+
+    # Using the include_lines, find the correct CFLAGS on FreeBSD
+    if exe("/usr/sbin/pkg"):
+        for include in includes:
+            include_path = os.path.join(system_include_dir, include)
+            all_cxxflags = freebsd_include_path_to_cxxflags(include_path)
+            if all_cxxflags:
+                return split_cxxflags(all_cxxflags)
+        # Try the same, but now using find to search deeper in system_include_dir
+        for include in includes:
+            # Search system_include_dir
+            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
+                include + '" | /usr/bin/sort | /usr/bin/tail -1'
+            include_path = os.popen2(cmd)[1].read().strip()
+            all_cxxflags = freebsd_include_path_to_cxxflags(include_path)
             if all_cxxflags:
                 return split_cxxflags(all_cxxflags)
 
@@ -257,7 +308,7 @@ def get_buildflags(cppfilename, system_include_dir="/usr/include"):
     if which("brew"):
         for include in includes:
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
-            cmd = 'find -s -L /usr/local/include -type f -wholename "*' + include + '" | tail -1'
+            cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" | tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             all_cxxflags = brew_include_path_to_cxxflags(include_path)
             if all_cxxflags:
@@ -369,6 +420,12 @@ else:
         if key == 'std':
             env.Append(CXXFLAGS=' -std=' + value)
 
+system_include_dir = "/usr/include"
+# Set system_include_dir to the given value, or keep it as /usr/include
+if ARGUMENTS.get('system_include_dir', ''):
+    system_include_dir = ARGUMENTS['system_include_dir']
+#print("SYSTEM_INCLUDE_DIR = " + system_include_dir)
+
 # debug is set?
 if int(ARGUMENTS.get('debug', 0)):
     env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
@@ -446,7 +503,7 @@ if os.path.exists(MAIN_SOURCE):
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
     for src_file in [MAIN_SOURCE] + dep_src:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
@@ -468,7 +525,7 @@ main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
 # Find extra CFLAGS for the test sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
     for src_file in [ELF + ".cpp" for ELF in test_elves]:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
