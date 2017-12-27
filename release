@@ -1,0 +1,12 @@
+#!/bin/sh
+ver=1.11
+rm -rf sakemake-$ver
+mkdir -p sakemake-$ver
+cp -r Makefile LICENSE README.md example src sakemake-$ver/
+find sakemake-$ver -type f -name "*.dblite" -delete
+find sakemake-$ver -type f -name "*.o" -delete
+find sakemake-$ver -type f -name main -delete
+make -C sakemake-$ver clean
+find sakemake-$ver
+tar zcf sakemake-$ver.tar.gz sakemake-$ver
+rm -rf sakemake-$ver
