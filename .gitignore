@@ -7,3 +7,7 @@ main
 *~
 src/sakemake
 src/Makefile
+*.tar.gz
+*.gz
+*.xz
+*.zip
