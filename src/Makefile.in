@@ -19,6 +19,9 @@ THIS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 # used by the "pkg" target
 pkgdir ?= pkg
 
+# building the main executable, or the tests
+CMD := $(shell test -f main.cpp -o -f main.cc || echo testbuild)
+
 all: build
 
 version:
@@ -27,60 +30,40 @@ version:
 	@scons --version | head -2
 
 build:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 opt:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 small:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 strict:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q strict=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild strict=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} strict=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 sloppy:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q sloppy=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild sloppy=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} sloppy=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 testbuild:
-	@scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 test:
 	@scons --file="${THIS_DIR}/SConstruct" -Q test clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clang:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangstrict:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct "-Q clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangsloppy:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangdebug:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 debug:
-	@test -f main.cpp \
-	  && scons --file="${THIS_DIR}/SConstruct" -Q debug=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} \
-	  || scons --file="${THIS_DIR}/SConstruct" -Q testbuild debug=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons --file="${THIS_DIR}/SConstruct" -Q ${CMD} debug=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 run:
 	@scons --file="${THIS_DIR}/SConstruct" -Q run clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}

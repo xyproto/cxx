@@ -4,6 +4,7 @@ hello_test
 main
 *.bak
 *.swp
+*.tmp
 *~
 src/sakemake
 src/Makefile

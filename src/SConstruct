@@ -2,19 +2,20 @@
 
 from __future__ import print_function
 
-import commands
-import glob
-import multiprocessing
 import os
 import os.path
-import subprocess
-import sys
+from commands import getstatusoutput
+from glob import iglob
+from itertools import chain
+from multiprocessing import cpu_count
+from subprocess import check_output
+from sys import exit, argv
 
 MAIN_SOURCE = "main.cpp"
 MAIN_EXECUTABLE = os.path.splitext(MAIN_SOURCE)[0]
-TEST_SUFFIX = "_test.cpp"
-LOCAL_INCLUDE_PATHS = ["include", "../include"]
-LOCAL_COMMON_PATHS = ["common", "../common"]
+TEST_SUFFIXES = ("_test.cpp", "_test.cc") # max 2
+LOCAL_INCLUDE_PATHS = ("include", "../include")
+LOCAL_COMMON_PATHS = ("common", "../common")
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
 
@@ -77,7 +78,7 @@ def arch_include_path_to_cxxflags(include_path):
     package = os.popen2(cmd)[1].read().strip()
     if not package:
         print("ERROR: No package owns: " + include_path)
-        sys.exit(1)
+        exit(1)
     cmd = '/usr/bin/pacman -Ql ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
@@ -111,7 +112,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     package = os.popen2(cmd)[1].read().strip()
     if not package:
         print("ERROR: No package owns: " + include_path)
-        sys.exit(1)
+        exit(1)
     cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
@@ -145,7 +146,7 @@ def ubuntu_include_path_to_cxxflags(include_path):
     package = os.popen2(cmd)[1].read().strip()
     if not package:
         print("ERROR: No package owns: " + include_path)
-        sys.exit(1)
+        exit(1)
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
@@ -319,11 +320,12 @@ def get_buildflags(cppfilename, system_include_dir):
 
 
 # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
-test_elves = [os.path.splitext(fn)[0] for fn in glob.glob("*" + TEST_SUFFIX)]
+test_sources = chain(iglob("*" + TEST_SUFFIXES[0]), iglob("*" + TEST_SUFFIXES[1]))
+test_elves = [os.path.splitext(fn)[0] for fn in test_sources]
 
 # Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
-dep_src = [fn for fn in glob.glob("*.cpp") if not fn.endswith(TEST_SUFFIX)
-           and fn != MAIN_SOURCE and fn != "test.cpp"]
+dep_src = [fn for fn in chain(iglob("*.cpp"), iglob("*.cc")) if not (fn.endswith(TEST_SUFFIXES[0]) or fn.endswith(TEST_SUFFIXES[1]))
+           and fn != MAIN_SOURCE and fn != "test.cpp" and fn != "test.cc"]
 
 # If there is only one .cpp file, and it@s not a test file and not main.cpp,
 # consider that one to be the main source file from now on.
@@ -335,69 +337,69 @@ if len(dep_src) == 1:
 # Custom command line targets
 if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
     # Replace the "clean" argument with "-c", and list all targets
-    cmd = [x for x in sys.argv if x != "clean"] + ["-c"] + [MAIN_EXECUTABLE] + test_elves
+    cmd = [x for x in argv if x != "clean"] + ["-c"] + [MAIN_EXECUTABLE] + test_elves
     # Clean
-    status, output = commands.getstatusoutput(" ".join(cmd))
+    status, output = getstatusoutput(" ".join(cmd))
     output = output.strip()
     if output:
         print(output)
-    sys.exit(status)
+    exit(status)
 elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
     if not test_elves:
         print("Nothing to build")
-        sys.exit(0)
+        exit(0)
     # Remove the "test" argument, and list all test-executable targets
-    cmd = [x for x in sys.argv if x != "testbuild"] + test_elves
+    cmd = [x for x in argv if x != "testbuild"] + test_elves
     # Build the tests
-    status, output = commands.getstatusoutput(" ".join(cmd))
+    status, output = getstatusoutput(" ".join(cmd))
     output = output.strip()
     if output:
         print(output)
-    sys.exit(status)
+    exit(status)
 elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     if not test_elves:
         print("Nothing to build")
-        sys.exit(0)
+        exit(0)
     # Remove the "test" argument, and list all test-executable targets
-    cmd = [x for x in sys.argv if x != "test"] + test_elves
+    cmd = [x for x in argv if x != "test"] + test_elves
     # Build the tests
-    output = subprocess.check_output(cmd)
+    output = check_output(cmd)
     output = os.linesep.join([line for line in output.split(
         os.linesep) if not "up to date" in line]).strip()
     if output:
         print(output)
     # Run the tests
     for ELF in test_elves:
-        status, output = commands.getstatusoutput(os.path.join(".", ELF))
+        status, output = getstatusoutput(os.path.join(".", ELF))
         output = output.strip()
         if output:
             print(output)
         # Exit on error
         if status != 0:
-            sys.exit(status)
-    sys.exit(0)
+            exit(status)
+    exit(0)
 elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
-    cmd = [x for x in sys.argv if x != "run"] + [MAIN_EXECUTABLE]
+    cmd = [x for x in argv if x != "run"] + [MAIN_EXECUTABLE]
     # Check if main.cpp exists
     if not os.path.exists(MAIN_SOURCE):
         print("Nothing to run (no " + MAIN_SOURCE + ")")
-        sys.exit(0)
+        exit(0)
     # Build main
-    output = subprocess.check_output(cmd)
+    output = check_output(cmd)
     output = os.linesep.join([line for line in output.split(
         os.linesep) if not "up to date" in line]).strip()
     if output:
         print(output)
     # Run main
-    status, output = commands.getstatusoutput(os.path.join(".", MAIN_EXECUTABLE))
+    status, output = getstatusoutput(os.path.join(".", MAIN_EXECUTABLE))
     output = output.strip()
     if output:
         print(output)
-    sys.exit(status)
+    exit(status)
 
 # Set the number of jobs to the number of CPUs
-SetOption('num_jobs', multiprocessing.cpu_count())
+SetOption('num_jobs', cpu_count())
 
 # Random build-order, for the possiblity of using the cache better
 SetOption('random', 1)
@@ -499,6 +501,10 @@ if os.path.exists(MAIN_SOURCE):
                     if os.path.exists(source_filename):
                         if source_filename not in dep_src:
                             dep_src.append(source_filename)
+                    source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cc")
+                    if os.path.exists(source_filename):
+                        if source_filename not in dep_src:
+                            dep_src.append(source_filename)
 
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
@@ -524,7 +530,7 @@ main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
 
 # Find extra CFLAGS for the test sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
-    for src_file in [ELF + ".cpp" for ELF in test_elves]:
+    for src_file in test_sources:
         includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
@@ -566,8 +572,9 @@ env.Replace(CPPPATH=[])
 # env.Replace(CPPPATH=new_includes)
 
 # Set up non-default targets for all the test executables (based on *_test.cpp)
-for ELF in test_elves:
-    env.Program(ELF, [ELF + ".cpp"] + dep_src)
+for test_src in test_sources:
+    ELF = os.path.splitext(test_src)[0]
+    env.Program(ELF, [test_src] + dep_src)
 
 # Only main is the default target
 Default(main)
