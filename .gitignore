@@ -6,3 +6,4 @@ main
 *.swp
 *~
 src/sakemake
+src/Makefile

@@ -25,4 +25,4 @@ sm small        - build a smaller executable
 
 dog
 fi
-make -f "$SAKEMAKE_DIR/Makefile" "$@"
+@@MAKE@@ -f "$SAKEMAKE_DIR/Makefile" "$@"

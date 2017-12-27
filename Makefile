@@ -7,19 +7,27 @@ ALIAS := sm
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
   PREFIX ?= /usr/local
+  MAKE ?= make
+else ifeq ($(UNAME_S),FreeBSD)
+  PREFIX ?= /usr/local
+  MAKE ?= gmake
 else
   PREFIX ?= /usr
+  MAKE ?= make
 endif
 
 # used by the "pkg" target
 pkgdir ?= pkg
 
-all: src/${NAME}
+all: src/${NAME} src/Makefile
 
 src/${NAME}: src/${NAME}.in
-	@sed "s,@@PREFIX@@,${PREFIX},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g" $< > $@
 
-install: src/${NAME}
+src/Makefile: src/Makefile.in
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g" $< > $@
+
+install: src/${NAME} src/Makefile
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 src/${NAME} "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf ${PREFIX}/bin/${NAME} "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -40,7 +48,7 @@ uninstall:
 	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 
 clean:
-	@-rm "src/${NAME}"
+	@-rm -f "src/${NAME}" src/Makefile
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR := ${pkgdir}

@@ -6,13 +6,8 @@ debug ?= 0
 opt ?= 0
 sloppy ?= 0
 std ?= c++17
-
-# macOS detection, for setting the default PREFIX
-ifeq ($(shell uname -s),Darwin)
-  PREFIX ?= /usr/local
-else
-  PREFIX ?= /usr
-endif
+MAKE ?= @@MAKE@@
+PREFIX ?= @@PREFIX@@
 
 # the name of the installed executable and related directories
 NAME ?= $(shell basename $(CURDIR))
@@ -91,9 +86,6 @@ run:
 
 rebuild: clean build
 
-clean:
-	@scons --file="${THIS_DIR}/SConstruct" -Q clean
-
 main: main.cpp
 	@scons --file="${THIS_DIR}/SConstruct" -Q clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS}
 
@@ -117,3 +109,6 @@ pkg: install
 
 export:
 	@cp -i -v "${THIS_DIR}/Makefile" "${THIS_DIR}/SConstruct" .
+
+clean:
+	@scons --file="${THIS_DIR}/SConstruct" -Q clean
