@@ -289,7 +289,7 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ---
 
-### Emoji badge
+### Tiny badge
 
 [:sake:](https://github.com/xyproto/sakemake)
 
