@@ -41,4 +41,4 @@ install:
 - if [ $TRAVIS_OS_NAME == linux ]; then sudo make install; fi
 
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then sm -C examples/sdl2 CXX="$CXX"; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then sm -C example/sdl2 CXX="$CXX"; fi
