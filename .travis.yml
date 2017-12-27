@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6 scons make pkg-config build-essential sdl2
+            - g++-6 scons make pkg-config build-essential libsdl2-dev
       env:
         - MATRIX_EVAL="CXX=g++-6"
 
@@ -20,18 +20,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7 scons make pkg-config build-essential sdl2
+            - g++-7 scons make pkg-config build-essential libsdl2-dev
       env:
         - MATRIX_EVAL="CXX=g++-7"
-
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="brew update; brew upgrade; brew install pkg-config make scons sdl2; brew install gcc --HEAD"
-
-    - os: freebsd
-      env:
-        - MATRIX_EVAL="pkg install pkgconf gmake scons gcc sdl2"
 
     - os: linux
       addons:
@@ -39,14 +30,15 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
-            - clang-5.0 scons make pkg-config build-essential sdl2
+            - clang-5.0 scons make pkg-config build-essential libsdl2-dev
       env:
         - MATRIX_EVAL="CXX=clang++-5.0"
 
 before_install:
     - eval "${MATRIX_EVAL}"
 
+install:
+- if [ $TRAVIS_OS_NAME == linux ]; then sudo make install; fi
+
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then make; sudo make install; sm -C examples/sdl2 CXX="$CXX"; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then make; sudo make install; sm -C examples/sdl2 CXX="$CXX"; fi
-- if [ $TRAVIS_OS_NAME == freebsd ]; then make; sudo gmake install; sm -C examples/sdl2 CXX="$CXX"; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then sm -C examples/sdl2 CXX="$CXX"; fi
