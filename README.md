@@ -235,7 +235,11 @@ Install build-essential, scons and pkg-config:
 
 ## C++17 on FreeBSD
 
-    pkg install gcc7 pkgconf scons gmake
+FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc7 or later.
+
+Install pkg-conf, scons and gmake:
+
+    pkg install pkgconf scons gmake
 
 ## Installation
 
