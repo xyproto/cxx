@@ -7,7 +7,7 @@ packages:
 - scons make pkg-config build-essential libsdl2-dev
 
 install:
-- make install
+- sudo make install
 
 script:
 - sm -C example/sdl2
