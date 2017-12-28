@@ -10,13 +10,12 @@ addons:
     - g++-7
 
 packages:
-- scons make pkg-config build-essential libsdl2-dev
+- scons make pkg-config build-essential
 
 install:
 - sudo make install
 
 script:
-- sm -C example/sdl2 CXX=g++-7
 - sm -C example/tinyhello small=1 run CXX=g++-7
 - sm -C example/hello/common test CXX=g++-7
 - sm -C example/hello run CXX=g++-7
