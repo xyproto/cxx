@@ -16,16 +16,18 @@ else
   MAKE ?= make
 endif
 
+VERSION := $(shell grep -F '* Version: ' README.md | cut -d' ' -f3)
+
 # used by the "pkg" target
 pkgdir ?= pkg
 
 all: src/${NAME} src/Makefile
 
 src/${NAME}: src/${NAME}.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 src/Makefile: src/Makefile.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 install: src/${NAME} src/Makefile
 	@install -d "${DESTDIR}${PREFIX}/bin"

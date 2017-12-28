@@ -25,7 +25,7 @@ CMD := $(shell test -f main.cpp -o -f main.cc || echo testbuild)
 all: build
 
 version:
-	@echo sakemake 1.11
+	@echo sakemake @@VERSION@@
 	@${MAKE} --version | head -1
 	@scons --version | head -2
 
