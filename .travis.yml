@@ -1,7 +1,13 @@
 language: cpp
 
 sudo: required
-distro: artful
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-7
 
 packages:
 - scons make pkg-config build-essential libsdl2-dev
