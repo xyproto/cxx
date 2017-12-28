@@ -11,7 +11,7 @@ from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import exit, argv
 
-LOCAL_INCLUDE_PATHS = ["include", "../include"]
+LOCAL_INCLUDE_PATHS = [".", "include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
@@ -219,8 +219,19 @@ def get_buildflags(sourcefilename, system_include_dir):
     # Skip C99, C++, C++20 and deprecated C++ headers + more
     skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc")
 
-    # Filter out skipped includes
-    includes = [x for x in includes if x not in skiplist]
+    # Filter out skipped includes, and includes in LOCAL_INCLUDE_PATHS
+    filtered_includes = []
+    for include in includes:
+        if include in skiplist:
+            continue
+        found = False
+        for local_include_path in LOCAL_INCLUDE_PATHS:
+            if os.path.exists(os.path.join(local_include_path, include)):
+                found = True
+                break
+        if not found:
+            filtered_includes.append(include)
+    includes = filtered_includes
 
     # Check for installed frameworks in /Library/Frameworks
     if os.path.exists("/Library/Frameworks"):
@@ -559,7 +570,6 @@ if os.path.exists(main_source_file):
                         if os.path.exists(source_filename):
                             if source_filename not in dep_src:
                                 dep_src.append(source_filename)
-
 
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
