@@ -1,16 +1,16 @@
 language: cpp
 
-sudo: false
+sudo: required
 distro: artful
 
 packages:
 - scons make pkg-config build-essential libsdl2-dev
 
 install:
-- make
+- make install
 
 script:
-- alias sm=src/sakemake
 - sm -C example/sdl2
+- sm -C example/tinyhello small=1 run
+- sm -C example/hello/common test
 - sm -C example/hello run
-- sm -C example/
