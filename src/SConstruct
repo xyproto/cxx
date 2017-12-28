@@ -344,7 +344,7 @@ def get_main_source_file(test_sources=None):
 
 def get_test_sources():
     """Get all source files ending with _test.cpp, _test.cc, _test.cxx or named test.cpp, test.cc or test.cxx"""
-    test_sources = chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx")
+    test_sources = chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx"))
     if os.path.exists("test.cc"):
         test_sources.append("test.cc")
     elif os.path.exists("test.cpp"):
