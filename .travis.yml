@@ -2,43 +2,12 @@ language: cpp
 
 sudo: required
 
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6 scons make pkg-config build-essential libsdl2-dev
-      env:
-        - MATRIX_EVAL="CXX=g++-6"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7 scons make pkg-config build-essential libsdl2-dev
-      env:
-        - MATRIX_EVAL="CXX=g++-7"
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - clang-5.0 scons make pkg-config build-essential libsdl2-dev
-      env:
-        - MATRIX_EVAL="CXX=clang++-5.0"
-
-before_install:
-    - eval "${MATRIX_EVAL}"
+packages:
+- g++-7 scons make pkg-config build-essential libsdl2-dev
 
 install:
-- if [ $TRAVIS_OS_NAME == linux ]; then sudo make install; fi
+- sudo make install
 
 script:
-- if [ $TRAVIS_OS_NAME == linux ]; then sm -C example/sdl2 CXX="$CXX"; fi
+- sm -C example/sdl2 CXX="g++-7"
+- sm -C example/hello CXX="g++-7" run
