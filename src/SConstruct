@@ -11,9 +11,6 @@ from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import exit, argv
 
-MAIN_SOURCE = "main.cpp"
-MAIN_EXECUTABLE = os.path.splitext(MAIN_SOURCE)[0]
-TEST_SUFFIXES = ("_test.cpp", "_test.cc") # max 2
 LOCAL_INCLUDE_PATHS = ("include", "../include")
 LOCAL_COMMON_PATHS = ("common", "../common")
 PATHLIST = os.environ["PATH"].split(os.pathsep)
@@ -319,25 +316,82 @@ def get_buildflags(cppfilename, system_include_dir):
     return "", "", "", "", "", ""
 
 
+def get_main_source_file(test_sources=None):
+    """Get the main source file. It may be named main.cpp or main.cc, or be the only one, or the one containing 'main('.
+    Return a blank string if none is found."""
+    if os.path.exists("main.cpp"):
+        return "main.cpp"
+    if os.path.exists("main.cc"):
+        return "main.cc"
+    # No main source file, see if there is only one non-test source file there
+    if not test_sources:
+        test_sources = get_test_sources()
+    all_sources = [fname for fname in chain(
+        iglob("*.cpp"), iglob("*.cc")) if fname not in test_sources]
+    if len(all_sources) == 0:
+        # No main source
+        return ""
+    if len(all_sources) == 1:
+        # Return the 1 source file that was found
+        return all_sources[0]
+    # Multiple candidates for the main source file, use the one that contains the word "main("
+    for fname in all_sources:
+        if "main(" in open(fname).read():
+            return fname
+    # No source file contained "main(", there may not be a main source file here
+    return ""
+
+
+def get_test_sources():
+    """Get all source files ending with _test.cpp, _test.cc or named test.cpp or test.cc"""
+    test_sources = chain(iglob("*" + "_test.cpp"), iglob("*" + "_test.cc"))
+    if os.path.exists("test.cc"):
+        test_sources.append("test.cc")
+    if os.path.exists("test.cpp"):
+        test_sources.append("test.cpp")
+    return list(test_sources)
+
+
+def get_dep_sources(main_source_file=None, test_sources=None):
+    """Get all source files that the main executable, or test executables, may depend upon"""
+    if not test_sources:
+        test_sources = get_test_sources()
+    if not main_source_file:
+        main_source_file = get_main_source_file(test_sources)
+    return [fname for fname in chain(iglob("*.cpp"), iglob("*.cc")) if (fname != main_source_file) and (fname not in test_sources)]
+
+
+def strip_ext(filenames):
+    """Remove filename extensions from the list of filenames"""
+    return [os.path.splitext(fname)[0] for fname in filenames]
+
+# ---
+
+
 # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
-test_sources = chain(iglob("*" + TEST_SUFFIXES[0]), iglob("*" + TEST_SUFFIXES[1]))
-test_elves = [os.path.splitext(fn)[0] for fn in test_sources]
+test_sources = get_test_sources()
+
+# Main ELF-file to be generated
+main_source_file = get_main_source_file(test_sources)
 
 # Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
-dep_src = [fn for fn in chain(iglob("*.cpp"), iglob("*.cc")) if not (fn.endswith(TEST_SUFFIXES[0]) or fn.endswith(TEST_SUFFIXES[1]))
-           and fn != MAIN_SOURCE and fn != "test.cpp" and fn != "test.cc"]
+dep_src = get_dep_sources(main_source_file, test_sources)
 
-# If there is only one .cpp file, and it@s not a test file and not main.cpp,
-# consider that one to be the main source file from now on.
-if len(dep_src) == 1:
-    MAIN_SOURCE = dep_src[0]
-    MAIN_EXECUTABLE = os.path.splitext(MAIN_SOURCE)[0]
-    dep_src = []
+# Test executables to be built
+test_elves = []
+if test_sources:
+    test_elves = strip_ext(test_sources)
+
+# Main executable to be built
+main_elf = ""
+if main_source_file:
+    main_elf = os.path.splitext(main_source_file)[0]
+
 
 # Custom command line targets
 if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
     # Replace the "clean" argument with "-c", and list all targets
-    cmd = [x for x in argv if x != "clean"] + ["-c"] + [MAIN_EXECUTABLE] + test_elves
+    cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
     # Clean
     status, output = getstatusoutput(" ".join(cmd))
     output = output.strip()
@@ -369,8 +423,8 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     if output:
         print(output)
     # Run the tests
-    for ELF in test_elves:
-        status, output = getstatusoutput(os.path.join(".", ELF))
+    for test_elf in test_elves:
+        status, output = getstatusoutput(os.path.join(".", test_elf))
         output = output.strip()
         if output:
             print(output)
@@ -380,10 +434,10 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
     exit(0)
 elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
-    cmd = [x for x in argv if x != "run"] + [MAIN_EXECUTABLE]
+    cmd = [x for x in argv if x != "run"] + [main_elf]
     # Check if main.cpp exists
-    if not os.path.exists(MAIN_SOURCE):
-        print("Nothing to run (no " + MAIN_SOURCE + ")")
+    if not main_source_file:
+        print("Nothing to run (no main.cpp)")
         exit(0)
     # Build main
     output = check_output(cmd)
@@ -391,8 +445,8 @@ elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
         os.linesep) if not "up to date" in line]).strip()
     if output:
         print(output)
-    # Run main
-    status, output = getstatusoutput(os.path.join(".", MAIN_EXECUTABLE))
+    # Run the first main elf
+    status, output = getstatusoutput(os.path.join(".", main_elf))
     output = output.strip()
     if output:
         print(output)
@@ -475,14 +529,14 @@ if 'CXXFLAGS' in ARGUMENTS:
 env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
 
 # Find all included header files in ../include, then check if there are corresponding .cpp files in ../common and add them to dep_src, if there is a main source file
-if os.path.exists(MAIN_SOURCE):
+if os.path.exists(main_source_file):
     includes = []
     has_new_include = True
     examined = []
     while has_new_include:
         has_new_include = False
         for INCLUDE_PATH in LOCAL_INCLUDE_PATHS:
-            for filename in dep_src + [MAIN_SOURCE] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
+            for filename in dep_src + [main_source_file] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
                 if filename in examined:
                     continue
                 examined.append(filename)
@@ -508,8 +562,9 @@ if os.path.exists(MAIN_SOURCE):
 
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
-    for src_file in [MAIN_SOURCE] + dep_src:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
+    for src_file in [main_source_file] + dep_src:
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
+            src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
@@ -526,12 +581,14 @@ if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
             env.Append(CXXFLAGS=other_cxxflags)
 
 # Build main executable
-main = env.Program(MAIN_EXECUTABLE, [MAIN_SOURCE] + dep_src)
+if main_source_file:
+    main = env.Program(main_elf, [main_source_file] + dep_src)
 
 # Find extra CFLAGS for the test sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
     for src_file in test_sources:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
+            src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
@@ -573,8 +630,8 @@ env.Replace(CPPPATH=[])
 
 # Set up non-default targets for all the test executables (based on *_test.cpp)
 for test_src in test_sources:
-    ELF = os.path.splitext(test_src)[0]
-    env.Program(ELF, [test_src] + dep_src)
+    test_elf = os.path.splitext(test_src)[0]
+    env.Program(test_elf, [test_src] + dep_src)
 
 # Only main is the default target
 Default(main)
