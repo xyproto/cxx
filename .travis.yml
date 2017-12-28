@@ -2,20 +2,13 @@ language: cpp
 
 sudo: required
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-7
+services:
+  - docker
 
-packages:
-- scons make pkg-config build-essential
-
-install:
-- sudo make install
+before_install:
+  - docker run -t ubuntu_artful -d ubuntu:artful -v "$TRAVIS_BUILD_DIR":/root/sakemake /bin/bash -c "cd /root/sakemake; apt update; apt upgrade; apt install libsdl2-dev build-essential scons make; sudo make install"
 
 script:
-- sm -C example/tinyhello small=1 run CXX=g++-7
-- sm -C example/hello/common test CXX=g++-7
-- sm -C example/hello run CXX=g++-7
+- docker exec -t ubuntu_artful /bin/bash -c "cd /root/sakemake/example; sm -C tinyhello small=1 run"
+- docker exec -t ubuntu_artful /bin/bash -c "cd /root/sakemake/example; sm -C hello/common test"
+- docker exec -t ubuntu_artful /bin/bash -c "cd /root/sakemake/example; sm -C hello run"
