@@ -6,4 +6,4 @@ services:
   - docker
 
 script:
-  - docker run -t ubuntu_artful -d ubuntu:artful -v "$TRAVIS_BUILD_DIR":/root/sakemake /bin/bash -c "cd /root/sakemake; apt update; apt upgrade; apt install libsdl2-dev build-essential scons make; sudo make install; sm -C example/tinyhello small=1 run; sm -C example/hello/common test; sm -C example/hello run"
+  - docker run ubuntu:artful -v "$TRAVIS_BUILD_DIR":/root/sakemake /bin/bash -c "cd /root/sakemake; apt update; apt upgrade; apt install libsdl2-dev build-essential scons make; sudo make install; sm -C example/tinyhello small=1 run; sm -C example/hello/common test; sm -C example/hello run"
