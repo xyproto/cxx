@@ -11,8 +11,8 @@ from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import exit, argv
 
-LOCAL_INCLUDE_PATHS = ("include", "../include")
-LOCAL_COMMON_PATHS = ("common", "../common")
+LOCAL_INCLUDE_PATHS = ["include", "../include"]
+LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
 
@@ -563,8 +563,7 @@ if os.path.exists(main_source_file):
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
     for src_file in [main_source_file] + dep_src:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-            src_file, system_include_dir)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
@@ -587,8 +586,7 @@ if main_source_file:
 # Find extra CFLAGS for the test sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
     for src_file in test_sources:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-            src_file, system_include_dir)
+        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
         if includes:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
