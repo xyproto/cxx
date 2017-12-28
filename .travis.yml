@@ -16,7 +16,7 @@ install:
 - sudo make install
 
 script:
-- sm -C example/sdl2
-- sm -C example/tinyhello small=1 run
-- sm -C example/hello/common test
-- sm -C example/hello run
+- sm -C example/sdl2 CXX=g++7
+- sm -C example/tinyhello small=1 run CXX=g++7
+- sm -C example/hello/common test CXX=g++7
+- sm -C example/hello run CXX=g++7
