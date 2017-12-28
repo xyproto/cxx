@@ -201,11 +201,11 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(cppfilename, system_include_dir):
-    """Given a .cpp file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
+def get_buildflags(sourcefilename, system_include_dir):
+    """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
     try:
-        lines = open(cppfilename).read().split(os.linesep)[:-1]
+        lines = open(sourcefilename).read().split(os.linesep)[:-1]
     except:
         return "", "", "", "", "", ""
     includes = []
@@ -217,8 +217,7 @@ def get_buildflags(cppfilename, system_include_dir):
                 includes.append(line.strip().split("\"")[1].split("\"")[0])
 
     # Skip C99, C++, C++20 and deprecated C++ headers + more
-    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits",
-                "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc")
+    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc")
 
     # Filter out skipped includes
     includes = [x for x in includes if x not in skiplist]
@@ -323,11 +322,12 @@ def get_main_source_file(test_sources=None):
         return "main.cpp"
     if os.path.exists("main.cc"):
         return "main.cc"
+    if os.path.exists("main.cxx"):
+        return "main.cc"
     # No main source file, see if there is only one non-test source file there
     if not test_sources:
         test_sources = get_test_sources()
-    all_sources = [fname for fname in chain(
-        iglob("*.cpp"), iglob("*.cc")) if fname not in test_sources]
+    all_sources = [fname for fname in chain(iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx")) if fname not in test_sources]
     if len(all_sources) == 0:
         # No main source
         return ""
@@ -343,12 +343,14 @@ def get_main_source_file(test_sources=None):
 
 
 def get_test_sources():
-    """Get all source files ending with _test.cpp, _test.cc or named test.cpp or test.cc"""
-    test_sources = chain(iglob("*" + "_test.cpp"), iglob("*" + "_test.cc"))
+    """Get all source files ending with _test.cpp, _test.cc, _test.cxx or named test.cpp, test.cc or test.cxx"""
+    test_sources = chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx")
     if os.path.exists("test.cc"):
         test_sources.append("test.cc")
-    if os.path.exists("test.cpp"):
+    elif os.path.exists("test.cpp"):
         test_sources.append("test.cpp")
+    elif os.path.exists("test.cxx"):
+        test_sources.append("test.cxx")
     return list(test_sources)
 
 
@@ -358,7 +360,7 @@ def get_dep_sources(main_source_file=None, test_sources=None):
         test_sources = get_test_sources()
     if not main_source_file:
         main_source_file = get_main_source_file(test_sources)
-    return [fname for fname in chain(iglob("*.cpp"), iglob("*.cc")) if (fname != main_source_file) and (fname not in test_sources)]
+    return [fname for fname in chain(iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx")) if (fname != main_source_file) and (fname not in test_sources)]
 
 
 def strip_ext(filenames):
@@ -374,7 +376,7 @@ test_sources = get_test_sources()
 # Main ELF-file to be generated
 main_source_file = get_main_source_file(test_sources)
 
-# Find all .cpp files that are not not *_test.cpp, not main.cpp and not test.cpp
+# Find all source files that are not the main source file and not test files
 dep_src = get_dep_sources(main_source_file, test_sources)
 
 # Test executables to be built
@@ -435,7 +437,7 @@ elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
 elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
     # Remove the "run" argument, and add "main"
     cmd = [x for x in argv if x != "run"] + [main_elf]
-    # Check if main.cpp exists
+    # Check if any main source file exists
     if not main_source_file:
         print("Nothing to run (no main.cpp)")
         exit(0)
@@ -528,7 +530,8 @@ if 'CXXFLAGS' in ARGUMENTS:
 # add path to the include files
 env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
 
-# Find all included header files in ../include, then check if there are corresponding .cpp files in ../common and add them to dep_src, if there is a main source file
+# Find all included header files in ../include, then check if there are corresponding
+# sourcefiles in ../common and add them to dep_src, if there is a main source file
 if os.path.exists(main_source_file):
     includes = []
     has_new_include = True
@@ -551,14 +554,12 @@ if os.path.exists(main_source_file):
                         includes.append(new_include)
             for include in includes:
                 for COMMON_PATH in LOCAL_COMMON_PATHS:
-                    source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cpp")
-                    if os.path.exists(source_filename):
-                        if source_filename not in dep_src:
-                            dep_src.append(source_filename)
-                    source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ".cc")
-                    if os.path.exists(source_filename):
-                        if source_filename not in dep_src:
-                            dep_src.append(source_filename)
+                    for ext in [".cpp", ".cc", ".cxx"]:
+                        source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ext)
+                        if os.path.exists(source_filename):
+                            if source_filename not in dep_src:
+                                dep_src.append(source_filename)
+
 
 # Find extra CFLAGS for the sources, if not cleaning
 if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
@@ -626,7 +627,7 @@ env.Replace(CPPPATH=[])
 # This also work for adding includes, but SConstruct changes them to longer versions of the same path names
 # env.Replace(CPPPATH=new_includes)
 
-# Set up non-default targets for all the test executables (based on *_test.cpp)
+# Set up non-default targets for all the test executables (based on *_test sources)
 for test_src in test_sources:
     test_elf = os.path.splitext(test_src)[0]
     env.Program(test_elf, [test_src] + dep_src)
