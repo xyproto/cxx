@@ -275,6 +275,11 @@ def get_buildflags(sourcefilename, system_include_dir):
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
+            # Also add the system include directory to the flags
+            if include in flag_dict:
+                flag_dict[include] += " -I" + system_include_dir
+            else:
+                flag_dict[include] = " -I" + system_include_dir
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
     if exe("/usr/bin/dpkg-query"):
@@ -420,14 +425,14 @@ def get_main_source_file(test_sources=None):
 
 def get_test_sources():
     """Get all source files ending with _test.cpp, _test.cc, _test.cxx or named test.cpp, test.cc or test.cxx"""
-    test_sources = chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx"))
+    test_sources = list(chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx")))
     if os.path.exists("test.cc"):
         test_sources.append("test.cc")
     elif os.path.exists("test.cpp"):
         test_sources.append("test.cpp")
     elif os.path.exists("test.cxx"):
         test_sources.append("test.cxx")
-    return list(test_sources)
+    return test_sources
 
 
 def get_dep_sources(main_source_file=None, test_sources=None):
