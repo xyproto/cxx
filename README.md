@@ -41,7 +41,7 @@ In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file
 
 #### Building a specific directory (`sm` can take the same flags as `make`):
 
-    sm -C example/hello
+    sm -C examples/hello
 
 #### Cleaning and building:
 
@@ -92,7 +92,7 @@ The name of the current directory will be used as the executable name.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * For now, *Sakemake* is only meant to be able to build executables, not libraries.
-* See the `hello` example in the `example` directory for the suggested directory structure.
+* See the `hello` example in the `examples` directory for the suggested directory structure.
 
 ## Suggested directory structure
 
