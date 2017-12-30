@@ -647,7 +647,10 @@ def sakemake():
         env.Program(test_elf, [test_src] + dep_src)
 
     # Only main is the default target
-    Default(main)
+    if main:
+        Default(main)
+    else:
+        print("Nothing to build")
 
 #try:
 sakemake()
