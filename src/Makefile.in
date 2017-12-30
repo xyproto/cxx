@@ -84,10 +84,10 @@ main: $(wildcard main.c*)
 # "resources/
 #
 patch:
-	for ext in cpp cc cxx; do test -f main.$$ext && cp -f -v main.$$ext main.$$ext.bak && sed "s:./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g" < main.$$ext.bak > main.$$ext; done || true
+	@for ext in cpp cc cxx; do test -f main.$$ext && cp -f -v main.$$ext main.$$ext.bak && sed "s:./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g" < main.$$ext.bak > main.$$ext; done || true
 
 unpatch:
-	for ext in cpp cc cxx; do test -f main.$$ext.bak && mv -v -f main.$$ext.bak main.$$ext || true; done
+	@for ext in cpp cc cxx; do test -f main.$$ext.bak && mv -v -f main.$$ext.bak main.$$ext || true; done
 
 # install the executable, data/*, img/*, resources/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
