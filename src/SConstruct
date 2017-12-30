@@ -59,9 +59,11 @@ def split_cxxflags(given_cxxflags):
             if not flag in libpaths:
                 libpaths += flag + " "
         elif flag.startswith("-Wl,"):
-            linkflags += flag + " "
+            if not flag in linkflags:
+                linkflags += flag + " "
         elif flag.startswith("-p"):
-            other += flag + " "
+            if not flag in other:
+                other += flag + " "
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework!", "-framework ")
             if new_flag not in linkflags:
