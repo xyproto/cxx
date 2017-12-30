@@ -44,7 +44,8 @@ def split_cxxflags(given_cxxflags):
     libpaths = ""
     linkflags = ""
     other = ""
-    for flag in [f.strip() for f in given_cxxflags.replace("-framework ", "-framework!").split(" ")]:
+    # Note that -Wl,-framework may appear in the given_cxxflags
+    for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework!").split(" ")]:
         if flag.startswith("-I"):
             includes += flag[2:] + " "
         elif flag.startswith("-D"):
@@ -604,11 +605,11 @@ def sakemake():
         # if sloppy is not set, add various warnings:
 
         # pretty strict + fail at first error
-        env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
+        env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wno-parentheses -Wfatal-errors')
 
         # if strict is set, enable even more warnings
         if int(ARGUMENTS.get('strict', 0)):
-            env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
+            env.Append(CXXFLAGS=' -Wextra -Wconversion -Wparentheses -Weffc++')
 
     # Append any given CXXFLAGS after the other flags, to be able to override them
     if 'CXXFLAGS' in ARGUMENTS:
