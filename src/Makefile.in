@@ -98,7 +98,6 @@ unpatch:
 
 # install the executable, data/*, img/*, resources/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
-	@echo "Installing ${NAME} into ${DESTDIR}${PREFIX}/"
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 main "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@install -d "${DESTDIR}${PREFIX}/share/${NAME}"

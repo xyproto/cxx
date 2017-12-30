@@ -39,7 +39,6 @@ src/sakemake: src/sakemake.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 install: generate
-	@echo "Installing ${NAME} into ${DESTDIR}${PREFIX}/"
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -52,12 +51,12 @@ install: generate
 uninstall:
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${ALIAS}"
-	@-rmdir "${DESTDIR}${PREFIX}/bin"
+	@-rmdir "${DESTDIR}${PREFIX}/bin" 2>/dev/null || true
 	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
 	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
-	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
+	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}" 2>/dev/null || true
 	@-rm -f "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
-	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
+	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}" 2>/dev/null || true
 
 clean:
 	@-rm -f src/Makefile src/sakemake
