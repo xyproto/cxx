@@ -234,7 +234,7 @@ def get_buildflags(sourcefilename, system_include_dir):
             filtered_includes.append(include)
     includes = filtered_includes
 
-    flag_dict = {} # Map include files to flags
+    flag_dict = {}  # Map include files to flags
 
     # Check for installed frameworks in /Library/Frameworks
     if os.path.exists("/Library/Frameworks"):
@@ -721,7 +721,12 @@ def sakemake():
     try:
         Default(main)
     except UnboundLocalError:
-        print("Nothing to build")
+        if env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS:
+            print("Nothing to clean")
+        elif env.GetOption('test') or 'test' in COMMAND_LINE_TARGETS:
+            print("Nothing to test")
+        else:
+            print("Nothing to build")
 
 
 # try:
