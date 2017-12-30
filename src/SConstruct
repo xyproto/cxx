@@ -234,94 +234,157 @@ def get_buildflags(sourcefilename, system_include_dir):
             filtered_includes.append(include)
     includes = filtered_includes
 
+    flag_dict = {} # Map include files to flags
+
     # Check for installed frameworks in /Library/Frameworks
     if os.path.exists("/Library/Frameworks"):
         # on macOS, prefer not to use pkg-config
         for include in includes:
             first_word = include
             if "/" in include:
-                first_word = include.split("/")[0].lower()
+                first_word = include.split("/")[0].strip().lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
-                framework_flags = "-F/Library/Frameworks -framework " + first_word
-                return "", "", "", "", framework_flags, framework_flags
+                new_flags = "-F/Library/Frameworks -framework " + first_word
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Nothing more to do if pkg-config is missing
-    if not which("pkg-config"):
+    if not which("pkg-config") and not flag_dict.keys():
         print("NOTE: pkg-config must be installed for library-detection to work")
         return "", "", "", "", "", ""
 
     # If the include exists in /usr/include, what is the first word, in lowercase?
     for include in includes:
+        if include in flag_dict:
+            continue
         if os.path.exists(os.path.join(system_include_dir, include)):
             first_word = include.lower()
             if "/" in include:
                 first_word = include.split("/")[0].lower()
             cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
-            all_cxxflags = os.popen2(cmd)[1].read().strip()
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = os.popen2(cmd)[1].read().strip()
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
     if exe("/usr/bin/dpkg-query"):
         for include in includes:
+            if include in flag_dict:
+                continue
             include_path = os.path.join(system_include_dir, include)
-            all_cxxflags = ubuntu_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = ubuntu_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
         # Try the same with dpkg-query, but now using find to search deeper in system_include_dir
         for include in includes:
+            if include in flag_dict:
+                continue
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
-            all_cxxflags = ubuntu_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = ubuntu_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
     if exe("/usr/bin/pacman"):
         for include in includes:
+            if include in flag_dict:
+                continue
             include_path = os.path.join(system_include_dir, include)
-            all_cxxflags = arch_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = arch_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
         # Try the same with pacman, but now using find to search deeper in /usr/include
         for include in includes:
+            if include in flag_dict:
+                continue
             # Search /usr/include
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
-            all_cxxflags = arch_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = arch_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on FreeBSD
     if exe("/usr/sbin/pkg"):
         for include in includes:
+            if include in flag_dict:
+                continue
             include_path = os.path.join(system_include_dir, include)
-            all_cxxflags = freebsd_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = freebsd_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
         # Try the same, but now using find to search deeper in system_include_dir
         for include in includes:
+            if include in flag_dict:
+                continue
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
-            all_cxxflags = freebsd_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = freebsd_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on macOS with Homebrew and pkg-config installed
     if which("brew"):
         for include in includes:
+            if include in flag_dict:
+                continue
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
             cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" | tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
-            all_cxxflags = brew_include_path_to_cxxflags(include_path)
-            if all_cxxflags:
-                return split_cxxflags(all_cxxflags)
+            new_flags = brew_include_path_to_cxxflags(include_path)
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
+
+    # Special cases - additional build flags that should be reported as bugs and added to the ".pc" files that comes with libraries.
+    # This must come last
+    for include in includes:
+        if include == "SFML/OpenGL.hpp":
+            cmd = "pkg-config --cflags --libs gl 2>/dev/null"
+            new_flags = os.popen2(cmd)[1].read().strip()
+            if new_flags:
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
+
+    # Collect and return all the flags in flag_dict
+    all_cxxflags = " ".join(flag_dict.values()).strip()
+    if all_cxxflags:
+        return split_cxxflags(all_cxxflags)
 
     # CFLAGS, defines and libs not found
     return "", "", "", "", "", ""
