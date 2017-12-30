@@ -1,7 +1,12 @@
-.PHONY: all clean uninstall
+.PHONY: clean generate uninstall src/Makefile src/sakemake
 
 NAME := sakemake
 ALIAS := sm
+
+# the directory of this Makefile
+ROOTDIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+SRCDIR := ${ROOTDIR}/src
 
 # macOS detection
 UNAME_S := $(shell uname -s)
@@ -19,38 +24,42 @@ endif
 VERSION := $(shell grep -F '* Version: ' README.md | cut -d' ' -f3)
 
 # used by the "pkg" target
-pkgdir ?= pkg
+ifeq ($$pkgdir,)
+  pkgdir := $(pkgdir)
+else
+  pkgdir ?= ${PWD}/pkg
+endif
 
-all: src/${NAME} src/Makefile
-
-src/${NAME}: src/${NAME}.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+generate: src/Makefile src/sakemake
 
 src/Makefile: src/Makefile.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
-install: clean src/${NAME} src/Makefile
+src/sakemake: src/sakemake.in
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+
+install: generate
 	@install -d "${DESTDIR}${PREFIX}/bin"
-	@install -m755 src/${NAME} "${DESTDIR}${PREFIX}/bin/${NAME}"
-	@ln -sf ${PREFIX}/bin/${NAME} "${DESTDIR}${PREFIX}/bin/${ALIAS}"
+	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
+	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
 	@install -d "${DESTDIR}${PREFIX}/share/${NAME}"
-	@install -m644 src/Makefile "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
-	@install -m644 src/SConstruct "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
+	@install -m644 "${SRCDIR}/Makefile" "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
+	@install -m644 "${SRCDIR}/SConstruct" "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
-	@install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
 
 uninstall:
-	@-rm "${DESTDIR}${PREFIX}/bin/${NAME}"
-	@-rm "${DESTDIR}${PREFIX}/bin/${ALIAS}"
+	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
+	@-rm -f "${DESTDIR}${PREFIX}/bin/${ALIAS}"
 	@-rmdir "${DESTDIR}${PREFIX}/bin"
-	@-rm "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
-	@-rm "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
+	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
+	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}"
-	@-rm "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	@-rm -f "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
 	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 
 clean:
-	@-rm -f "src/${NAME}" src/Makefile
+	@-rm -f src/Makefile src/sakemake
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR := ${pkgdir}
