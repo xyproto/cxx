@@ -207,6 +207,15 @@ void equal(T a, T b) {
 * g++ with support for c++17
 * (clang++ with support for c++17)
 
+## Path replacements at installation-time
+
+Paths in `main.cpp`, `main.cc` or `main.cxx` are replaced at installation/packaging time (`sm install` or `sm pkg`):
+
+* `"img/` is replaced with the full path to the `$PREFIX/share/name/img` directory, for instance `/usr/share/application_name/img`
+* These strings are recognized and replaced: `"img/`, `"data/`, `"resources/`, `./img`, `./data` and `./resources`
+
+This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
+
 ## C++17 on macOS
 
 For installing a recent enough version of C++ on macOS, installing GCC with Homebrew and the `--HEAD` flag is one possible approach:
