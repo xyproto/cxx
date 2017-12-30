@@ -37,14 +37,14 @@ def which(program):
 
 
 def split_cxxflags(given_cxxflags):
-    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...), linkflags (-Wl,) and other flags (-p)"""
+    """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...), linkflags (-Wl,) and other flags (-p, -F, -framework)"""
     includes = ""
     defines = ""
     libs = ""
     libpaths = ""
     linkflags = ""
     other = ""
-    for flag in [f.strip() for f in given_cxxflags.split(" ")]:
+    for flag in [f.strip() for f in given_cxxflags.replace("-framework ", "-framework!").split(" ")]:
         if flag.startswith("-I"):
             includes += flag[2:] + " "
         elif flag.startswith("-D"):
@@ -57,6 +57,9 @@ def split_cxxflags(given_cxxflags):
             linkflags += flag + " "
         elif flag.startswith("-p"):
             other += flag + " "
+        elif flag.lower().startswith("-f"):
+            linkflags += flag.replace("-framework!", "-framework ") + " "
+            other += flag.replace("-framework!", "-framework ") + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
             print("WARNING: Unsupported flag: " + flag)
@@ -393,12 +396,9 @@ def get_buildflags(sourcefilename, system_include_dir):
 def get_main_source_file(test_sources=None):
     """Get the main source file. It may be named main.cpp or main.cc, or be the only one, or the one containing 'main('.
     Return a blank string if none is found."""
-    if os.path.exists("main.cpp"):
-        return "main.cpp"
-    if os.path.exists("main.cc"):
-        return "main.cc"
-    if os.path.exists("main.cxx"):
-        return "main.cxx"
+    for ext in ["cpp", "cc", "cxx"]:
+        if os.path.exists("main." + ext):
+            return "main." + ext
     # No main source file, see if there is only one non-test source file there
     if not test_sources:
         test_sources = get_test_sources()
@@ -674,7 +674,6 @@ def sakemake():
                 src_file, system_include_dir)
             if includes:
                 for include in includes.split(" "):
-                    print("TEST INCLUDE", include)
                     env.Append(CPPPATH=include)
             if defines:
                 for define in defines.split(" "):
