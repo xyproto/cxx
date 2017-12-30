@@ -29,7 +29,7 @@ src/${NAME}: src/${NAME}.in
 src/Makefile: src/Makefile.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
-install: src/${NAME} src/Makefile
+install: clean src/${NAME} src/Makefile
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 src/${NAME} "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf ${PREFIX}/bin/${NAME} "${DESTDIR}${PREFIX}/bin/${ALIAS}"

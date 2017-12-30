@@ -20,7 +20,7 @@ THIS_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 pkgdir ?= pkg
 
 # building the main executable, or the tests
-CMD := $(shell test -f main.cpp -o -f main.cc || echo testbuild)
+CMD := $(shell test -f main.cpp -o -f main.cc -o -f main.cxx || echo testbuild)
 
 all: build
 
@@ -70,22 +70,38 @@ run:
 
 rebuild: clean build
 
-main: main.cpp
+main: $(wildcard main.c*)
 	@scons --file="${THIS_DIR}/SConstruct" -Q clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
+# Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
+#
+# These strings are recognized and modified:
+# ./img
+# ./data
+# ./resources
+# "img/
+# "data/
+# "resources/
+#
+patch:
+	for ext in cpp cc cxx; do test -f main.$$ext && cp -f -v main.$$ext main.$$ext.bak && sed "s:./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g" < main.$$ext.bak > main.$$ext; done || true
+
+unpatch:
+	for ext in cpp cc cxx; do test -f main.$$ext.bak && mv -v -f main.$$ext.bak main.$$ext || true; done
+
 # install the executable, data/*, img/*, resources/* or share/* into a shared directory, also install the license, if available
-install: main
+install: patch main unpatch
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 main "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@install -d "${DESTDIR}${PREFIX}/share/${NAME}"
-	@test -d data && cp -r data/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -d img && cp -r img/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
+	@test -d data && cp -r data/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -d resources && cp -r resources/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -d share && cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
 	@test -f COPYING && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
 	@test -f LICENSE && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
-	@-rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share/${NAME}"
-	@-rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share"
+	@rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share/${NAME}" 2>/dev/null || true
+	@rmdir --ignore-fail-on-non-empty "${DESTDIR}${PREFIX}/share" 2>/dev/null || true
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR := ${pkgdir}

@@ -15,7 +15,6 @@ LOCAL_INCLUDE_PATHS = [".", "include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
-
 def exe(fpath):
     """Check if the given path/filename both exists and is executable."""
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -334,7 +333,7 @@ def get_main_source_file(test_sources=None):
     if os.path.exists("main.cc"):
         return "main.cc"
     if os.path.exists("main.cxx"):
-        return "main.cc"
+        return "main.cxx"
     # No main source file, see if there is only one non-test source file there
     if not test_sources:
         test_sources = get_test_sources()
@@ -378,271 +377,282 @@ def strip_ext(filenames):
     """Remove filename extensions from the list of filenames"""
     return [os.path.splitext(fname)[0] for fname in filenames]
 
-# ---
+def signal_handler(signal, frame):
+    """ctrl-c handler"""
+    print('Canceled')
+    exit(1)
+
+def sakemake():
+    """The main function"""
+
+    # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
+    test_sources = get_test_sources()
+
+    # Main ELF-file to be generated
+    main_source_file = get_main_source_file(test_sources)
+
+    # Find all source files that are not the main source file and not test files
+    dep_src = get_dep_sources(main_source_file, test_sources)
+
+    # Test executables to be built
+    test_elves = []
+    if test_sources:
+        test_elves = strip_ext(test_sources)
+
+    # Main executable to be built
+    main_elf = ""
+    if main_source_file:
+        main_elf = os.path.splitext(main_source_file)[0]
 
 
-# Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
-test_sources = get_test_sources()
-
-# Main ELF-file to be generated
-main_source_file = get_main_source_file(test_sources)
-
-# Find all source files that are not the main source file and not test files
-dep_src = get_dep_sources(main_source_file, test_sources)
-
-# Test executables to be built
-test_elves = []
-if test_sources:
-    test_elves = strip_ext(test_sources)
-
-# Main executable to be built
-main_elf = ""
-if main_source_file:
-    main_elf = os.path.splitext(main_source_file)[0]
-
-
-# Custom command line targets
-if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
-    # Replace the "clean" argument with "-c", and list all targets
-    cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
-    # Clean
-    status, output = getstatusoutput(" ".join(cmd))
-    output = output.strip()
-    if output:
-        print(output)
-    exit(status)
-elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
-    if not test_elves:
-        print("Nothing to build")
-        exit(0)
-    # Remove the "test" argument, and list all test-executable targets
-    cmd = [x for x in argv if x != "testbuild"] + test_elves
-    # Build the tests
-    status, output = getstatusoutput(" ".join(cmd))
-    output = output.strip()
-    if output:
-        print(output)
-    exit(status)
-elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
-    if not test_elves:
-        print("Nothing to build")
-        exit(0)
-    # Remove the "test" argument, and list all test-executable targets
-    cmd = [x for x in argv if x != "test"] + test_elves
-    # Build the tests
-    output = check_output(cmd)
-    output = os.linesep.join([line for line in output.split(
-        os.linesep) if not "up to date" in line]).strip()
-    if output:
-        print(output)
-    # Run the tests
-    for test_elf in test_elves:
-        status, output = getstatusoutput(os.path.join(".", test_elf))
+    # Custom command line targets
+    if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
+        # Replace the "clean" argument with "-c", and list all targets
+        cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
+        # Clean
+        status, output = getstatusoutput(" ".join(cmd))
         output = output.strip()
         if output:
             print(output)
-        # Exit on error
-        if status != 0:
-            exit(status)
-    exit(0)
-elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
-    # Remove the "run" argument, and add "main"
-    cmd = [x for x in argv if x != "run"] + [main_elf]
-    # Check if any main source file exists
-    if not main_source_file:
-        print("Nothing to run (no main.cpp)")
+        exit(status)
+    elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
+        if not test_elves:
+            print("Nothing to build")
+            exit(0)
+        # Remove the "test" argument, and list all test-executable targets
+        cmd = [x for x in argv if x != "testbuild"] + test_elves
+        # Build the tests
+        status, output = getstatusoutput(" ".join(cmd))
+        output = output.strip()
+        if output:
+            print(output)
+        exit(status)
+    elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
+        if not test_elves:
+            print("Nothing to build")
+            exit(0)
+        # Remove the "test" argument, and list all test-executable targets
+        cmd = [x for x in argv if x != "test"] + test_elves
+        # Build the tests
+        output = check_output(cmd)
+        output = os.linesep.join([line for line in output.split(
+            os.linesep) if not "up to date" in line]).strip()
+        if output:
+            print(output)
+        # Run the tests
+        for test_elf in test_elves:
+            status, output = getstatusoutput(os.path.join(".", test_elf))
+            output = output.strip()
+            if output:
+                print(output)
+            # Exit on error
+            if status != 0:
+                exit(status)
         exit(0)
-    # Build main
-    output = check_output(cmd)
-    output = os.linesep.join([line for line in output.split(
-        os.linesep) if not "up to date" in line]).strip()
-    if output:
-        print(output)
-    # Run the first main elf
-    status, output = getstatusoutput(os.path.join(".", main_elf))
-    output = output.strip()
-    if output:
-        print(output)
-    exit(status)
+    elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
+        # Remove the "run" argument, and add "main"
+        cmd = [x for x in argv if x != "run"] + [main_elf]
+        # Check if any main source file exists
+        if not main_source_file:
+            print("Nothing to run (no main.cpp)")
+            exit(0)
+        # Build main
+        output = check_output(cmd)
+        output = os.linesep.join([line for line in output.split(
+            os.linesep) if not "up to date" in line]).strip()
+        if output:
+            print(output)
+        # Run the first main elf
+        status, output = getstatusoutput(os.path.join(".", main_elf))
+        output = output.strip()
+        if output:
+            print(output)
+        exit(status)
 
-# Set the number of jobs to the number of CPUs
-SetOption('num_jobs', cpu_count())
+    # Set the number of jobs to the number of CPUs
+    SetOption('num_jobs', cpu_count())
 
-# Random build-order, for the possiblity of using the cache better
-SetOption('random', 1)
+    # Random build-order, for the possiblity of using the cache better
+    SetOption('random', 1)
 
-# Create an environment
-env = Environment()
+    # Create an environment
+    env = Environment()
 
-# Use the given CXX as the default value for the C++ compiler
-if 'CXX' in ARGUMENTS:
-    env.Replace(CXX=ARGUMENTS['CXX'])
+    # Use the given CXX as the default value for the C++ compiler
+    if 'CXX' in ARGUMENTS:
+        env.Replace(CXX=ARGUMENTS['CXX'])
 
-# std is not set, use the latest C++ standard
-if not ARGUMENTS.get('std', ''):
-    # Use C++17
-    env.Append(CXXFLAGS=' -std=c++17')
-else:
-    # if std is something else, use that
-    args = []
-    for key, value in ARGLIST:
-        if key == 'std':
-            env.Append(CXXFLAGS=' -std=' + value)
-
-system_include_dir = "/usr/include"
-# Set system_include_dir to the given value, or keep it as /usr/include
-if ARGUMENTS.get('system_include_dir', ''):
-    system_include_dir = ARGUMENTS['system_include_dir']
-#print("SYSTEM_INCLUDE_DIR = " + system_include_dir)
-
-# debug is set?
-if int(ARGUMENTS.get('debug', 0)):
-    env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
-    env.Append(LINKFLAGS=' -fsanitize=address')
-# small is set?
-elif int(ARGUMENTS.get('small', 0)):
-    env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
-    env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
-# opt is set?
-elif int(ARGUMENTS.get('opt', 0)):
-    env.Append(CXXFLAGS=' -O3')
-# default optimization level
-else:
-    env.Append(CXXFLAGS=' -O2')
-
-# Check if a particular C++ compiler is given, or not
-if env["CXX"] == "c++":
-    # Use the HEAD version of GCC as installed with Homebrew, if available
-    if which("g++-HEAD"):
-        env.Replace(CXX="g++-HEAD")
+    # std is not set, use the latest C++ standard
+    if not ARGUMENTS.get('std', ''):
+        # Use C++17
+        env.Append(CXXFLAGS=' -std=c++17')
     else:
-        env.Replace(CXX="g++")
-    # clang is set?
-    if int(ARGUMENTS.get('clang', 0)):
-        env.Replace(CXX='clang++')
+        # if std is something else, use that
+        args = []
+        for key, value in ARGLIST:
+            if key == 'std':
+                env.Append(CXXFLAGS=' -std=' + value)
 
-# if sloppy is set, just try to build the damn thing
-if int(ARGUMENTS.get('sloppy', 0)):
-    env.Append(CXXFLAGS=' -fpermissive -w')
-else:
-    # if sloppy is not set, add various warnings:
+    system_include_dir = "/usr/include"
+    # Set system_include_dir to the given value, or keep it as /usr/include
+    if ARGUMENTS.get('system_include_dir', ''):
+        system_include_dir = ARGUMENTS['system_include_dir']
+    #print("SYSTEM_INCLUDE_DIR = " + system_include_dir)
 
-    # pretty strict + fail at first error
-    env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
+    # debug is set?
+    if int(ARGUMENTS.get('debug', 0)):
+        env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
+        env.Append(LINKFLAGS=' -fsanitize=address')
+    # small is set?
+    elif int(ARGUMENTS.get('small', 0)):
+        env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
+        env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
+    # opt is set?
+    elif int(ARGUMENTS.get('opt', 0)):
+        env.Append(CXXFLAGS=' -O3')
+    # default optimization level
+    else:
+        env.Append(CXXFLAGS=' -O2')
 
-    # if strict is set, enable even more warnings
-    if int(ARGUMENTS.get('strict', 0)):
-        env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
+    # Check if a particular C++ compiler is given, or not
+    if env["CXX"] == "c++":
+        # Use the HEAD version of GCC as installed with Homebrew, if available
+        if which("g++-HEAD"):
+            env.Replace(CXX="g++-HEAD")
+        else:
+            env.Replace(CXX="g++")
+        # clang is set?
+        if int(ARGUMENTS.get('clang', 0)):
+            env.Replace(CXX='clang++')
 
-# Append any given CXXFLAGS after the other flags, to be able to override them
-if 'CXXFLAGS' in ARGUMENTS:
-    env.Append(CXXFLAGS=ARGUMENTS['CXXFLAGS'])
+    # if sloppy is set, just try to build the damn thing
+    if int(ARGUMENTS.get('sloppy', 0)):
+        env.Append(CXXFLAGS=' -fpermissive -w')
+    else:
+        # if sloppy is not set, add various warnings:
 
-# add path to the include files
-env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
+        # pretty strict + fail at first error
+        env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wfatal-errors')
 
-# Find all included header files in ../include, then check if there are corresponding
-# sourcefiles in ../common and add them to dep_src, if there is a main source file
-if os.path.exists(main_source_file):
-    includes = []
-    has_new_include = True
-    examined = []
-    while has_new_include:
-        has_new_include = False
-        for INCLUDE_PATH in LOCAL_INCLUDE_PATHS:
-            for filename in dep_src + [main_source_file] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
-                if filename in examined:
-                    continue
-                examined.append(filename)
-                if os.path.exists(filename):
-                    new_includes = [line.split("\"")[1] for line in open(filename).read().split(
-                        os.linesep)[:-1] if line.strip().startswith("#include \"")]
+        # if strict is set, enable even more warnings
+        if int(ARGUMENTS.get('strict', 0)):
+            env.Append(CXXFLAGS=' -Wextra -Wconversion -Weffc++')
+
+    # Append any given CXXFLAGS after the other flags, to be able to override them
+    if 'CXXFLAGS' in ARGUMENTS:
+        env.Append(CXXFLAGS=ARGUMENTS['CXXFLAGS'])
+
+    # add path to the include files
+    env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
+
+    # Find all included header files in ../include, then check if there are corresponding
+    # sourcefiles in ../common and add them to dep_src, if there is a main source file
+    if os.path.exists(main_source_file):
+        includes = []
+        has_new_include = True
+        examined = []
+        while has_new_include:
+            has_new_include = False
+            for INCLUDE_PATH in LOCAL_INCLUDE_PATHS:
+                for filename in dep_src + [main_source_file] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
+                    if filename in examined:
+                        continue
+                    examined.append(filename)
+                    if os.path.exists(filename):
+                        new_includes = [line.split("\"")[1] for line in open(filename).read().split(
+                            os.linesep)[:-1] if line.strip().startswith("#include \"")]
+                    else:
+                        continue
+                    for new_include in [os.path.relpath(x) for x in new_includes]:
+                        if new_include not in includes:
+                            has_new_include = True
+                            includes.append(new_include)
+                for include in includes:
+                    for COMMON_PATH in LOCAL_COMMON_PATHS:
+                        for ext in [".cpp", ".cc", ".cxx"]:
+                            source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ext)
+                            if os.path.exists(source_filename):
+                                if source_filename not in dep_src:
+                                    dep_src.append(source_filename)
+
+    # Find extra CFLAGS for the sources, if not cleaning
+    if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
+        for src_file in [main_source_file] + dep_src:
+            includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
+            if includes:
+                for include in includes.split(" "):
+                    env.Append(CPPPATH=include)
+            if defines:
+                for define in defines.split(" "):
+                    env.Append(CPPDEFINES=define)
+            if libs:
+                env.Append(LIBS=libs.split(" "))
+            if libpaths:
+                env.Append(LINKFLAGS=libpaths)
+            if linkflags:
+                env.Append(LINKFLAGS=linkflags)
+            if other_cxxflags:
+                env.Append(CXXFLAGS=other_cxxflags)
+
+    # Build main executable
+    if main_source_file:
+        main = env.Program(main_elf, [main_source_file] + dep_src)
+
+    # Find extra CFLAGS for the test sources, if not cleaning
+    if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
+        for src_file in test_sources:
+            includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
+            if includes:
+                for include in includes.split(" "):
+                    env.Append(CPPPATH=include)
+            if defines:
+                for define in defines.split(" "):
+                    env.Append(CPPDEFINES=define)
+            if libs:
+                env.Append(LIBS=libs.split(" "))
+            if libpaths:
+                env.Append(LINKFLAGS=libpaths)
+            if linkflags:
+                env.Append(LINKFLAGS=linkflags)
+            if other_cxxflags:
+                env.Append(CXXFLAGS=other_cxxflags)
+
+    # Remove non-existing includes
+    includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
+    # Remove duplicate includes (in terms of pointing to the same directory)
+    includemap = {}
+    for include in includes:
+        key = os.path.normpath(include)
+        if key in includemap:
+            # use the shortest includepath, if several are specified for the same directory
+            if len(include) < len(includemap[key]):
+                if len(os.path.relpath(include)) < len(include):
+                    includemap[key] = os.path.relpath(include)
                 else:
-                    continue
-                for new_include in [os.path.relpath(x) for x in new_includes]:
-                    if new_include not in includes:
-                        has_new_include = True
-                        includes.append(new_include)
-            for include in includes:
-                for COMMON_PATH in LOCAL_COMMON_PATHS:
-                    for ext in [".cpp", ".cc", ".cxx"]:
-                        source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ext)
-                        if os.path.exists(source_filename):
-                            if source_filename not in dep_src:
-                                dep_src.append(source_filename)
-
-# Find extra CFLAGS for the sources, if not cleaning
-if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
-    for src_file in [main_source_file] + dep_src:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
-        if includes:
-            for include in includes.split(" "):
-                env.Append(CPPPATH=include)
-        if defines:
-            for define in defines.split(" "):
-                env.Append(CPPDEFINES=define)
-        if libs:
-            env.Append(LIBS=libs.split(" "))
-        if libpaths:
-            env.Append(LINKFLAGS=libpaths)
-        if linkflags:
-            env.Append(LINKFLAGS=linkflags)
-        if other_cxxflags:
-            env.Append(CXXFLAGS=other_cxxflags)
-
-# Build main executable
-if main_source_file:
-    main = env.Program(main_elf, [main_source_file] + dep_src)
-
-# Find extra CFLAGS for the test sources, if not cleaning
-if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
-    for src_file in test_sources:
-        includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
-        if includes:
-            for include in includes.split(" "):
-                env.Append(CPPPATH=include)
-        if defines:
-            for define in defines.split(" "):
-                env.Append(CPPDEFINES=define)
-        if libs:
-            env.Append(LIBS=libs.split(" "))
-        if libpaths:
-            env.Append(LINKFLAGS=libpaths)
-        if linkflags:
-            env.Append(LINKFLAGS=linkflags)
-        if other_cxxflags:
-            env.Append(CXXFLAGS=other_cxxflags)
-
-# Remove non-existing includes
-includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
-# Remove duplicate includes (in terms of pointing to the same directory)
-includemap = {}
-for include in includes:
-    key = os.path.normpath(include)
-    if key in includemap:
-        # use the shortest includepath, if several are specified for the same directory
-        if len(include) < len(includemap[key]):
+                    includemap[key] = include
+        else:
             if len(os.path.relpath(include)) < len(include):
                 includemap[key] = os.path.relpath(include)
             else:
                 includemap[key] = include
-    else:
-        if len(os.path.relpath(include)) < len(include):
-            includemap[key] = os.path.relpath(include)
-        else:
-            includemap[key] = include
-new_includes = includemap.values()
-env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes]))
-env.Replace(CPPPATH=[])
-# This also work for adding includes, but SConstruct changes them to longer versions of the same path names
-# env.Replace(CPPPATH=new_includes)
+    new_includes = includemap.values()
+    env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes]))
+    env.Replace(CPPPATH=[])
+    # This also work for adding includes, but SConstruct changes them to longer versions of the same path names
+    # env.Replace(CPPPATH=new_includes)
 
-# Set up non-default targets for all the test executables (based on *_test sources)
-for test_src in test_sources:
-    test_elf = os.path.splitext(test_src)[0]
-    env.Program(test_elf, [test_src] + dep_src)
+    # Set up non-default targets for all the test executables (based on *_test sources)
+    for test_src in test_sources:
+        test_elf = os.path.splitext(test_src)[0]
+        env.Program(test_elf, [test_src] + dep_src)
 
-# Only main is the default target
-Default(main)
+    # Only main is the default target
+    Default(main)
+
+#try:
+sakemake()
+#except KeyboardInterrupt:
+#    print("Canceled")
+#    exit(1)
 
 # vim: ts=4 sw=4 et:
