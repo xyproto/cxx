@@ -18,7 +18,7 @@ ROOTDIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # used by the "pkg" target
 ifeq ($$pkgdir,)
-  pkgdir := $(pkgdir)
+  pkgdir := $$pkgdir
 else
   pkgdir ?= ${PWD}/pkg
 endif
@@ -98,6 +98,7 @@ unpatch:
 
 # install the executable, data/*, img/*, resources/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
+	@echo "Installing ${NAME} into ${DESTDIR}${PREFIX}/"
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 main "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@install -d "${DESTDIR}${PREFIX}/share/${NAME}"
@@ -110,12 +111,12 @@ install: patch main unpatch
 	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}" 2>/dev/null || true
 	@-rmdir "${DESTDIR}${PREFIX}/share" 2>/dev/null || true
 
-# like install, but override DESTDIR in order to place everything in "${pkgdir}"
-pkg: DESTDIR := ${pkgdir}
-pkg: install
-
 export:
 	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .
 
 clean:
 	@scons ${SCONSFILEARG} -Q clean
+
+# like install, but override DESTDIR in order to place everything in "${pkgdir}"
+pkg: DESTDIR ?= ${pkgdir}
+pkg: install

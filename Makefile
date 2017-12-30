@@ -25,7 +25,7 @@ VERSION := $(shell grep -F '* Version: ' README.md | cut -d' ' -f3)
 
 # used by the "pkg" target
 ifeq ($$pkgdir,)
-  pkgdir := $(pkgdir)
+  pkgdir := $$pkgdir
 else
   pkgdir ?= ${PWD}/pkg
 endif
@@ -39,6 +39,7 @@ src/sakemake: src/sakemake.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 install: generate
+	@echo "Installing ${NAME} into ${DESTDIR}${PREFIX}/"
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -62,5 +63,5 @@ clean:
 	@-rm -f src/Makefile src/sakemake
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
-pkg: DESTDIR := ${pkgdir}
+pkg: DESTDIR ?= ${pkgdir}
 pkg: install
