@@ -509,6 +509,9 @@ def sakemake():
 
     # Custom command line targets
     if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
+        if (not test_elves) and (not main_elf):
+            print("Nothing to clean")
+            exit(0)
         # Replace the "clean" argument with "-c", and list all targets
         cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
         # Clean
@@ -519,10 +522,11 @@ def sakemake():
         exit(status)
     elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests
         if not test_elves:
-            print("Nothing to build")
+            print("No tests to build")
             exit(0)
         # Remove the "test" argument, and list all test-executable targets
-        cmd = [x for x in argv if x != "testbuild"] + test_elves
+        cmd = [x for x in argv if x != "testbuild"] + \
+            [elf for elf in test_elves if elf != "testbuild"]
         # Build the tests
         status, output = getstatusoutput(" ".join(cmd))
         output = output.strip()
@@ -531,12 +535,16 @@ def sakemake():
         exit(status)
     elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
         if not test_elves:
-            print("Nothing to build")
+            print("Nothing to test")
             exit(0)
         # Remove the "test" argument, and list all test-executable targets
-        cmd = [x for x in argv if x != "test"] + test_elves
+        cmd = [x for x in argv if x != "test"] + [elf for elf in test_elves if elf != "test"]
         # Build the tests
-        output = check_output(cmd)
+        try:
+            output = check_output(cmd)
+        except CalledProcessError:
+            print("Could not run: " + cmd)
+            exit(1)
         output = os.linesep.join([line for line in output.split(
             os.linesep) if not "up to date" in line]).strip()
         if output:
@@ -559,7 +567,11 @@ def sakemake():
             print("Nothing to run (no main.cpp)")
             exit(0)
         # Build main
-        output = check_output(cmd)
+        try:
+            output = check_output(cmd)
+        except CalledProcessError:
+            print("Could not run: " + cmd)
+            exit(1)
         output = os.linesep.join([line for line in output.split(
             os.linesep) if not "up to date" in line]).strip()
         if output:
