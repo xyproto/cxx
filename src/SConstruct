@@ -604,6 +604,7 @@ def sakemake():
             includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir)
             if includes:
                 for include in includes.split(" "):
+                    print("TEST INCLUDE", include)
                     env.Append(CPPPATH=include)
             if defines:
                 for define in defines.split(" "):
@@ -647,9 +648,9 @@ def sakemake():
         env.Program(test_elf, [test_src] + dep_src)
 
     # Only main is the default target
-    if main:
+    try:
         Default(main)
-    else:
+    except UnboundLocalError:
         print("Nothing to build")
 
 #try:
