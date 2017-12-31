@@ -9,7 +9,7 @@ from glob import iglob
 from itertools import chain
 from multiprocessing import cpu_count
 from subprocess import check_output
-from sys import exit, argv
+from sys import argv, exit, stdout
 
 LOCAL_INCLUDE_PATHS = [".", "include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
@@ -220,6 +220,13 @@ def brew_include_path_to_cxxflags(include_path):
 def get_buildflags(sourcefilename, system_include_dir):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
+
+    # Check if pkg-config is in the PATH
+    has_pkg_config = bool(which("pkg-config"))
+
+    print("Discovering build flags for {}... ".format(sourcefilename), end="")
+    stdout.flush()
+
     try:
         lines = open(sourcefilename).read().split(os.linesep)[:-1]
     except:
@@ -251,6 +258,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     includes = filtered_includes
 
     flag_dict = {}  # Map include files to flags
+    global_flag_dict = {} # For -I flags, to not overwrite the flags for include files in flag_dict
 
     # Check for installed frameworks in /Library/Frameworks
     if os.path.exists("/Library/Frameworks"):
@@ -268,11 +276,6 @@ def get_buildflags(sourcefilename, system_include_dir):
                     else:
                         flag_dict[include] = new_flags
 
-    # Nothing more to do if pkg-config is missing
-    has_pkg_config = bool(which("pkg-config"))
-    if not has_pkg_config and not flag_dict.keys():
-        print("NOTE: pkg-config must be installed for library-detection to work")
-
     # If the include exists in /usr/include, what is the first word, in lowercase?
     for include in includes:
         if include in flag_dict:
@@ -280,9 +283,9 @@ def get_buildflags(sourcefilename, system_include_dir):
         if os.path.exists(os.path.join(system_include_dir, include)):
             # Add the include directory as an -I flag if the include file was found
             if include in flag_dict:
-                flag_dict["GLOBAL"] += " -I" + system_include_dir
+                global_flag_dict[include] += " -I" + system_include_dir
             else:
-                flag_dict["GLOBAL"] = "-I" + system_include_dir
+                global_flag_dict[include] = "-I" + system_include_dir
             # If pkg-config exists, add additional flags
             if has_pkg_config:
                 # Add flags from pkg-config, if available for the first word of the include
@@ -296,6 +299,12 @@ def get_buildflags(sourcefilename, system_include_dir):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+
+    # If there are now missing build flags, and pkg-config is not in the path, it's a problem
+    missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
+    if missing_includes and not has_pkg_config:
+        print("\nERROR: missing in PATH: pkg-config")
+        exit(1)
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
     if has_pkg_config and exe("/usr/bin/dpkg-query"):
@@ -443,12 +452,23 @@ def get_buildflags(sourcefilename, system_include_dir):
                     else:
                         flag_dict[include] = new_flags
 
-    # Collect and return all the flags in flag_dict
-    all_cxxflags = " ".join(flag_dict.values())
+    # List includes that were not found
+    missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
+    if missing_includes:
+        # If sloppy is set, just give a warning
+        if int(ARGUMENTS.get('sloppy', 0)):
+            print("WARNING: missing include: {}".format(missing_includes[0]))
+        else:
+            print("ERROR: missing include: {}".format(missing_includes[0]))
+            exit(1)
+    else:
+        print("OK")
 
-    all_cxxflags_stripped = all_cxxflags.strip()
-    if all_cxxflags_stripped:
-        return split_cxxflags(all_cxxflags_stripped)
+    # Collect and return all the flags in flag_dict
+    all_cxxflags = (" ".join(flag_dict.values()) + " ".join(global_flag_dict.values())).strip()
+
+    if all_cxxflags:
+        return split_cxxflags(all_cxxflags)
 
     # CFLAGS, defines and libs not found
     return "", "", "", "", "", ""
