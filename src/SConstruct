@@ -14,6 +14,7 @@ from sys import argv, exit, stdout
 LOCAL_INCLUDE_PATHS = [".", "include", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
+SPECIAL_SYMBOLS = "_,@!@" # string that is unlikely to appear in the source code or build flags
 
 
 def hints(missing_includes):
@@ -73,7 +74,7 @@ def split_cxxflags(given_cxxflags):
     linkflags = ""
     other = ""
     # Note that -Wl,-framework may appear in the given_cxxflags
-    for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework!").split(" ")]:
+    for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework" + SPECIAL_SYMBOLS).split(" ")]:
         if flag.startswith("-I"):
             if not flag[2:] in includes:
                 includes += flag[2:] + " "
@@ -93,7 +94,7 @@ def split_cxxflags(given_cxxflags):
             if not flag in other:
                 other += flag + " "
         elif flag.lower().startswith("-f"):
-            new_flag = flag.replace("-framework!", "-framework ")
+            new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
             if new_flag not in linkflags:
                 linkflags += new_flag + " "
         elif flag.startswith("-stdlib"):
@@ -255,11 +256,12 @@ def get_buildflags(sourcefilename, system_include_dir):
     print("Discovering build flags for {}... ".format(sourcefilename), end="")
     stdout.flush()
 
+    # Filter out include lines, then run cpp
+    cmd = "sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + sourcefilename + "\" | cpp | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
     try:
-        # TODO: filter out undefined includes first!
-        #       cat main.cpp | sed 's/^#include/_@@@@include/g' | cpp | sed 's/^_@@@@include/#include/g'
-        lines = open(sourcefilename).read().split(os.linesep)[:-1]
+        lines = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     except:
+        print("WARNING: Command failed: " + cmd)
         return "", "", "", "", "", ""
     includes = []
     for line in lines:
@@ -703,6 +705,9 @@ def sakemake():
     # default optimization level
     else:
         env.Append(CXXFLAGS=' -O2')
+
+    # add -pipe
+    env.Append(CXXFLAGS=' -pipe')
 
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
