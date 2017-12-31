@@ -16,6 +16,34 @@ LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 
 
+def hints(missing_includes):
+    """Output hints for how to configure missing includes on some platforms"""
+    if "GL/glut.h" in missing_includes:
+        print("""
+NOTE: On macOS, include GLUT/glut.h instead of GL/glut.h.
+
+Suggested code:
+
+    #ifdef __APPLE__
+    #include <GLUT/glut.h>
+    #else
+    #include <GL/glut.h>
+    #endif
+""")
+    if "GL/gl.h" in missing_includes:
+        print("""
+NOTE: On macOS, include OpenGL/gl.h instead of GL/gl.h.
+
+Suggested code:
+
+    #ifdef __APPLE__
+    #include <OpenGL/gl.h>
+    #else
+    #include <GL/gl.h>
+    #endif
+""")
+
+
 def exe(fpath):
     """Check if the given path/filename both exists and is executable."""
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -228,6 +256,8 @@ def get_buildflags(sourcefilename, system_include_dir):
     stdout.flush()
 
     try:
+        # TODO: filter out undefined includes first!
+        #       cat main.cpp | sed 's/^#include/_@@@@include/g' | cpp | sed 's/^_@@@@include/#include/g'
         lines = open(sourcefilename).read().split(os.linesep)[:-1]
     except:
         return "", "", "", "", "", ""
@@ -455,6 +485,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     # List includes that were not found
     missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
     if missing_includes:
+        hints(missing_includes)
         # If sloppy is set, just give a warning
         if int(ARGUMENTS.get('sloppy', 0)):
             print("WARNING: missing include: {}".format(missing_includes[0]))
