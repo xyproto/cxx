@@ -37,6 +37,8 @@ const std::string os = "Hello, BeOS!"s;
 const std::string os = "Hello, UNIX!"s;
 #elif defined(PLAN9)
 const std::string os = "Hello, Plan9!"s;
+#else
+const std::string os = "Hello, Other operating system!"s;
 #endif
 
 auto main() -> int {
