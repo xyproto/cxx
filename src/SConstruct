@@ -11,7 +11,7 @@ from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import argv, exit, stdout
 
-LOCAL_INCLUDE_PATHS = [".", "include", "../include"]
+LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 SPECIAL_SYMBOLS = "@@@@@" # string that is unlikely to appear in an include line or a build flag
@@ -606,11 +606,16 @@ def sakemake():
         if output:
             print(output)
         exit(status)
-    elif 'testbuild' in COMMAND_LINE_TARGETS and test_elves:  # Build and run tests, this is the default if no main.c* file is present
+    elif 'testbuild' in COMMAND_LINE_TARGETS and (test_elves or main_elf):  # Build and run tests, this is the default
         # Remove the "test" argument, and list all test-executable targets
-        cmd = [x for x in argv if x != "testbuild"] + \
-            [elf for elf in test_elves if elf != "testbuild"]
-        # Build the tests
+        cmd = ""
+        if test_elves and main_elf:
+            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves + [main_elf] if elf != "testbuild"]
+        elif test_elves:
+            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves if elf != "testbuild"]
+        elif main_elf:
+            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in [main_elf] if elf != "testbuild"]
+        # Build the tests/executable
         status, output = getstatusoutput(" ".join(cmd))
         output = output.strip()
         if output:
@@ -838,7 +843,7 @@ def sakemake():
             else:
                 includemap[key] = include
     new_includes = includemap.values()
-    env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes]))
+    env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes if x != "." and x != ".."]))
     env.Replace(CPPPATH=[])
     # This also work for adding includes, but SConstruct changes them to longer versions of the same path names
     # env.Replace(CPPPATH=new_includes)
