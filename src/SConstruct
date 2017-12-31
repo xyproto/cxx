@@ -593,8 +593,6 @@ def sakemake():
     if main_source_file:
         main_elf = os.path.splitext(main_source_file)[0]
 
-    print("YO", main_source_file, COMMAND_LINE_TARGETS)
-
     # Custom command line targets
     if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
         if (not test_elves) and (not main_elf):
