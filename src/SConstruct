@@ -709,11 +709,12 @@ def sakemake():
                 exit(status)
         exit(0)
     elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
+        # TODO: if win64=1, build an .exe and run it with wine
         # Remove the "run" argument, and add "main"
         cmd = [x for x in argv if x != "run"] + [main_elf]
         # Check if any main source file exists
         if not main_source_file:
-            print("Nothing to run (no main.cpp)")
+            print("Nothing to run (no main source file)")
             exit(0)
         # Build main
         try:
