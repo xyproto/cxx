@@ -261,6 +261,10 @@ def get_buildflags(sourcefilename, system_include_dir):
     # Check if pkg-config is in the PATH
     has_pkg_config = bool(which("pkg-config"))
 
+    # Can't use pkg-config when win64=1
+    if int(ARGUMENTS.get('win64', 0)):
+        has_pkg_config
+
     print("Discovering build flags for {}... ".format(sourcefilename), end="")
     stdout.flush()
 
@@ -300,7 +304,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     global_flag_dict = {} # For -I flags, to not overwrite the flags for include files in flag_dict
 
     # Check for installed frameworks in /Library/Frameworks
-    if os.path.exists("/Library/Frameworks"):
+    if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
         # on macOS, prefer not to use pkg-config
         for include in includes:
             first_word = include
@@ -448,7 +452,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         if include.split("/")[0].strip().lower() == "sfml":
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks"):
+            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
@@ -474,7 +478,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         elif "opengl" in include.lower() or include.startswith("GL/") or include.startswith("GLUT/"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks"):
+            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
@@ -494,7 +498,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         elif include.startswith("GLUT/") or include.endswith("/glut.h"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks"):
+            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
                 if include in flag_dict:
@@ -758,7 +762,7 @@ def sakemake():
 
     # If "win64" is set, use the mingw32 g++ compiler
     if int(ARGUMENTS.get('win64', 0)):
-        env.Replace(CXX="x86_64-w64-mingw32-g++")
+        env.Replace(CXX="x86_64-w64-mingw32-g++ -mwindows")
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
