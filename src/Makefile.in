@@ -5,6 +5,8 @@ strict ?= 0
 debug ?= 0
 opt ?= 0
 sloppy ?= 0
+win64 ?= 0
+
 std ?= c++17
 MAKE ?= @@MAKE@@
 PREFIX ?= @@PREFIX@@
@@ -37,28 +39,40 @@ version:
 	@scons --version | head -2
 
 build:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 opt:
-	@scons ${SCONSFILEARG} -Q ${CMD} opt=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} opt=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 small:
-	@scons ${SCONSFILEARG} -Q ${CMD} small=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} small=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 strict:
-	@scons ${SCONSFILEARG} -Q ${CMD} strict=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} strict=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 sloppy:
-	@scons ${SCONSFILEARG} -Q ${CMD} sloppy=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} sloppy=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 testbuild:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 test:
-	@scons ${SCONSFILEARG} -Q test clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q test clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clang:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+win64:
+	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+win64strict:
+	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+win64sloppy:
+	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+win64debug:
+	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangstrict:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
@@ -70,15 +84,15 @@ clangdebug:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 debug:
-	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 run:
-	@scons ${SCONSFILEARG} -Q run clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
@@ -114,7 +128,7 @@ export:
 	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .
 
 clean:
-	@scons ${SCONSFILEARG} -Q clean
+	@scons ${SCONSFILEARG} -Q clean win64=${win64}
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR ?= ${pkgdir}

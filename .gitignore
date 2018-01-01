@@ -12,3 +12,4 @@ src/Makefile
 *.gz
 *.xz
 *.zip
+*.exe

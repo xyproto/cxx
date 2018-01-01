@@ -265,7 +265,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     stdout.flush()
 
     # Filter out include lines, then run cpp
-    cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + sourcefilename + "\" | cpp -E -P -pipe | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
+    cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + sourcefilename + "\" | cpp -E -P -w -pipe | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
     try:
         lines = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     except:
@@ -470,20 +470,40 @@ def get_buildflags(sourcefilename, system_include_dir):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
-        # If one of the includes just mention OpenGL, add flags for OpenGL and GLU
-        elif "opengl" in include.lower() or include.lower() == "glut/glut.h":
+        # If one of the includes just mention something with OpenGL, or GLUT, add build flags for OpenGL
+        elif "opengl" in include.lower() or include.startswith("GL/") or include.startswith("GLUT/"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks"):
                 # Found it, add the OpenGL framework as well
-                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL -framework GLUT"
+                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
             if has_pkg_config:
                 # Try pkg-config
-                cmd = "pkg-config --cflags --libs gl glu 2>/dev/null"
+                cmd = "pkg-config --cflags --libs gl 2>/dev/null"
+                new_flags = os.popen2(cmd)[1].read().strip()
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
+        # If one of the includes just mention GLUT, add flags for GLUT or glu
+        elif include.startswith("GLUT/") or include.endswith("/glut.h"):
+            new_flags = ""
+            # Check if the macOS Frameworks path exists
+            if os.path.exists("/Library/Frameworks"):
+                # Found it, add the OpenGL framework as well
+                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
+            if has_pkg_config:
+                # Try pkg-config
+                cmd = "pkg-config --cflags --libs glu 2>/dev/null"
                 new_flags = os.popen2(cmd)[1].read().strip()
                 if new_flags:
                     if include in flag_dict:
@@ -505,7 +525,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         print("OK")
 
     # Collect and return all the flags in flag_dict
-    all_cxxflags = (" ".join(flag_dict.values()) + " ".join(global_flag_dict.values())).strip()
+    all_cxxflags = (" ".join(flag_dict.values()) + " " + " ".join(global_flag_dict.values())).strip()
 
     if all_cxxflags:
         return split_cxxflags(all_cxxflags)
@@ -592,12 +612,19 @@ def sakemake():
     main_elf = ""
     if main_source_file:
         main_elf = os.path.splitext(main_source_file)[0]
+        # Add .exe extension for 64-bit Windows executables
+        if int(ARGUMENTS.get('win64', 0)):
+            main_elf += ".exe"
 
     # Custom command line targets
     if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
         if (not test_elves) and (not main_elf):
             print("Nothing to clean")
             exit(0)
+        # Also remove main.exe, if it's there, and win64=1
+        if int(ARGUMENTS.get('win64', 0)) and os.path.exists(main_elf + ".exe"):
+            os.remove(main_elf + ".exe")
+            print("Removed {}.exe".format(main_elf))
         # Replace the "clean" argument with "-c", and list all targets
         cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
         # Clean
@@ -729,6 +756,10 @@ def sakemake():
         if int(ARGUMENTS.get('clang', 0)):
             env.Replace(CXX='clang++')
 
+    # If "win64" is set, use the mingw32 g++ compiler
+    if int(ARGUMENTS.get('win64', 0)):
+        env.Replace(CXX="x86_64-w64-mingw32-g++")
+
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
         env.Append(CXXFLAGS=' -fpermissive -w')
@@ -843,7 +874,7 @@ def sakemake():
             else:
                 includemap[key] = include
     new_includes = includemap.values()
-    env.Append(CPPFLAGS=" ".join(["-I" + x for x in new_includes if x != "." and x != ".."]))
+    env.Append(CPPFLAGS=" " + " ".join(["-I" + x for x in new_includes if x != "." and x != ".."]))
     env.Replace(CPPPATH=[])
     # This also work for adding includes, but SConstruct changes them to longer versions of the same path names
     # env.Replace(CPPPATH=new_includes)
