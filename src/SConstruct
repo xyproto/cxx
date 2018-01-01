@@ -15,6 +15,7 @@ LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 SPECIAL_SYMBOLS = "@@@@@" # string that is unlikely to appear in an include line or a build flag
+WIN64 = bool(int(ARGUMENTS.get('win64', 0))) # win64=1
 
 
 def hints(missing_includes):
@@ -76,27 +77,32 @@ def split_cxxflags(given_cxxflags):
     # Note that -Wl,-framework may appear in the given_cxxflags
     for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework" + SPECIAL_SYMBOLS).split(" ")]:
         if flag.startswith("-I"):
-            if not flag[2:] in includes:
+            if flag[2:] not in includes:
                 includes += flag[2:] + " "
         elif flag.startswith("-D"):
-            if not flag[2:] in defines:
+            if flag[2:] not in defines:
                 defines += flag[2:] + " "
         elif flag.startswith("-l"):
-            if not flag[2:] in libs:
-                libs += flag[2:] + " "
+            if flag[2:] not in libs:
+                if not WIN64:
+                    libs += flag[2:] + " "
+                else:
+                    libs += flag[2:] + ".dll "
         elif flag.startswith("-L"):
-            if not flag in libpaths:
+            if flag not in libpaths:
                 libpaths += flag + " "
         elif flag.startswith("-Wl,"):
-            if not flag in linkflags:
+            if (flag not in linkflags) and not (WIN64 and "-framework" in flag):
                 linkflags += flag + " "
         elif flag.startswith("-p"):
-            if not flag in other:
+            if flag not in other:
                 other += flag + " "
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
-            if new_flag not in linkflags:
+            if not WIN64 and not new_flag in linkflags:
                 linkflags += new_flag + " "
+            elif WIN64:
+                linkflags += new_flag.replace("framework ", "l") + ".dll "
         elif flag.startswith("-stdlib"):
             if not flag in linkflags:
                 linkflags += flag + " "
@@ -261,10 +267,6 @@ def get_buildflags(sourcefilename, system_include_dir):
     # Check if pkg-config is in the PATH
     has_pkg_config = bool(which("pkg-config"))
 
-    # Can't use pkg-config when win64=1
-    if int(ARGUMENTS.get('win64', 0)):
-        has_pkg_config
-
     print("Discovering build flags for {}... ".format(sourcefilename), end="")
     stdout.flush()
 
@@ -304,7 +306,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     global_flag_dict = {} # For -I flags, to not overwrite the flags for include files in flag_dict
 
     # Check for installed frameworks in /Library/Frameworks
-    if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
+    if os.path.exists("/Library/Frameworks"):
         # on macOS, prefer not to use pkg-config
         for include in includes:
             first_word = include
@@ -452,7 +454,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         if include.split("/")[0].strip().lower() == "sfml":
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
+            if os.path.exists("/Library/Frameworks") and not WIN64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
@@ -465,6 +467,14 @@ def get_buildflags(sourcefilename, system_include_dir):
                         flag_dict[include] += " -stdlib=libc++"
                     else:
                         flag_dict[include] = " -stdlib=libc++"
+            elif WIN64:
+                # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
+                os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
+                new_flags = "-lopengl32.dll"
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs gl 2>/dev/null"
@@ -478,9 +488,17 @@ def get_buildflags(sourcefilename, system_include_dir):
         if "opengl" in include.lower() or include.startswith("GL/") or include.startswith("GLUT/"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
+            if os.path.exists("/Library/Frameworks") and not WIN64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
+            elif WIN64:
+                # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
+                os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
+                new_flags = "-lopengl32.dll"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -498,9 +516,23 @@ def get_buildflags(sourcefilename, system_include_dir):
         if include.startswith("GLUT/") or include.endswith("/glut.h"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not int(ARGUMENTS.get('win64', 0)):
+            if os.path.exists("/Library/Frameworks") and not WIN64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
+            elif WIN64:
+                # TODO: Find a way to use the GLUT headers on macOS while not using the __apple__ define, on 64-bit Windows
+                # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
+                os.system("rm -f GLUT; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUT")
+                #os.system("rm -rf GLUT GLUTGL")
+                #os.system("ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUT")
+                #os.system("mkdir -p GLUTGL")
+                #os.system("ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUTGL/GL")
+                #new_flags = "-IGLUTGL -lglu32.dll"
+                new_flags = "-lglu32.dll"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -566,12 +598,10 @@ def get_main_source_file(test_sources=None):
 def get_test_sources():
     """Get all source files ending with _test.cpp, _test.cc, _test.cxx or named test.cpp, test.cc or test.cxx"""
     test_sources = list(chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx")))
-    if os.path.exists("test.cc"):
-        test_sources.append("test.cc")
-    elif os.path.exists("test.cpp"):
-        test_sources.append("test.cpp")
-    elif os.path.exists("test.cxx"):
-        test_sources.append("test.cxx")
+    for ext in "cpp", "cc", "cxx":
+        if os.path.exists("test." + ext):
+            test_sources.append("test." + ext)
+            break
     return test_sources
 
 
@@ -617,7 +647,7 @@ def sakemake():
     if main_source_file:
         main_elf = os.path.splitext(main_source_file)[0]
         # Add .exe extension for 64-bit Windows executables
-        if int(ARGUMENTS.get('win64', 0)):
+        if WIN64:
             main_elf += ".exe"
 
     # Custom command line targets
@@ -626,7 +656,7 @@ def sakemake():
             print("Nothing to clean")
             exit(0)
         # Also remove main.exe, if it's there, and win64=1
-        if int(ARGUMENTS.get('win64', 0)) and os.path.exists(main_elf + ".exe"):
+        if WIN64 and os.path.exists(main_elf + ".exe"):
             os.remove(main_elf + ".exe")
             print("Removed {}.exe".format(main_elf))
         # Replace the "clean" argument with "-c", and list all targets
@@ -761,8 +791,9 @@ def sakemake():
             env.Replace(CXX='clang++')
 
     # If "win64" is set, use the mingw32 g++ compiler
-    if int(ARGUMENTS.get('win64', 0)):
-        env.Replace(CXX="x86_64-w64-mingw32-g++ -mwindows")
+    if WIN64:
+        env.Replace(CXX="x86_64-w64-mingw32-g++")
+        env.Append(CXXFLAGS=' -mwindows')
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
