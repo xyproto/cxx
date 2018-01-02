@@ -15,8 +15,7 @@ LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
 PATHLIST = os.environ["PATH"].split(os.pathsep)
 SPECIAL_SYMBOLS = "@@@@@" # string that is unlikely to appear in an include line or a build flag
-WIN64 = bool(int(ARGUMENTS.get('win64', 0))) # win64=1
-
+SKIP_PACKAGES = ["glibc", "gcc", "wine"] # skip compilation-related packages when searching for includes
 
 def hints(missing_includes):
     """Output hints for how to configure missing includes on some platforms"""
@@ -66,7 +65,7 @@ def which(program):
     return None
 
 
-def split_cxxflags(given_cxxflags):
+def split_cxxflags(given_cxxflags, win64):
     """Split a list of flags into includes (-I...), defines (-D...), libs (-l...), lib paths (-L...), linkflags (-Wl,) and other flags (-p, -F, -framework)"""
     includes = ""
     defines = ""
@@ -84,7 +83,7 @@ def split_cxxflags(given_cxxflags):
                 defines += flag[2:] + " "
         elif flag.startswith("-l"):
             if flag[2:] not in libs:
-                if WIN64 and flag[2:] != "opengl32" and flag[2:] != "glu32":
+                if win64 and flag[2:] != "opengl32" and flag[2:] != "glu32":
                     libs += flag[2:] + ".dll "
                 else:
                     libs += flag[2:] + " "
@@ -92,16 +91,16 @@ def split_cxxflags(given_cxxflags):
             if flag not in libpaths:
                 libpaths += flag + " "
         elif flag.startswith("-Wl,"):
-            if (flag not in linkflags) and not (WIN64 and "-framework" in flag):
+            if (flag not in linkflags) and not (win64 and "-framework" in flag):
                 linkflags += flag + " "
         elif flag.startswith("-p"):
             if flag not in other:
                 other += flag + " "
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
-            if not WIN64 and not new_flag in linkflags:
+            if not win64 and not new_flag in linkflags:
                 linkflags += new_flag + " "
-            elif WIN64:
+            elif win64:
                 new_dll = new_flag[len("-framework "):] + ".dll"
                 # new_dll now contains a case-insensitive name. See if there is .dll with the same name but different casing, then use that
                 for dll in chain(iglob("*.dll"), iglob("*.DLL")):
@@ -134,7 +133,7 @@ def arch_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
     package = os.popen2(cmd)[1].read().strip()
-    if package == "gcc":
+    if package in SKIP_PACKAGES:
         return ""
     if not package:
         print("ERROR: No package owns: " + include_path)
@@ -170,7 +169,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1'
     package = os.popen2(cmd)[1].read().strip()
-    if package == "gcc":
+    if package in SKIP_PACKAGES:
         return ""
     if not package:
         print("ERROR: No package owns: " + include_path)
@@ -206,7 +205,7 @@ def ubuntu_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -S ' + include_path + ' | /usr/bin/cut -d: -f1'
     package = os.popen2(cmd)[1].read().strip()
-    if package == "gcc":
+    if package in SKIP_PACKAGES:
         return ""
     if not package:
         print("ERROR: No package owns: " + include_path)
@@ -244,7 +243,7 @@ def brew_include_path_to_cxxflags(include_path):
         return ""
     # Strip away "/usr/local/Cellar/" from the start of the path
     package = realpath[18:].split("/")[0]
-    if package == "gcc":
+    if package in SKIP_PACKAGES:
         return ""
     # Get all .pc files that belong to the same package
     cmd = 'LC_ALL=C brew ls --verbose ' + package + ' | grep "\.pc$"'
@@ -270,7 +269,7 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(sourcefilename, system_include_dir):
+def get_buildflags(sourcefilename, system_include_dir, win64):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
 
@@ -332,28 +331,42 @@ def get_buildflags(sourcefilename, system_include_dir):
                         flag_dict[include] = new_flags
 
     # If the include exists in /usr/include, what is the first word, in lowercase?
-    for include in includes:
-        if include in flag_dict:
-            continue
-        if os.path.exists(os.path.join(system_include_dir, include)):
-            # Add the include directory as an -I flag if the include file was found
+    if not win64:
+        for include in includes:
             if include in flag_dict:
-                global_flag_dict[include] += " -I" + system_include_dir
-            else:
-                global_flag_dict[include] = "-I" + system_include_dir
-            # If pkg-config exists, add additional flags
-            if has_pkg_config:
-                # Add flags from pkg-config, if available for the first word of the include
-                first_word = include.lower()
-                if "/" in include:
-                    first_word = include.split("/")[0].lower()
-                cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
-                new_flags = os.popen2(cmd)[1].read().strip()
-                if new_flags:
-                    if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
-                        flag_dict[include] = new_flags
+                continue
+            if os.path.exists(os.path.join(system_include_dir, include)):
+                # Add the include directory as an -I flag if the include file was found
+                if include in flag_dict:
+                    global_flag_dict[include] += " -I" + system_include_dir
+                else:
+                    global_flag_dict[include] = "-I" + system_include_dir
+                # If pkg-config exists, add additional flags
+                if has_pkg_config:
+                    # Add flags from pkg-config, if available for the first word of the include
+                    first_word = include.lower()
+                    if "/" in include:
+                        first_word = include.split("/")[0].lower()
+                    cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
+
+    # Search the x86_64-w64-mingw32 path
+    if win64:
+        mingw_include_dir = "/usr/x86_64-w64-mingw32/include"
+        for include in includes:
+            if include in flag_dict:
+                continue
+            if os.path.exists(os.path.join(mingw_include_dir, include)):
+                # Add the include directory as an -I flag if the include file was found
+                if include in global_flag_dict:
+                    global_flag_dict[include] += " -I" + mingw_include_dir
+                else:
+                    global_flag_dict[include] = "-I" + mingw_include_dir
 
     # If there are now missing build flags, and pkg-config is not in the path, it's a problem
     missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
@@ -464,7 +477,7 @@ def get_buildflags(sourcefilename, system_include_dir):
         if include.split("/")[0].strip().lower() == "sfml":
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not WIN64:
+            if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
@@ -477,7 +490,7 @@ def get_buildflags(sourcefilename, system_include_dir):
                         flag_dict[include] += " -stdlib=libc++"
                     else:
                         flag_dict[include] = " -stdlib=libc++"
-            elif WIN64:
+            elif win64:
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
                 new_flags = "-lopengl32"
@@ -498,14 +511,14 @@ def get_buildflags(sourcefilename, system_include_dir):
         if "opengl" in include.lower() or include.startswith("GL/") or include.startswith("GLUT/"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not WIN64:
+            if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
-            elif WIN64:
+            elif win64:
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
                 new_flags = "-lopengl32"
@@ -526,14 +539,14 @@ def get_buildflags(sourcefilename, system_include_dir):
         if include.startswith("GLUT/") or include.endswith("/glut.h"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
-            if os.path.exists("/Library/Frameworks") and not WIN64:
+            if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
-            elif WIN64:
+            elif win64:
                 # TODO: Find a way to use the GLUT headers on macOS while not using the __apple__ define, on 64-bit Windows
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GLUT; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUT")
@@ -572,7 +585,7 @@ def get_buildflags(sourcefilename, system_include_dir):
     all_cxxflags = (" ".join(flag_dict.values()) + " " + " ".join(global_flag_dict.values())).strip()
 
     if all_cxxflags:
-        return split_cxxflags(all_cxxflags)
+        return split_cxxflags(all_cxxflags, win64)
 
     # CFLAGS, defines and libs not found
     return "", "", "", "", "", ""
@@ -642,6 +655,14 @@ def sakemake():
     # Main ELF-file to be generated
     main_source_file = get_main_source_file(test_sources)
 
+    # Check if we are compiling for 64-bit Windows or not
+    win64 = bool(int(ARGUMENTS.get('win64', 0))) # win64=1
+    for line in open(main_source_file).read().split(os.linesep):
+        # Check if "#include <windows.h>" exists in the main source file
+        if line.strip() == "#include <windows.h>":
+            win64 = True
+            break
+
     # Find all source files that are not the main source file and not test files
     dep_src = get_dep_sources(main_source_file, test_sources)
 
@@ -655,7 +676,7 @@ def sakemake():
     if main_source_file:
         main_elf = os.path.splitext(main_source_file)[0]
         # Add .exe extension for 64-bit Windows executables
-        if WIN64:
+        if win64:
             main_elf += ".exe"
 
     # Custom command line targets
@@ -664,7 +685,7 @@ def sakemake():
             print("Nothing to clean")
             exit(0)
         # Also remove main.exe, if it's there, and win64=1
-        if WIN64 and os.path.exists(main_elf + ".exe"):
+        if win64 and os.path.exists(main_elf + ".exe"):
             os.remove(main_elf + ".exe")
             print("Removed {}.exe".format(main_elf))
         # Replace the "clean" argument with "-c", and list all targets
@@ -717,7 +738,7 @@ def sakemake():
                 exit(status)
         exit(0)
     elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
-        # TODO: if win64=1, build an .exe and run it with wine
+        # TODO: if win64==True, build an .exe and run it with wine
         # Remove the "run" argument, and add "main"
         cmd = [x for x in argv if x != "run"] + [main_elf]
         # Check if any main source file exists
@@ -735,7 +756,11 @@ def sakemake():
         if output:
             print(output)
         # Run the first main elf
-        status, output = getstatusoutput(os.path.join(".", main_elf))
+        if win64:
+            print("wine " + main_elf)
+            status, output = getstatusoutput("wine " + main_elf)
+        else:
+            status, output = getstatusoutput(os.path.join(".", main_elf))
         output = output.strip()
         if output:
             print(output)
@@ -800,9 +825,11 @@ def sakemake():
             env.Replace(CXX='clang++')
 
     # If "win64" is set, use the mingw32 g++ compiler
-    if WIN64:
+    if win64:
         env.Replace(CXX="x86_64-w64-mingw32-g++")
-        env.Append(CXXFLAGS=' -mwindows -lm')
+        env.Append(CXXFLAGS=' -Wno-unused-variable')
+        env.Append(CPPFLAGS=' -mwindows -lm')
+        env.Append(LINKFLAGS=' -mwindows -lm')
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
@@ -859,7 +886,7 @@ def sakemake():
     if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
         for src_file in [main_source_file] + dep_src:
             includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-                src_file, system_include_dir)
+                src_file, system_include_dir, win64)
             if includes:
                 for include in includes.split(" "):
                     env.Append(CPPPATH=include)
@@ -883,7 +910,7 @@ def sakemake():
     if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
         for src_file in test_sources:
             includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-                src_file, system_include_dir)
+                src_file, system_include_dir, win64)
             if includes:
                 for include in includes.split(" "):
                     env.Append(CPPPATH=include)
