@@ -82,7 +82,6 @@ def split_cxxflags(given_cxxflags, win64):
             if " " + flag[2:] + " " not in defines:
                 defines += flag[2:] + " "
         elif flag.startswith("-l"):
-            if " " + flag[2:] + " " in libs:
             if " " + flag[2:] + " " not in libs:
                 if win64 and flag[2:] != "opengl32" and flag[2:] != "glu32":
                     libs += flag[2:] + ".dll "
