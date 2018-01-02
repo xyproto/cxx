@@ -661,12 +661,6 @@ def strip_ext(filenames):
     return [os.path.splitext(fname)[0] for fname in filenames]
 
 
-def signal_handler(signal, frame):
-    """ctrl-c handler"""
-    print('Canceled')
-    exit(1)
-
-
 def sakemake():
     """The main function"""
 
@@ -678,11 +672,14 @@ def sakemake():
 
     # Check if we are compiling for 64-bit Windows or not
     win64 = bool(int(ARGUMENTS.get('win64', 0))) # win64=1
-    for line in open(main_source_file).read().split(os.linesep):
-        # Check if "#include <windows.h>" exists in the main source file
-        if line.strip() == "#include <windows.h>":
-            win64 = True
-            break
+    try:
+        for line in open(main_source_file).read().split(os.linesep):
+            # Check if "#include <windows.h>" exists in the main source file
+            if line.strip() == "#include <windows.h>":
+                win64 = True
+                break
+    except IOError:
+        pass
 
     # Find all source files that are not the main source file and not test files
     dep_src = get_dep_sources(main_source_file, test_sources)
@@ -988,10 +985,6 @@ def sakemake():
             print("Nothing to build")
 
 
-# try:
 sakemake()
-# except KeyboardInterrupt:
-#    print("Canceled")
-#    exit(1)
 
 # vim: ts=4 sw=4 et:
