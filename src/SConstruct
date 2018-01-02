@@ -395,7 +395,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 continue
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
-                include + '" | /usr/bin/sort | /usr/bin/tail -1'
+                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             new_flags = ubuntu_include_path_to_cxxflags(include_path)
             if new_flags:
@@ -422,7 +422,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 continue
             # Search /usr/include
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
-                include + '" | /usr/bin/sort | /usr/bin/tail -1'
+                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             new_flags = arch_include_path_to_cxxflags(include_path)
             if new_flags:
@@ -449,7 +449,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 continue
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
-                include + '" | /usr/bin/sort | /usr/bin/tail -1'
+                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
             new_flags = freebsd_include_path_to_cxxflags(include_path)
             if new_flags:
