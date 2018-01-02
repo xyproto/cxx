@@ -781,8 +781,8 @@ def sakemake():
         # Build the tests
         try:
             output = check_output(cmd)
-        except CalledProcessError:
-            print("Could not run: " + cmd)
+        except:
+            #print("Could not run: " + " ".join(cmd))
             exit(1)
         output = os.linesep.join([line for line in output.split(
             os.linesep) if not "up to date" in line]).strip()
@@ -809,8 +809,8 @@ def sakemake():
         # Build main
         try:
             output = check_output(cmd)
-        except CalledProcessError:
-            print("Could not run: " + cmd)
+        except:
+            #print("Could not run: " + " ".join(cmd))
             exit(1)
         output = os.linesep.join([line for line in output.split(
             os.linesep) if not "up to date" in line]).strip()
