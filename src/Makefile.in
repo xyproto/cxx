@@ -62,18 +62,6 @@ test:
 clang:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
-win64:
-	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-
-win64strict:
-	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-
-win64sloppy:
-	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-
-win64debug:
-	@scons ${SCONSFILEARG} -Q ${CMD} win64=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-
 clangstrict:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
