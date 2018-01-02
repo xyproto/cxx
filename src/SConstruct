@@ -84,10 +84,10 @@ def split_cxxflags(given_cxxflags):
                 defines += flag[2:] + " "
         elif flag.startswith("-l"):
             if flag[2:] not in libs:
-                if not WIN64:
-                    libs += flag[2:] + " "
-                else:
+                if WIN64 and flag[2:] != "opengl32" and flag[2:] != "glu32":
                     libs += flag[2:] + ".dll "
+                else:
+                    libs += flag[2:] + " "
         elif flag.startswith("-L"):
             if flag not in libpaths:
                 libpaths += flag + " "
@@ -102,7 +102,17 @@ def split_cxxflags(given_cxxflags):
             if not WIN64 and not new_flag in linkflags:
                 linkflags += new_flag + " "
             elif WIN64:
-                linkflags += new_flag.replace("framework ", "l") + ".dll "
+                new_dll = new_flag[len("-framework "):] + ".dll"
+                # new_dll now contains a case-insensitive name. See if there is .dll with the same name but different casing, then use that
+                for dll in chain(iglob("*.dll"), iglob("*.DLL")):
+                    if dll.lower() == new_dll.lower():
+                        new_dll = dll
+                        break
+                new_linkflag = "-l" + new_dll[:-4] 
+                if new_linkflag not in linkflags and new_linkflag != "-lFrameworks":
+                    linkflags += new_linkflag + " "
+                if "-L." not in linkflags:
+                    linkflags += "-L. "
         elif flag.startswith("-stdlib"):
             if not flag in linkflags:
                 linkflags += flag + " "
@@ -286,7 +296,7 @@ def get_buildflags(sourcefilename, system_include_dir):
                 includes.append(line.strip().split("\"")[1].split("\"")[0])
 
     # Skip C99, C++, C++20 and deprecated C++ headers + more
-    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc", "string")
+    skiplist = ("assert.h", "complex.h", "ctype.h", "errno.h", "fenv.h", "float.h", "inttypes.h", "iso646.h", "limits.h", "locale.h", "math.h", "setjmp.h", "signal.h", "stdalign.h", "stdarg.h", "stdatomic.h", "stdbool.h", "stddef.h", "stdint.h", "stdio.h", "stdlib.h", "stdnoreturn.h", "string.h", "tgmath.h", "threads.h", "time.h", "uchar.h", "wchar.h", "wctype.h", "cstdlib", "csignal", "csetjmp", "cstdarg", "typeinfo", "typeindex", "type_traits", "bitset", "functional", "utility", "ctime", "chrono", "cstddef", "initializer_list", "tuple", "any", "optional", "variant", "new", "memory", "scoped_allocator", "memory_resource", "climits", "cfloat", "cstdint", "cinttypes", "limits", "exception", "stdexcept", "cassert", "system_error", "cerrno", "array", "vector", "deque", "list", "forward_list", "set", "map", "unordered_set", "unordered_map", "stack", "queue", "algorithm", "execution", "iterator", "cmath", "complex", "valarray", "random", "numeric", "ratio", "cfenv", "iosfwd", "ios", "istream", "ostream", "iostream", "fstream", "sstream", "iomanip", "streambuf", "cstdio", "locale", "clocale", "regex", "atomic", "thread", "mutex", "shared_mutex", "future", "condition_variable", "filesystem", "compare", "charconv", "syncstream", "strstream", "codecvt", "glibc", "string", "windows.h")
 
     # Filter out skipped includes, and includes in LOCAL_INCLUDE_PATHS
     filtered_includes = []
@@ -470,7 +480,7 @@ def get_buildflags(sourcefilename, system_include_dir):
             elif WIN64:
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
-                new_flags = "-lopengl32.dll"
+                new_flags = "-lopengl32"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -498,7 +508,7 @@ def get_buildflags(sourcefilename, system_include_dir):
             elif WIN64:
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GL; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers GL")
-                new_flags = "-lopengl32.dll"
+                new_flags = "-lopengl32"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -527,12 +537,10 @@ def get_buildflags(sourcefilename, system_include_dir):
                 # TODO: Find a way to use the GLUT headers on macOS while not using the __apple__ define, on 64-bit Windows
                 # TODO: Add cleanup of the symlink afterwards, or place it in /tmp instead
                 os.system("rm -f GLUT; ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUT")
-                #os.system("rm -rf GLUT GLUTGL")
-                #os.system("ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUT")
-                #os.system("mkdir -p GLUTGL")
-                #os.system("ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUTGL/GL")
-                #new_flags = "-IGLUTGL -lglu32.dll"
-                new_flags = "-lglu32.dll"
+                os.system("rm -rf GLUTGL")
+                os.system("mkdir -p GLUTGL")
+                os.system("ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers GLUTGL/GL")
+                new_flags = "-I./GLUTGL -lglu32"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -794,7 +802,7 @@ def sakemake():
     # If "win64" is set, use the mingw32 g++ compiler
     if WIN64:
         env.Replace(CXX="x86_64-w64-mingw32-g++")
-        env.Append(CXXFLAGS=' -mwindows')
+        env.Append(CXXFLAGS=' -mwindows -lm')
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
