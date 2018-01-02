@@ -273,6 +273,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
 
+    if sourcefilename == "":
+        return "", "", "", "", "", ""
+
     # Check if pkg-config is in the PATH
     has_pkg_config = bool(which("pkg-config"))
 
@@ -714,7 +717,7 @@ def sakemake():
         if output:
             print(output)
         exit(status)
-    elif 'testbuild' in COMMAND_LINE_TARGETS and (test_elves or main_elf):  # Build and run tests, this is the default
+    elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests, this is the default
         # Remove the "test" argument, and list all test-executable targets
         cmd = ""
         if test_elves and main_elf:
@@ -723,6 +726,9 @@ def sakemake():
             cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves if elf != "testbuild"]
         elif main_elf:
             cmd = [x for x in argv if x != "testbuild"] + [elf for elf in [main_elf] if elf != "testbuild"]
+        else:
+            print("Nothing to build")
+            exit(0)
         # Build the tests/executable
         status, output = getstatusoutput(" ".join(cmd))
         output = output.strip()
@@ -977,12 +983,19 @@ def sakemake():
     try:
         Default(main)
     except UnboundLocalError:
-        if env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS:
-            print("Nothing to clean")
-        elif env.GetOption('test') or 'test' in COMMAND_LINE_TARGETS:
-            print("Nothing to test")
-        else:
-            print("Nothing to build")
+        try:
+            if env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS:
+                print("Nothing to clean")
+                exit(0)
+        except AttributeError:
+            pass
+        try:
+            if env.GetOption('test') or 'test' in COMMAND_LINE_TARGETS:
+                print("Nothing to test")
+                exit(0)
+        except AttributeError:
+            pass
+        print("Nothing to build")
 
 
 sakemake()
