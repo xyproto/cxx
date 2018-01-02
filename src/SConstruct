@@ -76,29 +76,29 @@ def split_cxxflags(given_cxxflags, win64):
     # Note that -Wl,-framework may appear in the given_cxxflags
     for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework" + SPECIAL_SYMBOLS).split(" ")]:
         if flag.startswith("-I"):
-            if flag[2:] not in includes:
+            if flag[2:] + " " not in includes:
                 includes += flag[2:] + " "
         elif flag.startswith("-D"):
-            if flag[2:] not in defines:
+            if flag[2:] + " " not in defines:
                 defines += flag[2:] + " "
         elif flag.startswith("-l"):
-            if flag[2:] not in libs:
+            if flag[2:] + " " not in libs:
                 if win64 and flag[2:] != "opengl32" and flag[2:] != "glu32":
                     libs += flag[2:] + ".dll "
                 else:
                     libs += flag[2:] + " "
         elif flag.startswith("-L"):
-            if flag not in libpaths:
+            if flag + " " not in libpaths:
                 libpaths += flag + " "
         elif flag.startswith("-Wl,"):
-            if (flag not in linkflags) and not (win64 and "-framework" in flag):
+            if (flag + " " not in linkflags) and not (win64 and "-framework" in flag):
                 linkflags += flag + " "
         elif flag.startswith("-p"):
-            if flag not in other:
+            if flag + " " not in other:
                 other += flag + " "
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
-            if not win64 and not new_flag in linkflags:
+            if not win64 and new_flag + " " not in linkflags:
                 linkflags += new_flag + " "
             elif win64:
                 new_dll = new_flag[len("-framework "):] + ".dll"
@@ -108,14 +108,14 @@ def split_cxxflags(given_cxxflags, win64):
                         new_dll = dll
                         break
                 new_linkflag = "-l" + new_dll[:-4] 
-                if new_linkflag not in linkflags and new_linkflag != "-lFrameworks":
+                if new_linkflag + " " not in linkflags and new_linkflag != "-lFrameworks":
                     linkflags += new_linkflag + " "
                 if "-L." not in linkflags:
                     linkflags += "-L. "
         elif flag.startswith("-stdlib"):
-            if not flag in linkflags:
+            if flag + " " not in linkflags:
                 linkflags += flag + " "
-            if not flag in other:
+            if flag + " " not in other:
                 other += flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
@@ -555,6 +555,12 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
+            else:
+                new_flags = "-lglut" # Only configuration required for ie. freeglut
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glu 2>/dev/null"
@@ -564,6 +570,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+
         # If one of the includes mention GLEW, add flags for GLEW
         if include.endswith("/glew.h"):
             new_flags = ""
@@ -590,7 +597,14 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
-
+        if include.startswith("Q"):
+            qt_include_dir = os.path.join(system_include_dir, "qt")
+            if os.path.exists(qt_include_dir):
+                new_flags = "-I" + qt_include_dir
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # List includes that were not found
     missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
@@ -835,7 +849,7 @@ def sakemake():
         env.Append(CXXFLAGS=' -O2')
 
     # add -pipe
-    env.Append(CXXFLAGS=' -pipe')
+    env.Append(CXXFLAGS=' -pipe -fPIC')
 
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
