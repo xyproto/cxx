@@ -141,8 +141,13 @@ def arch_include_path_to_cxxflags(include_path):
     cmd = '/usr/bin/pacman -Ql ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
-        print("WARNING: No pkg-config files for: " + package)
-        return ""
+        # If a library in /usr/lib matches the name of the package without .pc files, link with that
+        possible_lib_name = "lib" + package + ".so"
+        if not os.path.exists(os.path.join("/usr/lib", possible_lib_name)):
+            print("WARNING: No pkg-config files for: " + package)
+            return ""
+        # Found a good candidate, matching the name of the package that owns the include file. Try that.
+        return "-l" + package
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -158,6 +163,7 @@ def arch_include_path_to_cxxflags(include_path):
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
                     all_cxxflags += " " + cxxflag
+
     return all_cxxflags.strip()
 
 
@@ -177,8 +183,13 @@ def freebsd_include_path_to_cxxflags(include_path):
     cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
-        print("WARNING: No pkg-config files for: " + package)
-        return ""
+        # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
+        possible_lib_name = "lib" + package + ".so"
+        if not os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+            print("WARNING: No pkg-config files for: " + package)
+            return ""
+        # Found a good candidate, matching the name of the package that owns the include file. Try that.
+        return "-l" + package
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -213,8 +224,13 @@ def ubuntu_include_path_to_cxxflags(include_path):
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
-        print("WARNING: No pkg-config files for: " + package)
-        return ""
+        # If a library in /usr/lib matches the name of the package without .pc files, link with that
+        possible_lib_name = "lib" + package + ".so"
+        if not os.path.exists(os.path.join("/usr/lib", possible_lib_name)):
+            print("WARNING: No pkg-config files for: " + package)
+            return ""
+        # Found a good candidate, matching the name of the package that owns the include file. Try that.
+        return "-l" + package
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -249,8 +265,13 @@ def brew_include_path_to_cxxflags(include_path):
     cmd = 'LC_ALL=C brew ls --verbose ' + package + ' | grep "\.pc$"'
     pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     if not pc_files:
-        print("WARNING: No pkg-config files for: " + package)
-        return ""
+        # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
+        possible_lib_name = "lib" + package + ".so"
+        if not os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+            print("WARNING: No pkg-config files for: " + package)
+            return ""
+        # Found a good candidate, matching the name of the package that owns the include file. Try that.
+        return "-l" + package
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -609,6 +630,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
 
     # List includes that were not found
     missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
+
     if missing_includes:
         hints(missing_includes)
         # If sloppy is set, just give a warning
