@@ -618,14 +618,14 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
 def get_main_source_file(test_sources=None):
     """Get the main source file. It may be named main.cpp or main.cc, or be the only one, or the one containing 'main('.
     Return a blank string if none is found."""
-    for ext in ["cpp", "cc", "cxx", "c", "ml"]:
+    for ext in ["cpp", "cc", "cxx"]:
         if os.path.exists("main." + ext):
             return "main." + ext
     # No main source file, see if there is only one non-test source file there
     if not test_sources:
         test_sources = get_test_sources()
     all_sources = [fname for fname in chain(
-        iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx"), iglob("*.c"), iglob("*.ml")) if fname not in test_sources]
+        iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx")) if fname not in test_sources]
     if len(all_sources) == 0:
         # No main source
         return ""
@@ -642,8 +642,8 @@ def get_main_source_file(test_sources=None):
 
 def get_test_sources():
     """Get all source files ending with _test.cpp, _test.cc, _test.cxx or named test.cpp, test.cc or test.cxx"""
-    test_sources = list(chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx"), iglob("*_test.c"), iglob("*_test.ml")))
-    for ext in "cpp", "cc", "cxx", "c", "ml":
+    test_sources = list(chain(iglob("*_test.cpp"), iglob("*_test.cc"), iglob("*_test.cxx")))
+    for ext in "cpp", "cc", "cxx":
         if os.path.exists("test." + ext):
             test_sources.append("test." + ext)
             break
@@ -656,7 +656,7 @@ def get_dep_sources(main_source_file=None, test_sources=None):
         test_sources = get_test_sources()
     if not main_source_file:
         main_source_file = get_main_source_file(test_sources)
-    return [fname for fname in chain(iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx"), iglob("*.c"), iglob("*.ml")) if (fname != main_source_file) and (fname not in test_sources)]
+    return [fname for fname in chain(iglob("*.cpp"), iglob("*.cc"), iglob("*.cxx")) if (fname != main_source_file) and (fname not in test_sources)]
 
 
 def strip_ext(filenames):
@@ -899,7 +899,7 @@ def sakemake():
                             includes.append(new_include)
                 for include in includes:
                     for COMMON_PATH in LOCAL_COMMON_PATHS:
-                        for ext in [".cpp", ".cc", ".cxx", ".c", ".ml"]:
+                        for ext in [".cpp", ".cc", ".cxx"]:
                             source_filename = os.path.join(
                                 COMMON_PATH, include.rsplit(".", 1)[0] + ext)
                             if os.path.exists(source_filename):
