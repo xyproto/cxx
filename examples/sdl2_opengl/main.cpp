@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
 	if (!Init())
 		return -1;
 
-    std::cout << std::endl;
     Print_OpenGL_Version();
+    std::cout << "Press r, g, b or Escape" << std::endl;
     std::cout.flush();
 
 	// Clear our buffer with a black background
@@ -110,11 +110,6 @@ int main(int argc, char *argv[])
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(mainWindow);
-
-    std::cout << "Press r, g, b or Escape" << std::endl;
-    std::cout << std::endl;
-
-    std::cout.flush();
 
 	RunGame();
 
@@ -140,6 +135,7 @@ void RunGame()
 				switch (event.key.keysym.sym)
 				{
 				case SDLK_ESCAPE:
+                case SDLK_q:
 					loop = false;
 					break;
 				case SDLK_r:
