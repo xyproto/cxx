@@ -1,7 +1,5 @@
 FROM ubuntu:17.10
 
-ENV TERM=dumb
-
 # Update and install packages
 RUN apt-get update && \
     apt-get upgrade && \
