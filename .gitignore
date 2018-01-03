@@ -1,15 +1,32 @@
+# Wildcards
 *.dblite
 *.o
-hello_test
-main
 *.bak
 *.swp
 *.tmp
 *~
-src/sakemake
-src/Makefile
 *.tar.gz
 *.gz
 *.xz
 *.zip
 *.exe
+
+# Generated files
+src/sakemake
+src/Makefile
+
+# Executables
+hello_test
+main
+examples/glut/glut
+examples/gtk3/gtk3
+examples/hello/hello
+examples/platforms/platforms
+examples/qt/qt
+examples/sdl2/sdl2
+examples/sdl2_opengl/sdl2_opengl
+examples/tinyhello/tinyhello
+examples/win64crate/win64crate
+
+# Test installs
+pkg/
