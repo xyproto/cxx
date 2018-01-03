@@ -22,7 +22,7 @@ examples/glut/glut
 examples/gtk3/gtk3
 examples/hello/hello
 examples/platforms/platforms
-examples/qt/qt
+examples/qt5/qt5
 examples/sdl2/sdl2
 examples/sdl2_opengl/sdl2_opengl
 examples/tinyhello/tinyhello
