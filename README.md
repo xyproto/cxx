@@ -139,9 +139,7 @@ int main() {
 
 #include <string>
 
-using std::string;
-
-string hello();
+std::string hello();
 ```
 
 **hello.cpp**
@@ -151,7 +149,7 @@ string hello();
 
 using namespace std::literals;
 
-string hello() {
+std::string hello() {
   return "Hello, World!"s;
 }
 ```

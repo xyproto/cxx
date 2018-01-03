@@ -2,6 +2,4 @@
 
 #include <string>
 
-using std::string;
-
-string hello();
+std::string hello();

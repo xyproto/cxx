@@ -2,6 +2,6 @@
 
 using namespace std::literals;
 
-string hello() {
+std::string hello() {
   return "Hello, World!"s;
 }
