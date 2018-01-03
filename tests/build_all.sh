@@ -1,10 +1,18 @@
-#!/bin/bash
+#!/bin/bash -e
+
 cur_dir="$(pwd)"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 examples_dir="$root_dir/../examples"
 figlet=$(which figlet)
+cmds="clean build"
 
-for cmd in clean build run; do
+# Also run if "run" was given
+if [ "$1" = "run" ]; then
+  cmds="$cmds run"
+fi
+
+# Perform all commands
+for cmd in $cmds; do
   msg="Building all examples"
   if [ "$cmd" == clean ]; then
     msg="Cleaning all examples"

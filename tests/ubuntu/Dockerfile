@@ -1,12 +1,20 @@
 FROM ubuntu:17.10
 
-RUN apt update && apt upgrade && apt install -y -q git scons make build-essential libsdl2-dev gtk+3-dev
+ENV TERM=dumb
 
-RUN git clone https://github.com/xyproto/sakemake
-RUN cd sakemake && make install && sm version
+# Update and install packages
+RUN apt-get update && \
+    apt-get upgrade && \
+    apt-get install -y -q build-essential figlet git gtk+3-dev libsdl2-dev make scons && \
+    apt-get clean
 
-RUN sm -C sakemake/example/tinyhello small
-RUN sm -C sakemake/example/hello run
-RUN sm -C sakemake/example/hello/common test
-RUN sm -C sakemake/example/sdl2
-RUN sm -C sakemake/example/gtk3
+# Install sakemake, but don't keep the git checkout in the docker image
+RUN git clone https://github.com/xyproto/sakemake && \
+    cd sakemake && \
+    make install
+
+# Clean and build all examples
+RUN sakemake/tests/build_all.sh
+
+# Build and run the hello_test in hello/common
+RUN sm -C sakemake/examples/hello/common test
