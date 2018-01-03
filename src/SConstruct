@@ -300,8 +300,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     # Check if pkg-config is in the PATH
     has_pkg_config = bool(which("pkg-config"))
 
-    print("Discovering build flags for {}... ".format(sourcefilename), end="")
-    stdout.flush()
+    if 'run' not in ARGUMENTS and 'clean' not in ARGUMENTS:
+        print("Discovering build flags for {}... ".format(sourcefilename), end="")
+        stdout.flush()
 
     # Filter out include lines, then run cpp
     cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + sourcefilename + "\" | cpp -E -P -w -pipe | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
@@ -637,7 +638,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             print("ERROR: missing include: {}".format(missing_includes[0]))
             exit(1)
     else:
-        print("OK")
+        if 'run' not in ARGUMENTS and 'clean' not in ARGUMENTS:
+            print("OK")
 
     # Collect and return all the flags in flag_dict
     all_cxxflags = (" ".join(flag_dict.values()) + " " + " ".join(global_flag_dict.values())).strip()
@@ -817,16 +819,21 @@ def sakemake_main():
             os.linesep) if not "up to date" in line]).strip()
         if output:
             print(output)
+        # Get arguments pased with args="..." (the arguments after -- on the sm command line)
+        given_args = []
+        if 'args' in ARGUMENTS:
+            given_args = ARGUMENTS['args']
         # Run the first main elf
         if win64:
-            print("wine " + main_executable)
-            status, output = getstatusoutput("wine " + main_executable)
+            if len(given_args) > 1:
+                print("wine " + main_executable + " " + " ".join(given_args.split()))
+            os.execvp("wine", ["wine", main_executable] + given_args.split())
         else:
-            status, output = getstatusoutput(os.path.join(".", main_executable))
-        output = output.strip()
-        if output:
-            print(output)
-        exit(status)
+            exe = os.path.join(".", main_executable)
+            if len(given_args) > 1:
+                print(exe + " " + " ".join(given_args.split()))
+            os.execvp(exe, [exe] + given_args.split())
+        exit(0)
 
     # Set the number of jobs to the number of CPUs
     SetOption('num_jobs', cpu_count())

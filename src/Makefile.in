@@ -7,6 +7,7 @@ opt ?= 0
 sloppy ?= 0
 win64 ?= $(shell grep -q -F '\#include <windows.h>' main.* 2>/dev/null && echo 1 || echo 0)
 patch_paths ?= 0
+run ?= 0
 
 std ?= c++17
 MAKE ?= @@MAKE@@
@@ -31,6 +32,24 @@ CMD := $(shell test -f main.cpp -o -f main.cc -o -f main.cxx || echo testbuild)
 
 # The Python 2 file
 SCONSFILEARG := --file="${ROOTDIR}/SConstruct"
+
+# Thanks: https://stackoverflow.com/a/14061796/131264
+# If the first argument is "run"...
+ifeq (run,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
+# If the first argument is "run"...
+ifeq (run,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments as flags "run"
+  RUN_FLAGS := $(wordlist 2,$(words $(MAKEFLAGS)),$(MAKEFLAGS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_FLAGS):;@:)
+endif
+
 
 all: build
 
@@ -76,7 +95,7 @@ debug:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 run:
-	@scons ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))"
 
 rebuild: clean build
 
