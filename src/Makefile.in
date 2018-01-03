@@ -6,7 +6,7 @@ debug ?= 0
 opt ?= 0
 sloppy ?= 0
 win64 ?= $(shell grep -q -F '\#include <windows.h>' main.* 2>/dev/null && echo 1 || echo 0)
-nomod ?= 1
+patch_paths ?= 0
 
 std ?= c++17
 MAKE ?= @@MAKE@@
@@ -97,7 +97,7 @@ main: $(wildcard main.c*)
 # "shaders/
 #
 patch:
-	@if [ ${nomod} = 0 ]; then \
+	@if [ ${patch_paths} = 1 ]; then \
 	  for ext in cpp cc cxx; do \
 	    test -f main.$$ext && \
 		cp -f -v main.$$ext main.$$ext.bak && \
@@ -107,7 +107,13 @@ patch:
 	fi
 
 unpatch:
-	@for ext in cpp cc cxx; do test -f main.$$ext.bak && mv -v -f main.$$ext.bak main.$$ext || true; done
+	@if [ ${patch_paths} = 1 ]; then \
+	  for ext in cpp cc cxx; do \
+	    test -f main.$$ext.bak && \
+		mv -v -f main.$$ext.bak main.$$ext || \
+		true; \
+	  done; \
+	fi
 
 # install the executable, data/*, img/*, shaders/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
