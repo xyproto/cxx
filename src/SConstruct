@@ -942,6 +942,9 @@ def sakemake_main():
     # Create an environment
     env = Environment()
 
+    # Faster checks of existing code
+    env.Decider('MD5-timestamp')
+
     # Use the given CXX as the default value for the C++ compiler
     if 'CXX' in ARGUMENTS:
         env.Replace(CXX=ARGUMENTS['CXX'])
@@ -996,13 +999,18 @@ def sakemake_main():
         env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
     # opt is set?
     elif int(ARGUMENTS.get('opt', 0)):
-        env.Append(CXXFLAGS=' -O3')
+        # Enable more optimization flags than O3 + link time optimization
+        env.Append(CXXFLAGS=' -Ofast')
     # default optimization level
     else:
         env.Append(CXXFLAGS=' -O2')
 
-    # add -pipe and -fPIC
+    # use -pipe for a possible speed increase when compiling and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
+
+    # use -flto for link-time optimization
+    env.Append(CXXFLAGS=' -flto')
+    env.Append(LINKFLAGS=' -flto')
 
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
