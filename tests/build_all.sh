@@ -3,7 +3,7 @@
 cur_dir="$(pwd)"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 examples_dir="$root_dir/../examples"
-figlet=$(which figlet)
+figlet=$(which figlet || echo)
 cmds="clean build"
 
 # Also run if "run" was given
@@ -28,7 +28,7 @@ for cmd in $cmds; do
     echo -e '|\n|'
   fi
   for example_dir in "$examples_dir"/*; do
-    rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir")"
+    rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir" 2>/dev/null || echo $example_dir)"
     echo "------- $rel_dir -------"
     if [ $cmd != build ]; then
       echo sm -C "$rel_dir" $cmd
