@@ -378,7 +378,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     for include in includes:
         if include in skiplist:
             continue
-        if win64 and include in win64skiplist:
+        if win64 and (include in win64skiplist):
             continue
         found = False
         for local_include_path in LOCAL_INCLUDE_PATHS:
@@ -580,6 +580,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     # Special cases - additional build flags that should be reported as bugs and added to the ".pc" files that comes with libraries.
     # This must come last.
     for include in includes:
+
         # SFML on macOS, add OpenGL and if clang, add -stdlib=libc++
         if include.split("/")[0].strip().lower() == "sfml":
             new_flags = ""
@@ -614,6 +615,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+
         # If one of the includes just mention something with OpenGL, or GLUT, add build flags for OpenGL
         if ("opengl" in include.lower()) or include.startswith("GL/") or include.startswith("GLUT/"):
             new_flags = ""
@@ -697,6 +699,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+
         if include.startswith("Q"):
             qt_include_dir = os.path.join(system_include_dir, "qt")
             new_flags = ""
