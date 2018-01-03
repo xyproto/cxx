@@ -17,6 +17,8 @@ PATHLIST = os.environ["PATH"].split(os.pathsep)
 SPECIAL_SYMBOLS = "@@@@@" # string that is unlikely to appear in an include line or a build flag
 SKIP_PACKAGES = ["glibc", "gcc", "wine"] # skip compilation-related packages when searching for includes
 
+cached_pc_files = {}
+
 def hints(missing_includes):
     """Output hints for how to configure missing includes on some platforms"""
     if "GL/glut.h" in missing_includes:
@@ -73,6 +75,8 @@ def split_cxxflags(given_cxxflags, win64):
     libpaths = " "
     linkflags = " "
     other = " "
+    has_encountered_framework = False
+
     # Note that -Wl,-framework may appear in the given_cxxflags
     for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework" + SPECIAL_SYMBOLS).split(" ")]:
         if flag.startswith("-I"):
@@ -99,6 +103,8 @@ def split_cxxflags(given_cxxflags, win64):
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
             if not win64 and " " + new_flag + " " not in linkflags:
+                if "-framework" in new_flag:
+                    has_encountered_framework = True
                 linkflags += new_flag + " "
             elif win64:
                 new_dll = new_flag[len("-framework "):] + ".dll"
@@ -117,6 +123,11 @@ def split_cxxflags(given_cxxflags, win64):
                 linkflags += flag + " "
             if " " + flag + " " not in other:
                 other += flag + " "
+        elif not win64 and has_encountered_framework:
+            # the pkg-config output for Qt libraries list several frameworks after a single "-framework" parameter
+            new_flag = "-framework " + flag.strip()
+            if " " + new_flag + " " not in linkflags:
+                linkflags += new_flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
             print("WARNING: Unsupported flag: " + flag)
@@ -139,7 +150,11 @@ def arch_include_path_to_cxxflags(include_path):
         print("ERROR: No package owns: " + include_path)
         exit(1)
     cmd = '/usr/bin/pacman -Ql ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
-    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+    if package in cached_pc_files:
+        pc_files = cached_pc_files[package]
+    else:
+        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+        cached_pc_files[package] = pc_files
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -181,7 +196,11 @@ def freebsd_include_path_to_cxxflags(include_path):
         print("ERROR: No package owns: " + include_path)
         exit(1)
     cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
-    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+    if package in cached_pc_files:
+        pc_files = cached_pc_files[package]
+    else:
+        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+        cached_pc_files[package] = pc_files
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -222,7 +241,11 @@ def ubuntu_include_path_to_cxxflags(include_path):
         print("ERROR: No package owns: " + include_path)
         exit(1)
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
-    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+    if package in cached_pc_files:
+        pc_files = cached_pc_files[package]
+    else:
+        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+        cached_pc_files[package] = pc_files
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -252,18 +275,39 @@ def ubuntu_include_path_to_cxxflags(include_path):
 def brew_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For macOS/homebrew."""
+
+    normpath = os.path.normpath(include_path)
+    if not os.path.exists(normpath):
+        return ""
     # Follow symlinks
     realpath = os.path.realpath(include_path)
+
+    # Now try to find the package that owns this file
+    package = ""
     # If the path now starts with "/usr/local/Cellar/", then success, else return
-    if not (realpath.startswith("/usr/local/Cellar/") and realpath.count("/") > 4):
+    if realpath.startswith("/usr/local/Cellar/") and realpath.count("/") > 4:
+        # OK, found an include file that has been installed by Homebrew, this is promising
+        # Strip away "/usr/local/Cellar/" from the start of the path,
+        # then use the first word as the package name
+        package = realpath[18:].split("/")[0]
+    else:
+        # Try using the first directory after "/usr/local/include" as the package name
+        package = include_path.replace("/usr/local/include/", "")
+    if not package:
+        # Out of guesses
         return ""
-    # Strip away "/usr/local/Cellar/" from the start of the path
-    package = realpath[18:].split("/")[0]
+    # Check if the guessed package name not be skipped
     if package in SKIP_PACKAGES:
         return ""
-    # Get all .pc files that belong to the same package
-    cmd = 'LC_ALL=C brew ls --verbose ' + package + ' | grep "\.pc$"'
-    pc_files = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+
+    # Get all .pc files that belong to the same package,
+    # this also tests if it's a valid package name
+    cmd = 'LC_ALL=C brew ls --verbose ' + package + " | grep '\.pc$'"
+    if package in cached_pc_files:
+        pc_files = cached_pc_files[package]
+    else:
+        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+        cached_pc_files[package] = pc_files
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -276,7 +320,8 @@ def brew_include_path_to_cxxflags(include_path):
     all_cxxflags = ""
     for pc_file in pc_files:
         pc_name = os.path.splitext(os.path.basename(pc_file))[0]
-        cmd = 'pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+        pc_dir = os.path.dirname(pc_file)
+        cmd = 'PKG_CONFIG_PATH="' + pc_dir + '" pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
@@ -300,7 +345,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     # Check if pkg-config is in the PATH
     has_pkg_config = bool(which("pkg-config"))
 
-    if 'run' not in ARGUMENTS and 'clean' not in ARGUMENTS:
+    if 'run' not in ARGUMENTS:
         print("Discovering build flags for {}... ".format(sourcefilename), end="")
         stdout.flush()
 
@@ -490,14 +535,43 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             if include in flag_dict:
                 continue
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
-            cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" | tail -1'
+            cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" -maxdepth 4 | tail -1'
             include_path = os.popen2(cmd)[1].read().strip()
-            new_flags = brew_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+            if not include_path:
+                # Could not find the include file in the system include dir, try searching /usr/local/Cellar for frameworks, and then headers
+                # This is much faster than searching for the header file directly, and it makes
+                # sense to look for the latest framework version before searching all of them.
+                cmd = 'find /usr/local/Cellar/ -name Frameworks -type d -maxdepth 3 | sort -V'
+                framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                # If directories named "Frameworks" were found, sort them by version number and then search
+                # the directories of the ones with the highest version numbers for the include file
+                if framework_dirs:
+                    # Collect the frameworks path in a dictionary, indexed by the part of the path with a framework name
+                    framework_dict = {}
+                    for framework_dir in framework_dirs:
+                        path_components = framework_dir.split("/")
+                        if len(path_components) >= 5:
+                            framework_dict[path_components[5]] = os.path.normpath(framework_dir)
+                    # Loop over the framework directories belonging to the latest versions of the frameworks
+                    # and look for the include file in question:
+                    for framework_dir in framework_dict.values():
+                        cmd = 'find -L "' + framework_dir + '" -type f -maxdepth 4 -name "' + include + '" | tail -1'
+                        include_path = os.popen2(cmd)[1].read().strip()
+                        if include_path:
+                            # Now use the existing function for getting build flags from a found include file
+                            new_flags = brew_include_path_to_cxxflags(include_path)
+                            if new_flags:
+                                if include in flag_dict:
+                                    flag_dict[include] += " " + new_flags
+                                else:
+                                    flag_dict[include] = new_flags
+            else:
+                new_flags = brew_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Special cases - additional build flags that should be reported as bugs and added to the ".pc" files that comes with libraries.
     # This must come last
@@ -638,7 +712,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             print("ERROR: missing include: {}".format(missing_includes[0]))
             exit(1)
     else:
-        if 'run' not in ARGUMENTS and 'clean' not in ARGUMENTS:
+        if 'run' not in ARGUMENTS:
             print("OK")
 
     # Collect and return all the flags in flag_dict
@@ -992,7 +1066,7 @@ def sakemake_main():
                                     dep_src.append(source_filename)
 
     # Find extra CFLAGS for the sources, if not cleaning
-    if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
+    if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in [main_source_file] + dep_src:
             includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
                 src_file, system_include_dir, win64)
@@ -1016,7 +1090,7 @@ def sakemake_main():
         main = env.Program(main_executable, [main_source_file] + dep_src)
 
     # Find extra CFLAGS for the test sources, if not cleaning
-    if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
+    if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in test_sources:
             includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
                 src_file, system_include_dir, win64)
