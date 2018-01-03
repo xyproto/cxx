@@ -126,12 +126,9 @@ For a "Hello, World!" program that places the text-generation in a `string hello
 #include <iostream>
 #include "hello.h"
 
-using std::cout;
-using std::endl;
-
 int main() {
-  cout << hello() << endl;
-  return 0;
+    std::cout << hello() << std::endl;
+    return 0;
 }
 ```
 
@@ -143,7 +140,6 @@ int main() {
 #include <string>
 
 using std::string;
-using namespace std::literals;
 
 string hello();
 ```
@@ -152,6 +148,8 @@ string hello();
 
 ```c++
 #include "hello.h"
+
+using namespace std::literals;
 
 string hello() {
   return "Hello, World!"s;
@@ -184,19 +182,15 @@ int main() {
 #include <iostream>
 #include <cstdlib>
 
-using std::cout;
-using std::endl;
-
 template<typename T>
 void equal(T a, T b) {
     if (a == b) {
-        cout << "YES" << endl;
+        std::cout << "YES" << std::endl;
     } else {
-        cout << "NO" << endl;
+        std::cout << "NO" << std::endl;
         exit(EXIT_FAILURE);
     }
 }
-
 ```
 
 ## Requirements
