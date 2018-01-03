@@ -7,17 +7,19 @@ figlet=$(which figlet || echo)
 cmds="clean build"
 args=
 
-if [ $1 = run ]; then
+sm version
+
+if [ "$1" == run ]; then
   # Also run if "run" was given
   cmds="$cmds run"
   shift
   args="$@"
-elif [ $1 = rebuild ]; then
+elif [ "$1" == rebuild ]; then
   # Only rebuild if "rebuild" was given
   cmds="rebuild"
   shift
   args="$@"
-elif [ $1 != build -a $1 != "" ]; then
+elif [ "$1" != build ] && [ "$1" != "" ]; then
   cmds="$@"
 fi
 
