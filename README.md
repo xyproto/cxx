@@ -53,7 +53,7 @@ In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file
 
 The name of the current directory will be used as the executable name.
 
-#### Packaging a project into $pkgdir:
+#### Packaging a project into $pkgdir (`pkg` by default):
 
     DESTDIR="$pkgdir" PREFIX=/usr sm install
 
