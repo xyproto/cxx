@@ -306,6 +306,6 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ## General info
 
-* Version: 1.35
+* Version: 1.36
 * License: MIT
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
