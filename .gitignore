@@ -27,6 +27,7 @@ examples/sdl2/sdl2
 examples/sdl2_opengl/sdl2_opengl
 examples/tinyhello/tinyhello
 examples/win64crate/win64crate
+examples/args/args
 
 # Test installs
 pkg/
