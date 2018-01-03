@@ -666,12 +666,24 @@ def get_main_source_file(test_sources=None):
         # No main source
         return ""
     if len(all_sources) == 1:
-        # Return the 1 source file that was found
-        return all_sources[0]
+        # Look at the one source file that was found
+        fname = all_sources[0]
+        try:
+            if "main(" in open(fname).read():
+                return fname
+        except:
+            print("Could not read " + fname)
+            exit(1)
+        # The one source file that was found did not contain "main("
+        return ""
     # Multiple candidates for the main source file, use the one that contains the word "main("
     for fname in all_sources:
-        if "main(" in open(fname).read():
-            return fname
+        try:
+            if "main(" in open(fname).read():
+                return fname
+        except:
+            print("Could not read " + fname)
+            exit(1)
     # No source file contained "main(", there may not be a main source file here
     return ""
 
@@ -1057,18 +1069,13 @@ def sakemake_main():
         Default(main)
     except UnboundLocalError:
         try:
-            if env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS:
-                print("Nothing to clean")
-                exit(0)
-        except AttributeError:
-            pass
-        try:
             if env.GetOption('test') or 'test' in COMMAND_LINE_TARGETS:
                 print("Nothing to test")
                 exit(0)
+            else:
+                print("Nothing to build")
         except AttributeError:
             pass
-        print("Nothing to build")
 
 
 sakemake_main()
