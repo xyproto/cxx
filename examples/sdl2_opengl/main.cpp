@@ -1,8 +1,14 @@
 /*
- * Hello World in the world of OpenGL (creating a simple windonw and setting background color when keys are pressed)
- * Source code is an C++ adaption / simplicication of : https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_(C_/_SDL)
  *
- * From: http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
+ * SDL2 + OpenGL 3.2 example
+ *
+ * Based on:
+ *     http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
+ * Which is based on:
+ *     https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_(C_/_SDL)
+ *
+ * Press "r", "g" or "b" to change color.
+ *
  */
 
 // C++ Headers
@@ -25,7 +31,7 @@ SDL_Window *mainWindow;
 SDL_GLContext mainContext;
 
 bool SetOpenGLAttributes();
-void PrintSDL_GL_Attributes();
+void Print_OpenGL_Version();
 void CheckSDLError(int line);
 void RunGame();
 void Cleanup();
@@ -66,7 +72,7 @@ bool Init()
 	glewExperimental = GL_TRUE;
 	glewInit();
 	#endif
-	
+
 	return true;
 }
 
@@ -92,6 +98,10 @@ int main(int argc, char *argv[])
 	if (!Init())
 		return -1;
 
+    std::cout << std::endl;
+    Print_OpenGL_Version();
+    std::cout.flush();
+
 	// Clear our buffer with a black background
 	// This is the same as :
 	// 		SDL_SetRenderDrawColor(&renderer, 255, 0, 0, 255);
@@ -102,6 +112,9 @@ int main(int argc, char *argv[])
 	SDL_GL_SwapWindow(mainWindow);
 
     std::cout << "Press r, g, b or Escape" << std::endl;
+    std::cout << std::endl;
+
+    std::cout.flush();
 
 	RunGame();
 
@@ -186,12 +199,12 @@ void CheckSDLError(int line = -1)
 	}
 }
 
-void PrintSDL_GL_Attributes()
-{
-	int value = 0;
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &value);
-	std::cout << "SDL_GL_CONTEXT_MAJOR_VERSION : " << value << std::endl;
+void Print_OpenGL_Version() {
+	int major = 0;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
 
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &value);
-	std::cout << "SDL_GL_CONTEXT_MINOR_VERSION: " << value << std::endl;
+	int minor = 0;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+
+	std::cout << "OpenGL " << major << "." << minor << std::endl;
 }
