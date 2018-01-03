@@ -494,7 +494,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
       //printf("keydown value %i\n", LOWORD(wParam));
       //fflush(stdout);
 
-      if (LOWORD(wParam) == 27)//Esc
+      if (LOWORD(wParam) == 27 || LOWORD(wParam) == 81) // Esc or q
       {
          KillTimer(hwnd, ID_TIMER);
          PostQuitMessage(0);
