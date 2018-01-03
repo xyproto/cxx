@@ -1,4 +1,4 @@
-.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug export opt rebuild run sloppy strict test testbuild version
+.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug export fastclean opt rebuild run sloppy strict test testbuild version
 
 clang ?= 0
 strict ?= 0
@@ -177,6 +177,14 @@ export:
 
 clean:
 	@scons ${SCONSFILEARG} -Q clean win64=${win64}
+
+# fastclean only removes the executable and *.o
+fastclean:
+ifeq (1,${win64})
+	-rm -vf ${NAME}.exe *.o
+else
+	-rm -vf ${NAME} *.o
+endif
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR ?= ${pkgdir}
