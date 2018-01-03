@@ -75,7 +75,7 @@ def split_cxxflags(given_cxxflags, win64):
     libpaths = " "
     linkflags = " "
     other = " "
-    has_encountered_framework = False
+    encountered_framework = False
 
     # Note that -Wl,-framework may appear in the given_cxxflags
     for flag in [f.strip() for f in given_cxxflags.replace(" -framework ", " -framework" + SPECIAL_SYMBOLS).split(" ")]:
@@ -104,7 +104,7 @@ def split_cxxflags(given_cxxflags, win64):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
             if not win64 and " " + new_flag + " " not in linkflags:
                 if "-framework" in new_flag:
-                    has_encountered_framework = True
+                    encountered_framework = True
                 linkflags += new_flag + " "
             elif win64:
                 new_dll = new_flag[len("-framework "):] + ".dll"
@@ -123,11 +123,15 @@ def split_cxxflags(given_cxxflags, win64):
                 linkflags += flag + " "
             if " " + flag + " " not in other:
                 other += flag + " "
-        elif not win64 and has_encountered_framework:
+        elif not win64 and encountered_framework and (not flag.startswith("-")) and ("." not in flag):
             # the pkg-config output for Qt libraries list several frameworks after a single "-framework" parameter
-            new_flag = "-framework " + flag.strip()
+            new_flag = "-framework " + flag
             if " " + new_flag + " " not in linkflags:
                 linkflags += new_flag + " "
+        elif flag.startswith("-W"):
+            # related to warnings
+            if " " + flag + " " not in other:
+                other += flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
             print("WARNING: Unsupported flag: " + flag)
@@ -574,7 +578,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] = new_flags
 
     # Special cases - additional build flags that should be reported as bugs and added to the ".pc" files that comes with libraries.
-    # This must come last
+    # This must come last.
     for include in includes:
         # SFML on macOS, add OpenGL and if clang, add -stdlib=libc++
         if include.split("/")[0].strip().lower() == "sfml":
@@ -646,6 +650,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
+                if not int(ARGUMENTS.get('strict', 0)): # if not strict=1
+                    new_flags += " -Wno-deprecated-declarations"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -693,12 +699,18 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] = new_flags
         if include.startswith("Q"):
             qt_include_dir = os.path.join(system_include_dir, "qt")
+            new_flags = ""
+            if not int(ARGUMENTS.get('strict', 0)): # if not strict=1
+                # These warnings kick in for the Qt5 include files themselves
+                new_flags += "-Wno-class-memaccess -Wno-pedantic"
             if os.path.exists(qt_include_dir):
-                new_flags = "-I" + qt_include_dir
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+                if new_flags:
+                    new_flags += " "
+                new_flags += "-I" + qt_include_dir
+            if include in flag_dict:
+                flag_dict[include] += " " + new_flags
+            else:
+                flag_dict[include] = new_flags
 
     # List includes that were not found
     missing_includes = [include for include in includes if include not in flag_dict and include not in global_flag_dict]
