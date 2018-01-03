@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -20,7 +22,7 @@ void displayMe(void) {
 void processKeys(unsigned char key, int x, int y) {
     // Quit if Esc or q was pressed
     if (key == 27 || key == 113) {
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 }
 
