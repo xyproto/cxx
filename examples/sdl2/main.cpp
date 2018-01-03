@@ -88,7 +88,7 @@ int main() {
         return 1;
     }
 
-    auto file = SDL_RWFromFile("img/sake.bmp", "rb");
+    auto file = SDL_RWFromFile(IMGDIR "sake.bmp", "rb");
     if (file == nullptr) {
         cout << "Error reading file: " << SDL_GetError() << endl;
         return 1;

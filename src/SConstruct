@@ -698,7 +698,7 @@ def strip_ext(filenames):
     return [os.path.splitext(fname)[0] for fname in filenames]
 
 
-def sakemake():
+def sakemake_main():
     """The main function"""
 
     # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
@@ -712,7 +712,7 @@ def sakemake():
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
-            if line.strip() == "#include <windows.h>":
+            if line.strip() in ('#include <windows.h>', '#include "windows.h"'):
                 win64 = True
                 break
     except IOError:
@@ -727,24 +727,28 @@ def sakemake():
         test_elves = strip_ext(test_sources)
 
     # Main executable to be built
-    main_elf = ""
+    main_executable = ""
     if main_source_file:
-        main_elf = os.path.splitext(main_source_file)[0]
+        current_directory_name = os.path.basename(os.path.normpath(os.getcwd()))
+        if current_directory_name != "src":
+            main_executable = current_directory_name
+        else:
+            main_executable = os.path.splitext(main_source_file)[0]
         # Add .exe extension for 64-bit Windows executables
         if win64:
-            main_elf += ".exe"
+            main_executable += ".exe"
 
     # Custom command line targets
     if 'clean' in COMMAND_LINE_TARGETS:  # Clean built executables and object files
-        if (not test_elves) and (not main_elf):
+        if (not test_elves) and (not main_executable):
             print("Nothing to clean")
             exit(0)
         # Also remove main.exe, if it's there, and win64=1
-        if win64 and os.path.exists(main_elf + ".exe"):
-            os.remove(main_elf + ".exe")
-            print("Removed {}.exe".format(main_elf))
+        if win64 and os.path.exists(main_executable + ".exe"):
+            os.remove(main_executable + ".exe")
+            print("Removed {}.exe".format(main_executable))
         # Replace the "clean" argument with "-c", and list all targets
-        cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_elf] + test_elves
+        cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_executable] + test_elves
         # Clean
         status, output = getstatusoutput(" ".join(cmd))
         output = output.strip()
@@ -754,12 +758,12 @@ def sakemake():
     elif 'testbuild' in COMMAND_LINE_TARGETS:  # Build and run tests, this is the default
         # Remove the "test" argument, and list all test-executable targets
         cmd = ""
-        if test_elves and main_elf:
-            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves + [main_elf] if elf != "testbuild"]
+        if test_elves and main_executable:
+            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves + [main_executable] if elf != "testbuild"]
         elif test_elves:
             cmd = [x for x in argv if x != "testbuild"] + [elf for elf in test_elves if elf != "testbuild"]
-        elif main_elf:
-            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in [main_elf] if elf != "testbuild"]
+        elif main_executable:
+            cmd = [x for x in argv if x != "testbuild"] + [elf for elf in [main_executable] if elf != "testbuild"]
         else:
             print("Nothing to build")
             exit(0)
@@ -798,7 +802,7 @@ def sakemake():
     elif 'run' in COMMAND_LINE_TARGETS:  # Build and run main
         # TODO: if win64==True, build an .exe and run it with wine
         # Remove the "run" argument, and add "main"
-        cmd = [x for x in argv if x != "run"] + [main_elf]
+        cmd = [x for x in argv if x != "run"] + [main_executable]
         # Check if any main source file exists
         if not main_source_file:
             print("Nothing to run (no main source file)")
@@ -815,10 +819,10 @@ def sakemake():
             print(output)
         # Run the first main elf
         if win64:
-            print("wine " + main_elf)
-            status, output = getstatusoutput("wine " + main_elf)
+            print("wine " + main_executable)
+            status, output = getstatusoutput("wine " + main_executable)
         else:
-            status, output = getstatusoutput(os.path.join(".", main_elf))
+            status, output = getstatusoutput(os.path.join(".", main_executable))
         output = output.strip()
         if output:
             print(output)
@@ -848,6 +852,28 @@ def sakemake():
             if key == 'std':
                 env.Append(CXXFLAGS=' -std=' + value)
 
+    # imgdir/datadir/shaderdir/sharedir is set?
+    for dirname in ["img", "data", "shader", "share"]:
+        if ARGUMENTS.get(dirname + 'dir', ""):
+            # only add system directories that have local equivalents (same or parent directory, singular or plural)
+            if os.path.exists(dirname) or os.path.exists(os.path.join("..", dirname)) or os.path.exists(dirname + "s") or os.path.exists(os.path.join("..", dirname + "s")):
+                dir = os.path.normpath(ARGUMENTS[dirname + "dir"]) + os.path.sep
+                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+        else:
+            # not specified on the commandline
+            if os.path.exists(dirname): # same directory
+                dir = os.path.normpath(dirname) + os.path.sep
+                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+            elif os.path.exists(os.path.join("..", dirname)): # parent directory
+                dir = os.path.normpath(os.path.join("..", dirname)) + os.path.sep
+                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+            elif os.path.exists(dirname + "s"): # same directory, plural
+                dir = os.path.normpath(dirname + "s") + os.path.sep
+                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+            elif os.path.exists(os.path.join("..", dirname + "s")): # parent directory, plural
+                dir = os.path.normpath(os.path.join("..", dirname + "s")) + os.path.sep
+                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+
     system_include_dir = "/usr/include"
     # Set system_include_dir to the given value, or keep it as /usr/include
     if ARGUMENTS.get('system_include_dir', ''):
@@ -870,7 +896,7 @@ def sakemake():
     else:
         env.Append(CXXFLAGS=' -O2')
 
-    # add -pipe
+    # add -pipe and -fPIC
     env.Append(CXXFLAGS=' -pipe -fPIC')
 
     # Check if a particular C++ compiler is given, or not
@@ -925,8 +951,12 @@ def sakemake():
                         continue
                     examined.append(filename)
                     if os.path.exists(filename):
-                        new_includes = [line.split("\"")[1] for line in open(filename).read().split(
-                            os.linesep)[:-1] if line.strip().startswith("#include \"")]
+                        try:
+                            new_includes = [line.split("\"")[1] for line in open(filename).read().split(
+                                os.linesep)[:-1] if line.strip().startswith("#include \"")]
+                        except IOError:
+                            print("Can not read " + filename)
+                            exit(1)
                     else:
                         continue
                     for new_include in [os.path.relpath(x) for x in new_includes]:
@@ -964,7 +994,7 @@ def sakemake():
 
     # Build main executable
     if main_source_file:
-        main = env.Program(main_elf, [main_source_file] + dep_src)
+        main = env.Program(main_executable, [main_source_file] + dep_src)
 
     # Find extra CFLAGS for the test sources, if not cleaning
     if not (env.GetOption('clean') or 'clean' in COMMAND_LINE_TARGETS):
@@ -1034,6 +1064,6 @@ def sakemake():
         print("Nothing to build")
 
 
-sakemake()
+sakemake_main()
 
 # vim: ts=4 sw=4 et:

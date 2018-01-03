@@ -5,7 +5,8 @@ strict ?= 0
 debug ?= 0
 opt ?= 0
 sloppy ?= 0
-win64 ?= 0
+win64 ?= $(shell grep -q -F '\#include <windows.h>' main.* 2>/dev/null && echo 1 || echo 0)
+nomod ?= 1
 
 std ?= c++17
 MAKE ?= @@MAKE@@
@@ -80,37 +81,71 @@ run:
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}"
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
-# These strings are recognized and modified:
+# These strings are recognized and modified, at installation time:
+# ../img
+# ../data
+# ../shaders
 # ./img
 # ./data
-# ./resources
+# ./shaders
 # "img/
 # "data/
-# "resources/
+# "shaders/
 #
 patch:
-	@for ext in cpp cc cxx; do test -f main.$$ext && cp -f -v main.$$ext main.$$ext.bak && sed "s:./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g" < main.$$ext.bak > main.$$ext; done || true
+	@if [ ${nomod} = 0 ]; then \
+	  for ext in cpp cc cxx; do \
+	    test -f main.$$ext && \
+		cp -f -v main.$$ext main.$$ext.bak && \
+		sed "s:\.\./img:${PREFIX}/share/${NAME}/img:g;s:\./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:\.\./data:${PREFIX}/share/${NAME}/data:g;s:\./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:\.\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\"shaders/:\"${PREFIX}/share/${NAME}/shaders/:g" < main.$$ext.bak > main.$$ext; \
+	  done || \
+	  true; \
+	fi
 
 unpatch:
 	@for ext in cpp cc cxx; do test -f main.$$ext.bak && mv -v -f main.$$ext.bak main.$$ext || true; done
 
-# install the executable, data/*, img/*, resources/* or share/* into a shared directory, also install the license, if available
+# install the executable, data/*, img/*, shaders/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
 	@install -d "${DESTDIR}${PREFIX}/bin"
-	@install -m755 main "${DESTDIR}${PREFIX}/bin/${NAME}"
-	@install -d "${DESTDIR}${PREFIX}/share/${NAME}"
-	@test -d img && cp -r img/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
-	@test -d data && cp -r data/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
-	@test -d resources && cp -r resources/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
-	@test -d share && cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || true
-	@test -f COPYING && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
-	@test -f LICENSE && install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
-	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}" 2>/dev/null || true
-	@-rmdir "${DESTDIR}${PREFIX}/share" 2>/dev/null || true
+	@if [ ${win64} = 0 ]; then \
+	  install -m755 "${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}" || \
+	  install -m755 src/main "${DESTDIR}${PREFIX}/bin/${NAME}"; \
+	else \
+	  install -m755 "${NAME}.exe" "${DESTDIR}${PREFIX}/bin/${NAME}.exe" || \
+	  install -m755 src/main.exe "${DESTDIR}${PREFIX}/bin/${NAME}.exe"; \
+	  echo '#!/bin/sh' > "${DESTDIR}${PREFIX}/bin/${NAME}"; \
+	  echo 'wine ${PREFIX}/bin/${NAME}.exe "$$@"' >> "${DESTDIR}${PREFIX}/bin/${NAME}"; \
+	  chmod 755 "${DESTDIR}${PREFIX}/bin/${NAME}"; \
+	fi
+	@test -d img && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/img" && \
+	  cp -r img/* "${DESTDIR}${PREFIX}/share/${NAME}/img/" || \
+	  true
+	@test -d data && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/data" && \
+	  cp -r data/* "${DESTDIR}${PREFIX}/share/${NAME}/data/" || \
+	  true
+	@test -d shaders && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/shaders" && \
+	  cp -r shaders/* "${DESTDIR}${PREFIX}/share/${NAME}/shaders/" || \
+	  true
+	@test -d share && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}" && \
+	  cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || \
+	  true
+	@test -f COPYING && \
+	  install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && \
+	  install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
+	@test -f LICENSE && \
+	  install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && \
+	  install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -exec chmod 755 {} \;
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -exec chmod 644 {} \;
 
 export:
 	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .

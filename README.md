@@ -207,14 +207,20 @@ void equal(T a, T b) {
 * g++ with support for c++17
 * (clang++ with support for c++17)
 
-## Path replacements at installation-time
+## Defines
 
-Paths in `main.cpp`, `main.cc` or `main.cxx` are replaced at installation/packaging time (`sm install` or `sm pkg`):
-
-* `"img/` is replaced with the full path to the `$PREFIX/share/name/img` directory, for instance `/usr/share/application_name/img`
-* These strings are recognized and replaced: `"img/`, `"data/`, `"resources/`, `./img`, `./data` and `./resources`
+* `DATADIR` is defined to `./data` or `../data` (when developing) and `$PREFIX/share/application_name/data` (at installation time)
+* `IMGDIR` is defined to `./img` or `../img` (when developing) and `$PREFIX/share/application_name/img` (at installation time)
+* `SHADERDIR` is defined to `./shaders` or `../shaders` (when developing) and `$PREFIX/share/application_name/shaders` (at installation time)
+* `SHAREDIR` is defined to `./share` or `../share` (when developing) and `$PREFIX/share/application_name` (at installation time)
 
 This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
+
+See `examples/sdl2` and `examples/win64crate` for examples that uses `IMGDIR`.
+
+## An alternative method to path defines (`-D`)
+
+Use something like `SDL_GetBasePath()`, like in [this example](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
 
 ## C++17 on macOS
 
