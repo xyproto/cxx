@@ -1,6 +1,8 @@
 # [:sake:](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake)
 
-*Sakemake* is a build system that provides a simple way to build your C++17 executables, structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be istalled manually.
+
+*Sakemake* also provides a way to structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
@@ -11,6 +13,8 @@ Dependencies are discovered automatically, and the correct flags are given to th
 The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
 If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
+
+`x86_64-w64-mingw32-g++` is required for compiling executables for 64-bit Windows.
 
 
 ## Usage
