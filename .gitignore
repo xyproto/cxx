@@ -33,3 +33,6 @@ examples/args/args
 
 # Test installs
 pkg/
+
+# Vagrant tempfiles
+.vagrant
