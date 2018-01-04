@@ -36,3 +36,6 @@ pkg/
 
 # Vagrant tempfiles
 .vagrant
+
+# Valgrind files
+callgrind.out.*
