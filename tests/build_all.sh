@@ -3,10 +3,12 @@
 cur_dir="$(pwd)"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 examples_dir="$root_dir/../examples"
-figlet=$(which figlet || echo)
+figlet=$(which figlet 2>/dev/null || echo)
 cmds="clean build"
 args=
 
+which scons 2>/dev/null
+which make 2>/dev/null
 sm version
 
 if [ "$1" == run ]; then
