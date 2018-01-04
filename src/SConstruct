@@ -1092,9 +1092,6 @@ def sakemake_main():
     # Use -pipe for a possible speed increase when compiling and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
 
-    # Stop after the first linker warning, like -Wfatal-errors for the compiler
-    env.Append(LINKFLAGS=' -Wl,--fatal-warnings')
-
     # Skip unused shared object dependencies
     env.Append(LINKFLAGS=' -Wl,--as-needed')
 
