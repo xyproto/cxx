@@ -1063,16 +1063,15 @@ def sakemake_main():
     elif int(ARGUMENTS.get('opt', 0)):
         # Enable more optimization flags than O3 + link time optimization
         env.Append(CXXFLAGS=' -Ofast')
-    # default optimization level
+        # Use -flto for link-time optimization
+        env.Append(CXXFLAGS=' -flto')
+        env.Append(LINKFLAGS=' -flto')
     else:
+        # Default optimization level
         env.Append(CXXFLAGS=' -O2')
 
-    # use -pipe for a possible speed increase when compiling and -fPIC for position independent code
+    # Use -pipe for a possible speed increase when compiling and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
-
-    # use -flto for link-time optimization
-    env.Append(CXXFLAGS=' -flto')
-    env.Append(LINKFLAGS=' -flto')
 
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
