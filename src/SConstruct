@@ -1084,13 +1084,19 @@ def sakemake_main():
         env.Append(CXXFLAGS=' -Ofast')
         # Use -flto for link-time optimization
         env.Append(CXXFLAGS=' -flto')
-        env.Append(LINKFLAGS=' -flto')
+        env.Append(LINKFLAGS=' -Wl,-flto')
     else:
         # Default optimization level
         env.Append(CXXFLAGS=' -O2')
 
     # Use -pipe for a possible speed increase when compiling and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
+
+    # Stop after the first linker warning, like -Wfatal-errors for the compiler
+    env.Append(LINKFLAGS=' -Wl,--fatal-warnings')
+
+    # Skip unused shared object dependencies
+    env.Append(LINKFLAGS=' -Wl,--as-needed')
 
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
@@ -1109,6 +1115,7 @@ def sakemake_main():
         env.Append(CXXFLAGS=' -Wno-unused-variable')
         env.Append(CPPFLAGS=' -mwindows -lm')
         env.Append(LINKFLAGS=' -mwindows -lm')
+        # This could also work, for automatically adding ".exe": -Wl,--force-exe-suffix
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
