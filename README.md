@@ -197,11 +197,28 @@ void equal(T a, T b) {
 
 ## Requirements
 
-* scons
-* make
-* pkg-config
-* g++ with support for c++17
-* (clang++ with support for c++17)
+* `scons`
+* `make`
+* `pkg-config`
+* `g++` with support for c++17 (version 7.2 or higher should work)
+
+#### Platform-specific notes
+
+* *sakemake* may also work with `pkg-config`, if no system libraries are needed.
+* Homebrew (`brew`) is needed on macOS. It may work without it, for some projects.
+
+#### Optional requirements
+
+* clang++ with support for c++17
+* x86_64-w64-mingw32-g++, for cross-compiling executables for 64-bit Windows
+* wine, for testing executables compiled for 64-bit Windows
+* valgrind, for profiling
+* kcachefrind, for viewing the information produced by valgrind
+* gprof2dot and dot, for producing a graph from the information produced by valgrind
+* vagrant, for testing *sakemake* on other operating systems
+* figlet, for nicer output when running the `tests/build_all.sh` script, for building all the examples
+* development packages for sdl2, opengl, glut, gtk3 and qt5, for building and running the examples
+
 
 ## Defines
 
