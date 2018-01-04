@@ -209,18 +209,21 @@ void equal(T a, T b) {
 
 #### Optional requirements
 
-* clang++ with support for c++17
-* x86_64-w64-mingw32-g++, for cross-compiling executables for 64-bit Windows
-* wine, for testing executables compiled for 64-bit Windows
-* valgrind, for profiling
-* kcachefrind, for viewing the information produced by valgrind
-* gprof2dot and dot, for producing a graph from the information produced by valgrind
-* vagrant, for testing *sakemake* on other operating systems
-* figlet, for nicer output when running the `tests/build_all.sh` script, for building all the examples
-* development packages for sdl2, opengl, glut, gtk3 and qt5, for building and running the examples
+* `clang++` with support for C++17 (build with `sm clang`).
+* `x86_64-w64-mingw32-g++`, for cross-compiling executables for 64-bit Windows.
+* `wine`, for testing executables compiled for 64-bit Windows (`sm run`).
+* `valgrind`, for profiling (`sm valgrind`).
+* `kcachegrind`, for viewing the information produced by *valgrind*.
+* `gprof2dot` and `dot`, for producing a graph from the information produced by valgrind.
+* `vagrant`, for testing *sakemake* on other operating systems.
+* `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
+* Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
+* `x86_64-w64-mingw32-g++` is needed for building the `win64crate` example.
 
 
 ## Defines
+
+These defines are passed to the compiler, if the corresponding directories exist (or will exist, when packaging):
 
 * `DATADIR` is defined to `./data` or `../data` (when developing) and `$PREFIX/share/application_name/data` (at installation time)
 * `IMGDIR` is defined to `./img` or `../img` (when developing) and `$PREFIX/share/application_name/img` (at installation time)
@@ -231,9 +234,7 @@ This makes it easy to have an `img`, `data` or `resources` directory where files
 
 See `examples/sdl2` and `examples/win64crate` for examples that uses `IMGDIR`.
 
-## An alternative method to path defines (`-D`)
-
-Use something like `SDL_GetBasePath()`, like in [this example](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
+An alternative method to using defines (defined with `-D` when building) is to use something like `SDL_GetBasePath()`. Example: [res_path.h](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
 
 ## C++17 on macOS
 
