@@ -60,7 +60,7 @@ bool Init()
 
 	// Create our opengl context and attach it to our window
 	mainContext = SDL_GL_CreateContext(mainWindow);
-	
+
 	SetOpenGLAttributes();
 
 	// This makes our buffer swap syncronized with the monitor's vertical refresh
@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
 	if (!Init())
 		return -1;
 
-    Print_OpenGL_Version();
-    std::cout << "Press r, g, b or Escape" << std::endl;
-    std::cout.flush();
+	Print_OpenGL_Version();
+	std::cout << "Press r, g, b or Escape" << std::endl;
+	std::cout.flush();
 
 	// Clear our buffer with a black background
 	// This is the same as :
@@ -135,7 +135,7 @@ void RunGame()
 				switch (event.key.keysym.sym)
 				{
 				case SDLK_ESCAPE:
-                case SDLK_q:
+				case SDLK_q:
 					loop = false;
 					break;
 				case SDLK_r:
