@@ -733,6 +733,15 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+                else:
+                    # Try pkg-config with freeglut
+                    cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
 
         # If one of the includes mention GLEW, add flags for GLEW
         if include.endswith("/glew.h"):
