@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -i
 
 cur_dir="$(pwd)"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
