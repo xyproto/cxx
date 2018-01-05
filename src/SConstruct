@@ -169,6 +169,12 @@ def arch_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For Arch Linux."""
     if not os.path.exists(include_path):
+        if which("pkgfile"):
+            cmd = "LC_ALL=C pkgfile " + include_path
+            package = os.popen2(cmd)[1].read().strip()
+            if package:
+                print("ERROR: Could not find \"" + include_path + "\", try: pacman -S " + package)
+                exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
@@ -261,6 +267,12 @@ def ubuntu_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
     if not os.path.exists(include_path):
+        if which("pkgfile"):
+            cmd = "LC_ALL=C pkgfile " + include_path
+            package = os.popen2(cmd)[1].read().strip()
+            if package:
+                print("ERROR: Could not find \"" + include_path + "\", try: apt install " + package)
+                exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -S ' + include_path + ' | /usr/bin/cut -d: -f1'
@@ -269,13 +281,17 @@ def ubuntu_include_path_to_cxxflags(include_path):
         return ""
     if not package:
         if not which("apt-file"):
-            print("ERROR: No package owns \"" + include_path + "\", and apt-file is not installed.")
+            print("ERROR: No package owns \"" + include_path +
+                  "\", and apt-file is not installed, try: apt install apt-file")
             exit(1)
         cmd = "LC_ALL=C apt-file find -Fl " + include_path
         package = os.popen2(cmd)[1].read().strip()
         if not package:
             print("ERROR: No package owns \"" + include_path +
                   "\", and no package provides it, according to apt-file.")
+        elif "cache is empty" in package:
+            print("ERROR: No package owns \"" + include_path +
+                  "\" and apt-file can't be used until the cache has been updated, try: apt update")
         else:
             print("ERROR: Could not find \"" + include_path + "\", try: apt install " + package)
         exit(1)

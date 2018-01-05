@@ -177,14 +177,16 @@ export:
 
 clean:
 	@scons ${SCONSFILEARG} -Q clean win64=${win64}
+	@-rm -vf callgrind.out.*
 
 # fastclean only removes the executable and *.o
 fastclean:
 ifeq (1,${win64})
-	-rm -vf ${NAME}.exe *.o
+	@-rm -vf ${NAME}.exe *.o
 else
-	-rm -vf ${NAME} *.o
+	@-rm -vf ${NAME} *.o
 endif
+	@-rm -vf callgrind.out.*
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR ?= ${pkgdir}
