@@ -229,7 +229,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     if not os.path.exists(include_path):
         if which("curl"):
             cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' +include_path +'&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
-            packages = os.popen2(cmd)[1].read().strip().split(os.newline)
+            packages = os.popen2(cmd)[1].read().strip().split("\n")
             parts = include_path.split("/")
             chosen_package = ""
             for package in packages:
