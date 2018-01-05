@@ -168,6 +168,7 @@ def generic_include_path_to_cxxflags(include_path):
 def arch_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For Arch Linux."""
+    # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
         if which("pkgfile"):
             cmd = "LC_ALL=C pkgfile " + include_path
@@ -176,12 +177,8 @@ def arch_include_path_to_cxxflags(include_path):
                 if "/" in package:
                     # strip away leading "extra/" or "community/"
                     package = package.split("/")[1]
-                print("\nERROR: Could not find \"" + include_path + "\", try:\n\npacman -S " + package + "\n")
+                print("\nERROR: Could not find \"" + include_path + "\", install with: pacman -S " + package + "\n")
                 exit(1)
-        else:
-            print("\nERROR: Could not find \"" + include_path +
-                  "\". Having pkgfile would help, try:\n\npacman -S pkgfile\n")
-            exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
@@ -228,7 +225,17 @@ def arch_include_path_to_cxxflags(include_path):
 def freebsd_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For FreeBSD."""
+    # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
+        if which("curl"):
+            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' +include_path +'&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1 | head -1'
+            package = os.popen2(cmd)[1].read().strip()
+            if package:
+                if "/" in package:
+                    # strip away leading "extra/" or "community/"
+                    package = package.split("/")[1]
+                print("\nERROR: Could not find \"" + include_path + "\", install with: pkg install " + package + "\n")
+                exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1'
@@ -278,11 +285,11 @@ def ubuntu_include_path_to_cxxflags(include_path):
             cmd = "LC_ALL=C apt-file find -Fl " + include_path
             package = os.popen2(cmd)[1].read().strip()
             if package:
-                print("\nERROR: Could not find \"" + include_path + "\", try:\n\napt install " + package + "\n")
+                print("\nERROR: Could not find \"" + include_path + "\", install with: apt install " + package + "\n")
                 exit(1)
         else:
             print("\nERROR: Could not find \"" + include_path +
-                  "\". Having apt-file would help, try:\n\napt install apt-file\n")
+                  "\". Having apt-file would help, try: apt install apt-file\n")
             exit(1)
         return ""
     # Find the package that owns the include directory in question

@@ -214,6 +214,8 @@ void equal(T a, T b) {
 #### Optional requirements
 
 * `clang++` with support for C++17 (build with `sm clang`).
+* `pkgfile` on Arch Linux, for faster dependency discovery.
+* `apt-file` on Debian/Ubuntu, for faster dependency discovery.
 * `x86_64-w64-mingw32-g++`, for cross-compiling executables for 64-bit Windows.
 * `wine`, for testing executables compiled for 64-bit Windows (`sm run`).
 * `valgrind`, for profiling (`sm valgrind`).
@@ -224,7 +226,6 @@ void equal(T a, T b) {
 * Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` is needed for building the `win64crate` example.
 * `clang-format` for `sm fmt`
-* `apt-file` on Debian/Ubuntu, for suggesting which package to install when includes are missing
 
 ## Defines
 
