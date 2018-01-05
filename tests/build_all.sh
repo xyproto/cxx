@@ -21,6 +21,10 @@ elif [ "$1" == rebuild ]; then
   cmds="rebuild"
   shift
   args="$@"
+elif [ "$1" == fastbuild ] || [ "$1" == fast ]; then
+  cmds="fastclean build"
+  shift
+  args="$@"
 elif [ "$1" != build ] && [ "$1" != "" ]; then
   cmds="$@"
 fi
