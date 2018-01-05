@@ -1,4 +1,4 @@
-# [:sake:](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE)
+# [🍶](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE)
 
 Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be installed manually.
 
@@ -361,9 +361,9 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ### Tiny badge
 
-[:sake:](https://github.com/xyproto/sakemake)
+[🍶](https://github.com/xyproto/sakemake)
 
-    [:sake:](https://github.com/xyproto/sakemake)
+    [🍶](https://github.com/xyproto/sakemake)
 
 ---
 
