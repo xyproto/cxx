@@ -173,8 +173,15 @@ def arch_include_path_to_cxxflags(include_path):
             cmd = "LC_ALL=C pkgfile " + include_path
             package = os.popen2(cmd)[1].read().strip()
             if package:
-                print("ERROR: Could not find \"" + include_path + "\", try: pacman -S " + package)
+                if "/" in package:
+                    # strip away leading "extra/" or "community/"
+                    package = package.split("/")[1]
+                print("\nERROR: Could not find \"" + include_path + "\", try:\n\npacman -S " + package + "\n")
                 exit(1)
+        else:
+            print("\nERROR: Could not find \"" + include_path +
+                  "\". Having pkgfile would help, try:\n\npacman -S pkgfile\n")
+            exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
@@ -267,12 +274,16 @@ def ubuntu_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
     if not os.path.exists(include_path):
-        if which("pkgfile"):
-            cmd = "LC_ALL=C pkgfile " + include_path
+        if which("apt-file"):
+            cmd = "LC_ALL=C apt-file find -Fl " + include_path
             package = os.popen2(cmd)[1].read().strip()
             if package:
-                print("ERROR: Could not find \"" + include_path + "\", try: apt install " + package)
+                print("\nERROR: Could not find \"" + include_path + "\", try:\n\napt install " + package + "\n")
                 exit(1)
+        else:
+            print("\nERROR: Could not find \"" + include_path +
+                  "\". Having apt-file would help, try:\n\napt install apt-file\n")
+            exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -S ' + include_path + ' | /usr/bin/cut -d: -f1'
@@ -280,20 +291,7 @@ def ubuntu_include_path_to_cxxflags(include_path):
     if package in SKIP_PACKAGES:
         return ""
     if not package:
-        if not which("apt-file"):
-            print("ERROR: No package owns \"" + include_path +
-                  "\", and apt-file is not installed, try: apt install apt-file")
-            exit(1)
-        cmd = "LC_ALL=C apt-file find -Fl " + include_path
-        package = os.popen2(cmd)[1].read().strip()
-        if not package:
-            print("ERROR: No package owns \"" + include_path +
-                  "\", and no package provides it, according to apt-file.")
-        elif "cache is empty" in package:
-            print("ERROR: No package owns \"" + include_path +
-                  "\" and apt-file can't be used until the cache has been updated, try: apt update")
-        else:
-            print("ERROR: Could not find \"" + include_path + "\", try: apt install " + package)
+        print("ERROR: No package owns: " + include_path)
         exit(1)
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
     if package in cached_pc_files:
