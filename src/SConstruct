@@ -154,12 +154,13 @@ def generic_include_path_to_cxxflags(include_path):
     for package in packages:
         if package in SKIP_PACKAGES:
             return ""
-    # If a library in /usr/lib matches the name of the directory in the system include directory, link with that
+    # If a library in /usr/include/../lib matches the name of the directory in the system include directory, link with that
     for package in packages:
         possible_lib_name = "lib" + package + ".so"
-        if os.path.exists(os.path.join("/usr/lib", possible_lib_name)):
-            # Found a good candidate, matching the name of the package that owns the include file. Try that.
-            return "-l" + package
+        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+            if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                return "-l" + package
     # Out of ideas
     return ""
 
@@ -186,11 +187,12 @@ def arch_include_path_to_cxxflags(include_path):
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
-        if not os.path.exists(os.path.join("/usr/lib", possible_lib_name)):
-            print("WARNING: No pkg-config files for: " + package)
-            return ""
-        # Found a good candidate, matching the name of the package that owns the include file. Try that.
-        return "-l" + package
+        libpath = "/usr/lib"
+        if os.path.exists(os.path.join(libpath, possible_lib_name)):
+            # Found a good candidate, matching the name of the package that owns the include file. Try that.
+            return "-l" + package
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -275,13 +277,15 @@ def ubuntu_include_path_to_cxxflags(include_path):
         pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
         cached_pc_files[package] = pc_files
     if not pc_files:
-        # If a library in /usr/lib matches the name of the package without .pc files, link with that
+        # If a library in one of the library paths matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
-        if not os.path.exists(os.path.join("/usr/lib", possible_lib_name)):
-            print("WARNING: No pkg-config files for: " + package)
-            return ""
-        # Found a good candidate, matching the name of the package that owns the include file. Try that.
-        return "-l" + package
+        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+            if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                return "-l" + package
+        # Did not find a suitable library file, nor .pc file
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -700,13 +704,15 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     else:
                         flag_dict[include] = new_flags
             else:
-                # if the libGL library is in /usr/lib, link with that
-                if os.path.exists("/usr/lib/libGL.so"):
-                    new_flags = "-lGL"
-                    if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
-                        flag_dict[include] = new_flags
+                # if the libGL library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                    if os.path.exists(os.path.join(libpath, "libGL.so")):
+                        new_flags = "-lGL"
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
+                        break
 
         # If one of the includes just mention GLUT, add flags for GLUT or glu
         if include.startswith("GLUT/") or include.endswith("/glut.h"):
@@ -728,12 +734,15 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 else:
                     flag_dict[include] = new_flags
             else:
-                if os.path.exists("/usr/lib/libglut.so"):
-                    new_flags = "-lglut"  # Only configuration required for ie. freeglut
-                    if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
-                        flag_dict[include] = new_flags
+                # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                    if os.path.exists(os.path.join(libpath, "libglut.so")):
+                        new_flags = "-lglut"  # Only configuration required for ie. freeglut
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
+                        break
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glu 2>/dev/null"
