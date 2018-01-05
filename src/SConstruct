@@ -1133,7 +1133,12 @@ def sakemake_main():
         if which("g++-HEAD"):
             env.Replace(CXX="g++-HEAD")
         else:
-            env.Replace(CXX="g++")
+            if which("g++"):
+                # Use g++ if it exists in path
+                env.Replace(CXX="g++")
+            elif which("g++7"):
+                # Use g++7 if it exists in path
+                env.Replace(CXX="g++7")
         # clang is set?
         if int(ARGUMENTS.get('clang', 0)):
             env.Replace(CXX='clang++')
