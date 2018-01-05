@@ -224,7 +224,7 @@ void equal(T a, T b) {
 * Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` is needed for building the `win64crate` example.
 * `clang-format` for `sm fmt`
-
+* `apt-file` on Debian/Ubuntu, for suggesting which package to install when includes are missing
 
 ## Defines
 
