@@ -177,7 +177,8 @@ def arch_include_path_to_cxxflags(include_path):
                 if "/" in package:
                     # strip away leading "extra/" or "community/"
                     package = package.split("/")[1]
-                print("\nERROR: Could not find \"" + include_path + "\", install with: pacman -S " + package + "\n")
+                print("\nERROR: Could not find \"" + include_path +
+                      "\", install with: pacman -S " + package + "\n")
                 exit(1)
         return ""
     # Find the package that owns the include directory in question
@@ -228,7 +229,8 @@ def freebsd_include_path_to_cxxflags(include_path):
     # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
         if which("curl"):
-            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' +include_path +'&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
+            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + include_path + \
+                '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             packages = os.popen2(cmd)[1].read().strip().split("\n")
             parts = include_path.split("/")
             chosen_package = ""
@@ -244,7 +246,8 @@ def freebsd_include_path_to_cxxflags(include_path):
                 if chosen_package:
                     break
             if chosen_package:
-                print("\nERROR: Could not find \"" + include_path + "\", install with: pkg install " + chosen_package + "\n")
+                print("\nERROR: Could not find \"" + include_path +
+                      "\", install with: pkg install " + chosen_package + "\n")
                 exit(1)
         return ""
     # Find the package that owns the include directory in question
@@ -295,7 +298,8 @@ def ubuntu_include_path_to_cxxflags(include_path):
             cmd = "LC_ALL=C apt-file find -Fl " + include_path
             package = os.popen2(cmd)[1].read().strip()
             if package:
-                print("\nERROR: Could not find \"" + include_path + "\", install with: apt install " + package + "\n")
+                print("\nERROR: Could not find \"" + include_path +
+                      "\", install with: apt install " + package + "\n")
                 exit(1)
         else:
             print("\nERROR: Could not find \"" + include_path +
