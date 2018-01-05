@@ -1,6 +1,6 @@
 # [:sake:](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE)
 
-Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be istalled manually.
+Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be installed manually.
 
 *Sakemake* also provides a way to structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
@@ -291,7 +291,7 @@ If possible, install *Sakemake* with the package manager that comes with your OS
 
 ## Feedback
 
-The ideal is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with homebrew), without any additional configuration.
+The ideal is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
 If you have a project written in C++17 that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
