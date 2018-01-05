@@ -23,7 +23,7 @@ cached_pc_files = {}
 
 def hints(missing_includes):
     """Output hints for how to configure missing includes on some platforms"""
-    if "GL/glut.h" in missing_includes:
+    if os.path.exists("/Library/Frameworks") and "GL/glut.h" in missing_includes:
         print("""
 NOTE: On macOS, include GLUT/glut.h instead of GL/glut.h.
 
