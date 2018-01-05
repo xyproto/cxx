@@ -143,6 +143,9 @@ def generic_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For unfamiliar Linux distros where a package manager and pkg-config are not available."""
 
+    if include_path == "":
+        return ""
+
     # Guess the name of the package
     try:
         package_guess = include_path.split(os.path.sep)[3]
@@ -168,6 +171,8 @@ def generic_include_path_to_cxxflags(include_path):
 def arch_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For Arch Linux."""
+    if include_path == "":
+        return ""
     # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
         if which("pkgfile"):
@@ -226,25 +231,38 @@ def arch_include_path_to_cxxflags(include_path):
 def freebsd_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For FreeBSD."""
+    if include_path == "":
+        return ""
     # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
         if which("curl"):
-            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + include_path + \
+            last_part = include_path.replace("/usr/local/include", "")
+            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + last_part + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
-            packages = os.popen2(cmd)[1].read().strip().split("\n")
-            parts = include_path.split("/")
-            chosen_package = ""
-            for package in packages:
-                for part in parts:
-                    if "." in part:
-                        name = part.split(".")[0]
-                    else:
-                        name = part
-                    if name in package:
-                        chosen_package = package
+            packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip()]
+            if len(packages) == 1:
+                chosen_package = packages[0]
+            else:
+                parts = os.path.split(last_part)
+                chosen_package = ""
+                for package in packages:
+                    if not package.strip():
+                        continue
+                    for part in parts:
+                        if "." in part:
+                            name = part.split(".")[0]
+                        else:
+                            name = part
+                        if name in package:
+                            chosen_package = package
+                            break
+                    if chosen_package:
                         break
-                if chosen_package:
-                    break
+                if not chosen_package and packages:
+                    print("\nWARNING: Could not find package for missing include \"" +
+                          include_path + "\", but it could be one of these:")
+                    for package in packages:
+                        print("\t" + package)
             if chosen_package:
                 print("\nERROR: Could not find \"" + include_path +
                       "\", install with: pkg install " + chosen_package + "\n")
@@ -293,6 +311,8 @@ def freebsd_include_path_to_cxxflags(include_path):
 def ubuntu_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
+    if include_path == "":
+        return ""
     if not os.path.exists(include_path):
         if which("apt-file"):
             cmd = "LC_ALL=C apt-file find -Fl " + include_path
@@ -352,6 +372,8 @@ def brew_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For macOS/homebrew."""
 
+    if include_path == "":
+        return ""
     normpath = os.path.normpath(include_path)
     if not os.path.exists(normpath):
         return ""
@@ -1145,9 +1167,6 @@ def sakemake_main():
     # Use -pipe for a possible speed increase when compiling and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
 
-    # Skip unused shared object dependencies
-    env.Append(LINKFLAGS=' -Wl,--as-needed')
-
     # Check if a particular C++ compiler is given, or not
     if env["CXX"] == "c++":
         # Use the HEAD version of GCC as installed with Homebrew, if available
@@ -1246,6 +1265,10 @@ def sakemake_main():
                 env.Append(LINKFLAGS=linkflags)
             if other_cxxflags:
                 env.Append(CXXFLAGS=other_cxxflags)
+
+    # If libraries are linked to, skip unused shared object dependencies
+    if "LIBS" in env and env["LIBS"]:
+        env.Append(LINKFLAGS=' -Wl,--as-needed')
 
     # Build main executable
     if main_source_file:
