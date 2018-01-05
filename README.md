@@ -83,6 +83,10 @@ The name of the current directory will be used as the executable name.
 
     sm version
 
+#### Format the source code:
+
+    sm fmt
+
 ## Features and limitations
 
 * **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
@@ -219,6 +223,7 @@ void equal(T a, T b) {
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
 * Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` is needed for building the `win64crate` example.
+* `clang-format` for `sm fmt`
 
 
 ## Defines

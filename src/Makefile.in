@@ -194,3 +194,8 @@ valgrind: main
 	-valgrind --tool=callgrind ./${NAME} || valgrind --tool=callgrind ./src/main || echo 'Is Valgrind installed?'
 	-gprof2dot -f callgrind callgrind.out.* | dot -Tsvg -o output.svg || echo 'Are gprof2dot and dot installed?'
 	-kcachegrind callgrind.out.* || echo 'Is kcachegrind installed?'
+
+fmt:
+	@-for ext in cpp cc cxx h hpp; do \
+	  clang-format --style=Chromium -i *.$$ext 2>/dev/null ; \
+	done || true
