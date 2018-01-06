@@ -240,34 +240,11 @@ def freebsd_recommend_package(missing_include):
             cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip()]
-            chosen_package = ""
-            if len(packages) == 1:
-                chosen_package = packages[0]
-            else:
-                parts = os.path.split(last_part)
-                chosen_package = ""
-                for package in packages[::-1]:
-                    if not package.strip():
-                        continue
-                    for part in parts:
-                        if "." in part:
-                            name = part.split(".")[0]
-                        else:
-                            name = part
-                        if name in package:
-                            chosen_package = package
-                            break
-                    if chosen_package:
-                        break
-                if not chosen_package and packages:
-                    print("\nERROR: Could not find package for missing include \"" +
-                          missing_include + "\", but it could be one of these:")
-                    for package in packages:
-                        print("\t" + package)
-                    exit(1)
-            if chosen_package:
-                print("\nERROR: Could not find \"" + missing_include +
-                      "\", install with: pkg install " + chosen_package + "\n")
+            if packages:
+                print("\nERROR: Could not find package for missing include \"" +
+                      missing_include + "\".\n       It could belong to one of these:")
+                for package in packages:
+                    print(" " * 11 + package)
                 exit(1)
         return
 
