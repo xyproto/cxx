@@ -7,6 +7,7 @@ examples_dir="$root_dir/../examples"
 figlet=$(which figlet 2>/dev/null || echo)
 cmds="clean build"
 args=
+skip=
 
 sm version
 
@@ -24,6 +25,9 @@ elif [ "$1" == fastbuild ] || [ "$1" == fast ]; then
   cmds="fastclean build"
   shift
   args="$@"
+elif [ "$1" == "freebsd" ]; then
+  skip="win64crate"
+  shift
 elif [ "$1" != build ] && [ "$1" != "" ]; then
   cmds="$@"
 fi
@@ -48,6 +52,10 @@ for cmd in $cmds; do
   fi
   for example_dir in "$examples_dir"/*; do
     rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir" 2>/dev/null || echo $example_dir)"
+    if [ "$skip" == "$(basename "$rel_dir")" ]; then
+      echo "Skipping $rel_dir"
+      continue
+    fi
     echo "------- $rel_dir -------"
     if [ $cmd == clean -o $cmd == fastclean ]; then
       # without $args when cleaning
@@ -65,3 +73,5 @@ for cmd in $cmds; do
     echo
   done
 done
+
+printf "\ndone"
