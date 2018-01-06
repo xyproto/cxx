@@ -241,12 +241,13 @@ def freebsd_include_path_to_cxxflags(include_path):
             cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + last_part + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip()]
+            chosen_package = ""
             if len(packages) == 1:
                 chosen_package = packages[0]
             else:
                 parts = os.path.split(last_part)
                 chosen_package = ""
-                for package in packages:
+                for package in packages[::-1]:
                     if not package.strip():
                         continue
                     for part in parts:
