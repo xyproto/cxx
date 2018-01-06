@@ -56,7 +56,7 @@ all: build
 version:
 	@echo sakemake @@VERSION@@
 	@${MAKE} --version | head -1
-	@echo -n 'SCons ' && scons --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5 || scons --version
+	@echo SCons $$(scons --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5)
 
 build:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
