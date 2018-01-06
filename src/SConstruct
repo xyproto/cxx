@@ -269,17 +269,17 @@ def freebsd_include_path_to_cxxflags(include_path):
                 exit(1)
         return ""
     # Find the package that owns the include directory in question
-    cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1'
+    cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1-'
     package = os.popen2(cmd)[1].read().strip()
     if package in SKIP_PACKAGES:
         return ""
     if not package:
         print("ERROR: No package owns: " + include_path)
         exit(1)
-    cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
+        cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
         pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
         cached_pc_files[package] = pc_files
     if not pc_files:
