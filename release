@@ -5,6 +5,7 @@ mkdir -p sakemake-$ver
 cp -r Makefile LICENSE README.md examples src sakemake-$ver/
 find sakemake-$ver -type f -name "*.dblite" -delete
 find sakemake-$ver -type f -name "*.o" -delete
+find sakemake-$ver -type f -name "*.exe" -delete
 find sakemake-$ver -type f -name main -delete
 make -C sakemake-$ver clean
 find sakemake-$ver
