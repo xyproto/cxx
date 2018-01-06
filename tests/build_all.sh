@@ -8,8 +8,6 @@ figlet=$(which figlet 2>/dev/null || echo)
 cmds="clean build"
 args=
 
-which scons 2>/dev/null
-which make 2>/dev/null
 sm version
 
 if [ "$1" == run ]; then
