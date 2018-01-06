@@ -1165,7 +1165,6 @@ def sakemake_main():
 
     # If "win64" is set, use the mingw32 g++ compiler
     if win64:
-        print("BAFFLED 2! It's", env["CXX"])
         # Check if looks like no Windows-related compiler is given, or not
         if env["CXX"] in ["g++", "c++"]:
             # Assume that a Windows-related compiler is not specified
@@ -1177,8 +1176,6 @@ def sakemake_main():
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
                 print("Neither x86_64-w64-mingw32-g++ nor mingw32-g++ were found.")
                 exit(1)
-        else:
-            print("BAFFLED 3! It's", env["CXX"])
     else:
         # Check if a particular C++ compiler is given, or not
         if env["CXX"] == "c++":
