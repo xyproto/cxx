@@ -229,9 +229,10 @@ def arch_include_path_to_cxxflags(include_path):
 
     return all_cxxflags.strip()
 
+
 def freebsd_recommend_package(missing_include):
     """Given a missing include file, print out a message for a package that could be installed and exit with error code 1, or else just return."""
-    if missing_include  == "":
+    if missing_include == "":
         return
     # Check if the given include file is missing from the system
     if not os.path.exists(missing_include):
@@ -239,7 +240,8 @@ def freebsd_recommend_package(missing_include):
             last_part = os.path.basename(missing_include)
             cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
-            packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip()]
+            packages = [x.strip() for x in os.popen2(
+                cmd)[1].read().strip().split("\n") if x.strip()]
             if packages:
                 print("\nERROR: Could not find package for missing include \"" +
                       missing_include + "\".\n       It could belong to one of these:")
@@ -247,6 +249,7 @@ def freebsd_recommend_package(missing_include):
                     print(" " * 11 + package)
                 exit(1)
         return
+
 
 def freebsd_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
@@ -1156,32 +1159,50 @@ def sakemake_main():
         # Default optimization level
         env.Append(CXXFLAGS=' -O2')
 
-    # Use -pipe for a possible speed increase when compiling and -fPIC for position independent code
+    # Use -pipe for a possible speed increase when compiling
+    # and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
-
-    # Check if a particular C++ compiler is given, or not
-    if env["CXX"] == "c++":
-        # Use the HEAD version of GCC as installed with Homebrew, if available
-        if which("g++-HEAD"):
-            env.Replace(CXX="g++-HEAD")
-        else:
-            if which("g++"):
-                # Use g++ if it exists in path
-                env.Replace(CXX="g++")
-            elif which("g++7"):
-                # Use g++7 if it exists in path
-                env.Replace(CXX="g++7")
-        # clang is set?
-        if int(ARGUMENTS.get('clang', 0)):
-            env.Replace(CXX='clang++')
 
     # If "win64" is set, use the mingw32 g++ compiler
     if win64:
-        env.Replace(CXX="x86_64-w64-mingw32-g++")
+        print("BAFFLED 2! It's", env["CXX"])
+        # Check if looks like no Windows-related compiler is given, or not
+        if env["CXX"] in ["g++", "c++"]:
+            # Assume that a Windows-related compiler is not specified
+            if which("x86_64-w64-mingw32-g++"):
+                env.Replace(CXX="x86_64-w64-mingw32-g++")
+            elif which("mingw32-g++"):
+                env.Replace(CXX="mingw32-g++")
+            else:
+                print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
+                print("Neither x86_64-w64-mingw32-g++ nor mingw32-g++ were found.")
+                exit(1)
+        else:
+            print("BAFFLED 3! It's", env["CXX"])
+    else:
+        # Check if a particular C++ compiler is given, or not
+        if env["CXX"] == "c++":
+            # Use the HEAD version of GCC as installed with Homebrew, if available
+            if which("g++-HEAD"):
+                env.Replace(CXX="g++-HEAD")
+            else:
+                if which("g++"):
+                    # Use g++ if it exists in path
+                    env.Replace(CXX="g++")
+                elif which("g++7"):
+                    # Use g++7 if it exists in path
+                    env.Replace(CXX="g++7")
+            # clang is set?
+            if int(ARGUMENTS.get('clang', 0)):
+                env.Replace(CXX='clang++')
+
+    # Windows related build flags
+    if win64:
         env.Append(CXXFLAGS=' -Wno-unused-variable')
         env.Append(CPPFLAGS=' -mwindows -lm')
         env.Append(LINKFLAGS=' -mwindows -lm')
-        # This could also work, for automatically adding ".exe": -Wl,--force-exe-suffix
+        # This could also work, for automatically adding ".exe":
+        # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
 
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
