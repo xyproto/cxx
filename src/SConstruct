@@ -1266,8 +1266,9 @@ def sakemake_main():
             if other_cxxflags:
                 env.Append(CXXFLAGS=other_cxxflags)
 
-    # If libraries are linked to, skip unused shared object dependencies
-    if "LIBS" in env and env["LIBS"]:
+    # If libraries are linked to, skip unused shared object dependencies.
+    # Also skip this flag if on macOS
+    if "LIBS" in env and env["LIBS"] and not os.path.exists("/Library/Frameworks"):
         env.Append(LINKFLAGS=' -Wl,--as-needed')
 
     # Build main executable
