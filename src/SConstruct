@@ -11,6 +11,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import argv, exit, stdout
+from urllib import quote
 
 LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include"]
 LOCAL_COMMON_PATHS = ["common", "../common"]
@@ -228,17 +229,15 @@ def arch_include_path_to_cxxflags(include_path):
 
     return all_cxxflags.strip()
 
-
-def freebsd_include_path_to_cxxflags(include_path):
-    """Takes a path to a header file and returns cxxflags, or an empty string.
-    For FreeBSD."""
-    if include_path == "":
-        return ""
+def freebsd_recommend_package(missing_include):
+    """Given a missing include file, print out a message for a package that could be installed and exit with error code 1, or else just return."""
+    if missing_include  == "":
+        return
     # Check if the given include file is missing from the system
-    if not os.path.exists(include_path):
-        if which("curl"):
-            last_part = include_path.replace("/usr/local/include", "")
-            cmd = 'curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + last_part + \
+    if not os.path.exists(missing_include):
+        if exe("/usr/local/bin/curl"):
+            last_part = os.path.basename(missing_include)
+            cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip()]
             chosen_package = ""
@@ -261,14 +260,24 @@ def freebsd_include_path_to_cxxflags(include_path):
                     if chosen_package:
                         break
                 if not chosen_package and packages:
-                    print("\nWARNING: Could not find package for missing include \"" +
-                          include_path + "\", but it could be one of these:")
+                    print("\nERROR: Could not find package for missing include \"" +
+                          missing_include + "\", but it could be one of these:")
                     for package in packages:
                         print("\t" + package)
+                    exit(1)
             if chosen_package:
-                print("\nERROR: Could not find \"" + include_path +
+                print("\nERROR: Could not find \"" + missing_include +
                       "\", install with: pkg install " + chosen_package + "\n")
                 exit(1)
+        return
+
+def freebsd_include_path_to_cxxflags(include_path):
+    """Takes a path to a header file and returns cxxflags, or an empty string.
+    For FreeBSD."""
+    if include_path == "":
+        return ""
+    # Check if the given include file is missing from the system
+    if not os.path.exists(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1-'
@@ -875,6 +884,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
         if int(ARGUMENTS.get('sloppy', 0)):
             print("WARNING: missing include: {}".format(missing_includes[0]))
         else:
+            if exe("/usr/sbin/pkg"):
+                for missing_include in missing_includes:
+                    # May recommend a package to install and then exit
+                    freebsd_recommend_package(missing_include)
             print("ERROR: missing include: {}".format(missing_includes[0]))
             exit(1)
     else:
