@@ -2,7 +2,7 @@ FROM base/devel
 
 # Update and install packages
 RUN pacman -Syu --noconfirm
-RUN pacman -S --noconfirm --needed base-devel figlet git gtk3 sdl2 make scons freeglut qt5 glew mingw-w64
+RUN pacman -S --noconfirm --needed base-devel figlet freeglut git glew gtk3 make mingw-w64 qt5 scons sdl2
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
