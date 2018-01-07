@@ -1,7 +1,9 @@
 Vagrant.configure("2") do |config|
+  config.vm.guest = :freebsd
   config.vm.box = "freebsd/FreeBSD-11.1-RELEASE"
   config.vm.box_version = "2017.07.21"
   config.vm.base_mac = "00deadbeef00"
+  config.ssh.shell = "sh"
   config.vm.provision "shell", path: "setup.sh"
   config.vm.provision "shell", path: "test.sh"
 end
