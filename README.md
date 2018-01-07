@@ -206,11 +206,6 @@ void equal(T a, T b) {
 * `pkg-config`
 * `g++` with support for c++17 (version 7.2 or higher should work)
 
-#### Platform-specific notes
-
-* *sakemake* may also work with `pkg-config`, if no system libraries are needed.
-* Homebrew (`brew`) is needed on macOS. It may work without it, for some projects.
-
 #### Optional requirements
 
 * `clang++` with support for C++17 (build with `sm clang`).
