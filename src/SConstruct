@@ -170,6 +170,29 @@ def generic_include_path_to_cxxflags(include_path):
     return ""
 
 
+def arch_recommend_package(missing_include):
+    """Given a missing include file, print out a message for a package that could be installed and exit with error code 1, or else just return."""
+    if missing_include == "":
+        return
+    # Check if the given include file is missing from the system
+    if not os.path.exists(missing_include):
+        if which("pkgfile"):
+            cmd = "LC_ALL=C pkgfile " + missing_include
+            package = os.popen2(cmd)[1].read().strip()
+            if package:
+                if "/" in package:
+                    # strip away leading "extra/" or "community/"
+                    package = package.split("/")[1]
+                print("\nERROR: Could not find \"" + missing_include +
+                      "\", install with: pacman -S " + package + "\n")
+                exit(1)
+        else:
+            print("\nERROR: Could not find \"" + missing_include +
+                  "\". Having pkgfile would help, try: pacman -S pkgfile\n")
+            exit(1)
+        return
+
+
 def arch_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For Arch Linux."""
@@ -177,16 +200,6 @@ def arch_include_path_to_cxxflags(include_path):
         return ""
     # Check if the given include file is missing from the system
     if not os.path.exists(include_path):
-        if which("pkgfile"):
-            cmd = "LC_ALL=C pkgfile " + include_path
-            package = os.popen2(cmd)[1].read().strip()
-            if package:
-                if "/" in package:
-                    # strip away leading "extra/" or "community/"
-                    package = package.split("/")[1]
-                print("\nERROR: Could not find \"" + include_path +
-                      "\", install with: pacman -S " + package + "\n")
-                exit(1)
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
@@ -873,14 +886,16 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
         if int(ARGUMENTS.get('sloppy', 0)):
             print("WARNING: missing include: {}".format(missing_includes[0]))
         else:
+            # May recommend a package to install and then exit
             if exe("/usr/sbin/pkg"):  # FreeBSD
                 for missing_include in missing_includes:
-                    # May recommend a package to install and then exit
                     freebsd_recommend_package(missing_include)
             elif which("apt"):  # Debian / Ubuntu
                 for missing_include in missing_includes:
-                    # May recommend a package to install and then exit
                     deb_recommend_package(missing_include)
+            elif which("pacman"):
+                for missing_include in missing_includes:
+                    arch_recommend_package(missing_include)
             print("ERROR: missing include: {}".format(missing_includes[0]))
             exit(1)
     else:

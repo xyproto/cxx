@@ -74,4 +74,4 @@ for cmd in $cmds; do
   done
 done
 
-printf "\ndone\n"
+echo 'Done.'
