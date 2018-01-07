@@ -17,5 +17,3 @@ RUN sakemake/tests/build_all.sh
 
 # Build and run the hello_test in hello/common
 RUN sm -C sakemake/examples/hello/common test
-
-CMD ["/usr/bin/sm"]
