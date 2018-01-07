@@ -1,2 +1,2 @@
 #!/bin/sh
-sakemake/tests/build_all.sh
+sakemake/tests/build_all.sh freebsd

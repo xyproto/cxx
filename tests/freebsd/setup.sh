@@ -10,7 +10,7 @@ sudo pkg update -f
 sudo pkg upgrade -y
 
 # Install packages required for Sakemake and for building the examples
-sudo pkg install -y bash figlet freeglut gcc7 git glew gmake gtk3 mingw32-gcc pkgconf qt5 scons sdl2
+sudo pkg install -y bash figlet freeglut gcc7 git glew gmake gtk3 pkgconf qt5 scons sdl2
 
 # Clone and install Sakemake
 git clone https://github.com/xyproto/sakemake
