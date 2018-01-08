@@ -998,6 +998,43 @@ def strip_ext(filenames):
     return [os.path.splitext(fname)[0] for fname in filenames]
 
 
+def add_flags(env, src_file, system_include_dir, win64):
+    """Add build flags to the environment"""
+    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
+        src_file, system_include_dir, win64)
+    if includes:
+        if "CPPPATH" in env:
+            newincs = [inc for inc in includes.split(" ") if inc not in env["CPPPATH"]]
+            if newincs:
+                for newinc in newincs:
+                    env.Append(CPPPATH=newinc)
+        else:
+            for include in includes.split(" "):
+                env.Append(CPPPATH=include)
+    if defines:
+        if "CPPDEFINES" in env:
+            newcppdefs = [cppdef for cppdef in defines.split(" ") if cppdef not in env["CPPDEFINES"]]
+            if newcppdefs:
+                for newdef in newcppdegs:
+                    env.Append(CPPDEFINES=newdef)
+        else:
+            for define in defines.split(" "):
+                env.Append(CPPDEFINES=define)
+    if libs:
+        if "LIBS" in env:
+            newlibs = [lib for lib in libs.split(" ") if lib not in env["LIBS"]]
+            if newlibs:
+                env.Append(LIBS=newlibs)
+        else:
+            env.Append(LIBS=libs.split(" "))
+    if libpaths and libpaths not in env["LINKFLAGS"]:
+        env.Append(LINKFLAGS=libpaths)
+    if linkflags and linkflags not in env["LINKFLAGS"]:
+        env.Append(LINKFLAGS=linkflags)
+    if other_cxxflags and other_cxxflags not in env["CXXFLAGS"]:
+        env.Append(CXXFLAGS=other_cxxflags)
+
+
 def sakemake_main():
     """The main function"""
 
@@ -1317,22 +1354,7 @@ def sakemake_main():
     # Find extra CFLAGS for the sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in [main_source_file] + dep_src:
-            includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-                src_file, system_include_dir, win64)
-            if includes:
-                for include in includes.split(" "):
-                    env.Append(CPPPATH=include)
-            if defines:
-                for define in defines.split(" "):
-                    env.Append(CPPDEFINES=define)
-            if libs:
-                env.Append(LIBS=libs.split(" "))
-            if libpaths:
-                env.Append(LINKFLAGS=libpaths)
-            if linkflags:
-                env.Append(LINKFLAGS=linkflags)
-            if other_cxxflags:
-                env.Append(CXXFLAGS=other_cxxflags)
+            add_flags(env, src_file, system_include_dir, win64)
 
     # If libraries are linked to, skip unused shared object dependencies.
     if "LIBS" in env and env["LIBS"]:
@@ -1349,22 +1371,7 @@ def sakemake_main():
     # Find extra CFLAGS for the test sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in test_sources:
-            includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-                src_file, system_include_dir, win64)
-            if includes:
-                for include in includes.split(" "):
-                    env.Append(CPPPATH=include)
-            if defines:
-                for define in defines.split(" "):
-                    env.Append(CPPDEFINES=define)
-            if libs:
-                env.Append(LIBS=libs.split(" "))
-            if libpaths:
-                env.Append(LINKFLAGS=libpaths)
-            if linkflags:
-                env.Append(LINKFLAGS=linkflags)
-            if other_cxxflags:
-                env.Append(CXXFLAGS=other_cxxflags)
+            add_flags(env, src_file, system_include_dir, win64)
 
     # Remove non-existing includes
     includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
