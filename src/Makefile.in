@@ -151,13 +151,25 @@ install: patch main unpatch
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/img" && \
 	  cp -r img/* "${DESTDIR}${PREFIX}/share/${NAME}/img/" || \
 	  true
+	@test -d imgs && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/img" && \
+	  cp -r imgs/* "${DESTDIR}${PREFIX}/share/${NAME}/img/" || \
+	  true
 	@test -d data && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/data" && \
 	  cp -r data/* "${DESTDIR}${PREFIX}/share/${NAME}/data/" || \
 	  true
+	@test -d datas && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/data" && \
+	  cp -r datas/* "${DESTDIR}${PREFIX}/share/${NAME}/data/" || \
+	  true
 	@test -d shaders && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/shaders" && \
 	  cp -r shaders/* "${DESTDIR}${PREFIX}/share/${NAME}/shaders/" || \
+	  true
+	@test -d shader && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/shaders" && \
+	  cp -r shader/* "${DESTDIR}${PREFIX}/share/${NAME}/shaders/" || \
 	  true
 	@test -d share && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}" && \
