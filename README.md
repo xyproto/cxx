@@ -14,8 +14,7 @@ The latest versions of both GCC (g++) and Clang (clang++) are supported.
 
 If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
 
-`x86_64-w64-mingw32-g++` is required for compiling executables for 64-bit Windows.
-
+`x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if `x86_64-w64-mingw32-g++` is missing: `jhasse/mingw:2017-10-19`.
 
 ## Usage
 
@@ -211,7 +210,7 @@ void equal(T a, T b) {
 * `clang++` with support for C++17 (build with `sm clang`).
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
-* `x86_64-w64-mingw32-g++`, for cross-compiling executables for 64-bit Windows.
+* `x86_64-w64-mingw32-g++` or `docker`, for cross-compiling executables for 64-bit Windows.
 * `wine`, for testing executables compiled for 64-bit Windows (`sm run`).
 * `valgrind`, for profiling (`sm valgrind`).
 * `kcachegrind`, for viewing the information produced by *valgrind*.
@@ -219,7 +218,7 @@ void equal(T a, T b) {
 * `vagrant`, for testing *sakemake* on other operating systems.
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
 * Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
-* `x86_64-w64-mingw32-g++` is needed for building the `win64crate` example.
+* `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
 * `clang-format` for `sm fmt`
 
 ## Defines

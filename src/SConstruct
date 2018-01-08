@@ -1198,11 +1198,15 @@ def sakemake_main():
             # Assume that a Windows-related compiler is not specified
             if which("x86_64-w64-mingw32-g++"):
                 env.Replace(CXX="x86_64-w64-mingw32-g++")
-            elif which("mingw32-g++"):
-                env.Replace(CXX="mingw32-g++")
+            elif which("docker"):
+                print(
+                    "x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
+                docker_image = "jhasse/mingw:2017-10-19"
+                env.Replace(CXX="docker run -w/home -v \"" + os.path.abspath(os.path.curdir) +
+                            ":/home\" -ti --rm " + docker_image + " x86_64-w64-mingw32-g++")
             else:
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
-                print("Neither x86_64-w64-mingw32-g++ nor mingw32-g++ were found.")
+                print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
                 exit(1)
     else:
         # Check if a particular C++ compiler is given, or not
@@ -1211,12 +1215,11 @@ def sakemake_main():
             if which("g++-HEAD"):
                 env.Replace(CXX="g++-HEAD")
             else:
-                if which("g++"):
-                    # Use g++ if it exists in path
-                    env.Replace(CXX="g++")
-                elif which("g++7"):
-                    # Use g++7 if it exists in path
-                    env.Replace(CXX="g++7")
+                # try g++, g++9, g++8 and g++7
+                for compiler in ["g++", "g++9", "g++8", "g++7"]:
+                    if which(compiler):
+                        # Use the compiler if it exists in path
+                        env.Replace(CXX=compiler)
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
                 env.Replace(CXX='clang++')
