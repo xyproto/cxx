@@ -94,12 +94,11 @@ The name of the current directory will be used as the executable name.
 * Uses the caching that is supplied by SCons, no ccache needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
 * Only tested on Linux, FreeBSD and macOS. Should be easy to port to other systems that also has a package manager and pkg-config (or equivalent way to discover build flags).
-* All source filenames must be lowercase.
-* Your include files are expected to be placed in `./include` or `../include`.
+* Your include files are expected to be found in `./include` or `../include`.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
-* For now, *Sakemake* is only meant to be able to build executables, not libraries.
 * See the `hello` example in the `examples` directory for the suggested directory structure.
+* For now, *Sakemake* is only meant to be able to build executables, not libraries.
 
 ## Suggested directory structure
 
