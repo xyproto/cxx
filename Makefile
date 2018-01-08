@@ -47,6 +47,9 @@ install: generate
 	@install -m644 "${SRCDIR}/SConstruct" "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	@# temporary
+	@cp -rv "${SRCDIR}/../scons" "${DESTDIR}${PREFIX}/share/${NAME}/scons"
+	@chmod -R a+rwX "${DESTDIR}${PREFIX}/share/${NAME}"
 
 uninstall:
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"

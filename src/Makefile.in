@@ -20,6 +20,13 @@ NAME ?= $(shell basename $(CURDIR))
 # the directory of this Makefile
 ROOTDIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
+# TODO: Extract the contents from scons.py and SConstruct and combine them into one file.
+#       The idea is to optimize/transpile/compile it later.
+# use scons that comes with sakemake
+export SCONS_SRC_DIR = ${ROOTDIR}/scons/src
+export SCONS_LIB_DIR = ${SCONS_SRC_DIR}/engine
+SCONS := python2 ${SCONS_SRC_DIR}/script/scons.py
+
 # used by the "pkg" target
 ifeq ($$pkgdir,)
   pkgdir := $$pkgdir
@@ -56,51 +63,51 @@ all: build
 version:
 	@echo sakemake @@VERSION@@
 	@${MAKE} --version | head -1
-	@echo '   SCons '$$(scons --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5)
+	@echo '   SCons '$$(${SCONS} --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5)
 
 build:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 opt:
-	@scons ${SCONSFILEARG} -Q ${CMD} opt=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} opt=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 small:
-	@scons ${SCONSFILEARG} -Q ${CMD} small=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} small=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 strict:
-	@scons ${SCONSFILEARG} -Q ${CMD} strict=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} strict=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 sloppy:
-	@scons ${SCONSFILEARG} -Q ${CMD} sloppy=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} sloppy=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 testbuild:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 test:
-	@scons ${SCONSFILEARG} -Q test clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q test clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clang:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangstrict:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangsloppy:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangdebug:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 debug:
-	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@${SCONS} ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 run:
-	@scons ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))"
+	@${SCONS} ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))"
 
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}"
+	@${SCONS} ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}"
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
@@ -188,7 +195,7 @@ export:
 	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .
 
 clean:
-	@scons ${SCONSFILEARG} -Q clean win64=${win64}
+	@${SCONS} ${SCONSFILEARG} -Q clean win64=${win64}
 	@-rm -vf callgrind.out.*
 
 # fastclean only removes the executable and *.o
