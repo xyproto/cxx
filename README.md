@@ -362,6 +362,11 @@ If your project can be built with `sakemake`, you are hereby awarded this badge 
 
 ---
 
+## Other proejcts that builds with Sakemake
+
+* [glskeleton](https://github.com/xyproto/glskeleton), OpenGL shader example application, uses `glfw`, `glew` and `glm`.
+* [vulkan_minimal_compute](https://github.com/xyproto/vulkan_minimal_compute), uses Vulkan for computations on the GPU.
+
 ## General info
 
 * Version: 1.39
