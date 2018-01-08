@@ -764,14 +764,16 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             elif win64:
                 new_flags = "-lopengl32"
                 if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             if has_pkg_config:
                 # Try pkg-config
@@ -779,8 +781,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 new_flags = os.popen2(cmd)[1].read().strip()
                 if new_flags:
                     if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
+                        if new_flags not in flag_dict[include]:
+                            flag_dict[include] += " " + new_flags
+                    elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
             else:
                 # if the libGL library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
@@ -788,8 +791,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     if os.path.exists(os.path.join(libpath, "libGL.so")):
                         new_flags = "-lGL"
                         if include in flag_dict:
-                            flag_dict[include] += " " + new_flags
-                        else:
+                            if new_flags not in flag_dict[include]:
+                                flag_dict[include] += " " + new_flags
+                        elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
                         break
 
@@ -803,14 +807,16 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 if not int(ARGUMENTS.get('strict', 0)):  # if not strict=1
                     new_flags += " -Wno-deprecated-declarations"
                 if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             elif win64:
                 new_flags = "-lglu32"
                 if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
@@ -818,8 +824,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
                         if include in flag_dict:
-                            flag_dict[include] += " " + new_flags
-                        else:
+                            if new_flags not in flag_dict[include]:
+                                flag_dict[include] += " " + new_flags
+                        elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
                         break
             if has_pkg_config:
@@ -828,8 +835,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 new_flags = os.popen2(cmd)[1].read().strip()
                 if new_flags:
                     if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
+                        if new_flags not in flag_dict[include]:
+                            flag_dict[include] += " " + new_flags
+                    elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
                 else:
                     # Try pkg-config with freeglut
@@ -837,8 +845,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     new_flags = os.popen2(cmd)[1].read().strip()
                     if new_flags:
                         if include in flag_dict:
-                            flag_dict[include] += " " + new_flags
-                        else:
+                            if new_flags not in flag_dict[include]:
+                                flag_dict[include] += " " + new_flags
+                        elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
 
         # If one of the includes mention GLEW, add flags for GLEW
@@ -848,8 +857,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             if win64:
                 new_flags = "-lglew32"
                 if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             if has_pkg_config:
                 # Try pkg-config
@@ -857,8 +867,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 new_flags = os.popen2(cmd)[1].read().strip()
                 if new_flags:
                     if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
+                        if new_flags not in flag_dict[include]:
+                            flag_dict[include] += " " + new_flags
+                    elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
 
         if include.startswith("Q"):
@@ -872,9 +883,22 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     new_flags += " "
                 new_flags += "-I" + qt_include_dir
             if include in flag_dict:
-                flag_dict[include] += " " + new_flags
-            else:
+                if new_flags not in flag_dict[include]:
+                    flag_dict[include] += " " + new_flags
+            elif new_flags not in flag_dict.values():
                 flag_dict[include] = new_flags
+
+        if include.startswith("glm/"):
+            new_flags = ""
+            if not int(ARGUMENTS.get('strict', 0)):  # if not strict=1
+                # These warnings kick in for the glm include files themselves
+                new_flags += "-Wno-shadow"
+            if include in flag_dict:
+                if new_flags not in flag_dict[include]:
+                    flag_dict[include] += " " + new_flags
+            elif new_flags not in flag_dict.values():
+                flag_dict[include] = new_flags
+
 
     # List includes that were not found
     missing_includes = [
@@ -1043,6 +1067,9 @@ def sakemake_main():
         elif main_executable:
             cmd = [x for x in argv if x != "testbuild"] + \
                 [elf for elf in [main_executable] if elf != "testbuild"]
+        elif os.path.basename(os.path.abspath(os.curdir)) in ["common", "include"]:
+            print("Nothing to test")
+            exit(0)
         else:
             print("Nothing to build")
             exit(0)
