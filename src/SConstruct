@@ -1201,8 +1201,9 @@ def sakemake_main():
             elif which("docker"):
                 docker_image = "jhasse/mingw:2017-10-19"
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
-                env.Replace(CXX="docker run -w/home -v \"" + os.path.abspath(os.path.curdir) +
-                            ":/home\" -ti --rm " + docker_image + " x86_64-w64-mingw32-g++")
+                # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
+                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
+                env.Replace(CXX=docker_cxx)
             else:
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
                 print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
