@@ -1199,9 +1199,8 @@ def sakemake_main():
             if which("x86_64-w64-mingw32-g++"):
                 env.Replace(CXX="x86_64-w64-mingw32-g++")
             elif which("docker"):
-                print(
-                    "x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 docker_image = "jhasse/mingw:2017-10-19"
+                print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 env.Replace(CXX="docker run -w/home -v \"" + os.path.abspath(os.path.curdir) +
                             ":/home\" -ti --rm " + docker_image + " x86_64-w64-mingw32-g++")
             else:

@@ -25,7 +25,7 @@ elif [ "$1" == fastbuild ] || [ "$1" == fast ]; then
   cmds="fastclean build"
   shift
   args="$@"
-elif [ "$1" == "freebsd" ]; then
+elif [ "$1" == "skipwin" ]; then
   skip="win64crate"
   shift
 elif [ "$1" != build ] && [ "$1" != "" ]; then

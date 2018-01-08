@@ -10,8 +10,9 @@ pkg update -f
 pkg upgrade -y
 
 # Install packages required for Sakemake and for building the examples
-pkg install -y bash figlet freeglut gcc7 git glew gmake gtk3 pkgconf qt5 scons sdl2
+pkg install -y bash docker figlet freeglut gcc7 git glew gmake gtk3 pkgconf qt5 scons sdl2
 
 # Clone and install Sakemake
+rm -rf sakemake || true
 git clone https://github.com/xyproto/sakemake
 gmake -C sakemake install

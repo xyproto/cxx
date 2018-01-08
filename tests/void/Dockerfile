@@ -11,7 +11,7 @@ RUN git clone https://github.com/xyproto/sakemake && \
 
 
 # Clean and build all examples
-RUN sakemake/tests/build_all.sh || find /usr -type f -name gdkkeysyms.h
+RUN sakemake/tests/build_all.sh skipwin || find /usr -type f -name gdkkeysyms.h
 
 # Build and run the hello_test in hello/common
 RUN sm -C sakemake/examples/hello/common test
