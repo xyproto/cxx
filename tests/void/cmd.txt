@@ -1,0 +1,7 @@
+Show the files list for a package:
+
+xbps-query [-R] -f pkg
+
+Search for packages matching a filename
+
+xbps-query [-R] -o '*/filename'
