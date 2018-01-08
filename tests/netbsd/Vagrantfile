@@ -1,0 +1,9 @@
+Vagrant.configure("2") do |config|
+  config.vm.guest = :netbsd
+  config.vm.box = "kja/netbsd-7-amd64"
+  config.vm.base_mac = "00deadbeef01"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.ssh.shell = "sh"
+  config.vm.provision "shell", path: "setup.sh"
+  config.vm.provision "shell", path: "test.sh"
+end
