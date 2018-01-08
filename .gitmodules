@@ -1,0 +1,6 @@
+[submodule "pymake"]
+	path = pymake
+	url = https://github.com/mozilla/pymake.git
+[submodule "scons"]
+	path = scons
+	url = https://github.com/SCons/scons.git
