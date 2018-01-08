@@ -3,6 +3,9 @@
 - [ ] Void Linux support
 - [ ] `sm get` for downloading dependencies by looking up the missing filename online somewhere, then installing the package with the package manager.
 - [ ] Add support for a `doc` directory that will be installed to the right place upon installation.
+- [ ] The scons script and the SConsctruct file can be combined to a single Python script, then compiled with nuitka
+- [ ] The things happening in the Makefile can be moved to a Python script
+- [ ] If everything is in Python, it can be converted to Go with Grumpy
 
 ### Maybe
 
