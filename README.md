@@ -1,4 +1,4 @@
-# [🍶](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE)
+# [🍶](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE) [![Buildsystem](https://img.shields.io/badge/buildsystem-config--free-brightgreen.svg)](https://github.com/xyproto/sakemake)
 
 Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be installed manually.
 
@@ -327,41 +327,25 @@ Installing required packages still needs to be handled manually.
 
 If you have a project written in C++17 that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
-## A badge for your project
+## Shields and images
 
-If your project can be built with `sakemake`, you are hereby awarded this badge that you may include in your `README.md` file:
+### Shield
 
-### Large badge
+[![Buildsystem](https://img.shields.io/badge/buildsystem-config--free-brightgreen.svg)](https://github.com/xyproto/sakemake)
 
-[![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_256.png)](https://github.com/xyproto/sakemake)
+    [![Buildsystem](https://img.shields.io/badge/buildsystem-config--free-brightgreen.svg)](https://github.com/xyproto/sakemake)
 
-    [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_256.png)](https://github.com/xyproto/sakemake)
-
----
-
-### Medium badge
-
-[![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_128.png)](https://github.com/xyproto/sakemake)
-
-    [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_128.png)](https://github.com/xyproto/sakemake)
-
----
-
-### Small badge
+### Award-style image
 
 [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake)
 
     [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake)
 
----
-
-### Tiny badge
+### Emoji
 
 [🍶](https://github.com/xyproto/sakemake)
 
     [🍶](https://github.com/xyproto/sakemake)
-
----
 
 ## Other proejcts that builds with Sakemake
 
