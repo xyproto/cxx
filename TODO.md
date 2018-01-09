@@ -18,3 +18,5 @@
 - [ ] Stop the linker error output after the first error. Send a patch upstream if this is not currently possible.
 - [ ] Support spaces in directory names.
 - [ ] Support spaces in source file names.
+- [ ] Put platform support in well-defined classes
+- [ ] Rewrite everything as one application, without depending on make or SCons
