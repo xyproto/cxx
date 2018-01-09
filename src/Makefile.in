@@ -177,12 +177,16 @@ install: patch main unpatch
 	  true
 	@test -f COPYING && \
 	  install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && \
-	  install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || true
+	  install -m644 COPYING "${DESTDIR}${PREFIX}/share/licenses/${NAME}/COPYING" || \
+	  true
 	@test -f LICENSE && \
 	  install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}" && \
-	  install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
-	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -exec chmod 755 {} \;
-	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -exec chmod 644 {} \;
+	  install -m644 LICENSE "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || \
+	  true
+	@test -d "${DESTDIR}${PREFIX}/share/${NAME}" && \
+	  (find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -exec chmod 755 {} \; ; \
+	  find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -exec chmod 644 {} \;) || \
+	  true
 
 export:
 	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .
