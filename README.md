@@ -285,9 +285,11 @@ If possible, install *Sakemake* with the package manager that comes with your OS
 
 ## Convention over configuration
 
-## Rules for Configuration-free projects
+## The "Configuration-Free Manifesto"
 
 > Convention over configuration
+
+Rules for Configuration-free projects:
 
 #### Filenames
 
@@ -315,7 +317,7 @@ If possible, install *Sakemake* with the package manager that comes with your OS
 
 ## Source code formatting
 
-* `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Chromium"-style), which is not configurable, on purpose. Using `sm fmt` is optional, of course.
+* `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Chromium"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
 
 ## Feedback
 
