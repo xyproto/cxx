@@ -354,6 +354,6 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 ## General info
 
-* Version: 1.41
+* Version: 1.42
 * License: MIT
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
