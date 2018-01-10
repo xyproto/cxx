@@ -1020,7 +1020,7 @@ def add_flags(env, src_file, system_include_dir, win64):
         if "CPPDEFINES" in env:
             newcppdefs = [cppdef for cppdef in defines.split(" ") if cppdef not in env["CPPDEFINES"]]
             if newcppdefs:
-                for newdef in newcppdegs:
+                for newdef in newcppdefs:
                     env.Append(CPPDEFINES=newdef)
         else:
             for define in defines.split(" "):
