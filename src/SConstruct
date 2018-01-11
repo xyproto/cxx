@@ -470,12 +470,12 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
     cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + \
         sourcefilename + "\" | cpp -E -P -w -pipe | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
     try:
-        lines = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+        source_lines = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
     except:
         print("WARNING: Command failed: " + cmd)
         return "", "", "", "", "", ""
     includes = []
-    for line in lines:
+    for line in source_lines:
         if line.strip().startswith("#include"):
             if line.count("<") == 1 and line.count(">") == 1:
                 includes.append(line.strip().split("<")[1].split(">")[0])
@@ -763,11 +763,15 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
 
         # If one of the includes just mention something with OpenGL, or GLUT, add build flags for OpenGL
         if ("opengl" in include.lower()) or include.startswith("GL/") or include.startswith("GLUT/"):
+            # Also check if "glu" is mentioned in the sourcefile, since we'll also have to link with glu then
+            also_glu = bool([line for line in source_lines if "glu" in line])
             new_flags = ""
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
                 new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
+                if also_glu:
+                    new_flags += " -framework GLUT"
                 if include in flag_dict:
                     if new_flags not in flag_dict[include]:
                         flag_dict[include] += " " + new_flags
@@ -775,6 +779,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                     flag_dict[include] = new_flags
             elif win64:
                 new_flags = "-lopengl32"
+                if also_glu:
+                    new_flags += " -lglu32"
                 if include in flag_dict:
                     if new_flags not in flag_dict[include]:
                         flag_dict[include] += " " + new_flags
@@ -783,6 +789,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs gl 2>/dev/null"
+                if also_glu:
+                    cmd = cmd.replace(" gl ", " gl glu ")
                 new_flags = os.popen2(cmd)[1].read().strip()
                 if new_flags:
                     if include in flag_dict:
@@ -795,6 +803,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
                     if os.path.exists(os.path.join(libpath, "libGL.so")):
                         new_flags = "-lGL"
+                        if also_glu:
+                            new_flags += " -lGLU"
                         if include in flag_dict:
                             if new_flags not in flag_dict[include]:
                                 flag_dict[include] += " " + new_flags
