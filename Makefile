@@ -1,4 +1,4 @@
-.PHONY: clean generate install_pymake src/Makefile src/pymake/make.py src/sakemake uninstall uninstall_pymake unpatch
+.PHONY: clean generate install_pymake install_sakemake src/Makefile src/pymake/make.py src/sakemake uninstall uninstall_pymake install
 
 NAME := sakemake
 ALIAS := sm
@@ -31,19 +31,13 @@ else
   pkgdir ?= ${PWD}/pkg
 endif
 
-generate: src/Makefile src/sakemake src/pymake/make.py
+generate: src/Makefile src/sakemake
 
 src/Makefile: src/Makefile.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@PYMAKE@@,${PYMAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 src/sakemake: src/sakemake.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@PYMAKE@@,${PYMAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
-
-src/pymake/make.py:
-	@sed 's/env python$$/env python2/g' -i $@
-
-unpatch:
-	@sed 's/env python2$$/env python/g' -i src/pymake/make.py
 
 install_pymake:
 	@cp -r "${SRCDIR}/pymake" "${DESTDIR}${PREFIX}/share/${NAME}/"
@@ -53,11 +47,12 @@ install_pymake:
 	@chmod 755 "${DESTDIR}${PREFIX}/share/${NAME}/pymake/make.py"
 	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -name .git -delete
 	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -name ".*ignore" -delete
+	@sed 's/env python$$/env python2/g' -i "${DESTDIR}${PREFIX}/share/${NAME}/pymake/make.py"
 
 uninstall_pymake:
 	@rm -rf "${DESTDIR}${PREFIX}/share/${NAME}/pymake"
 
-install: generate install_pymake unpatch
+install_sakemake: generate
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -66,6 +61,8 @@ install: generate install_pymake unpatch
 	@install -m644 "${SRCDIR}/SConstruct" "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+
+install: install_sakemake install_pymake
 
 uninstall: uninstall_pymake
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
