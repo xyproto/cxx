@@ -1,0 +1,3 @@
+[submodule "pymake"]
+	path = src/pymake
+	url = https://github.com/mozilla/pymake

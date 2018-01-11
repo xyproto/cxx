@@ -1,4 +1,4 @@
-.PHONY: clean generate uninstall src/Makefile src/sakemake
+.PHONY: clean generate install_pymake src/Makefile src/pymake/make.py src/sakemake uninstall uninstall_pymake
 
 NAME := sakemake
 ALIAS := sm
@@ -10,15 +10,16 @@ SRCDIR := ${ROOTDIR}/src
 
 # macOS detection
 UNAME_S := $(shell uname -s)
+PYMAKE ?= ${SRCDIR}/pymake/make.py
 ifeq ($(UNAME_S),Darwin)
   PREFIX ?= /usr/local
-  MAKE ?= make
+  PYMAKE ?= ${PREFIX}/pymake/make.py
 else ifeq ($(UNAME_S),FreeBSD)
   PREFIX ?= /usr/local
-  MAKE ?= gmake
+  PYMAKE ?= ${PREFIX}/pymake/make.py
 else
   PREFIX ?= /usr
-  MAKE ?= make
+  PYMAKE ?= ${PREFIX}/pymake/make.py
 endif
 
 VERSION := $(shell grep -F '* Version: ' README.md | cut -d' ' -f3)
@@ -30,15 +31,30 @@ else
   pkgdir ?= ${PWD}/pkg
 endif
 
-generate: src/Makefile src/sakemake
+generate: src/Makefile src/sakemake src/pymake/make.py
 
 src/Makefile: src/Makefile.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@PYMAKE@@,${PYMAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 src/sakemake: src/sakemake.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@PYMAKE@@,${PYMAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
-install: generate
+src/pymake/make.py:
+	@sed 's/env python$$/env python2/g' -i $@
+
+install_pymake:
+	@cp -r "${SRCDIR}/pymake" "${DESTDIR}${PREFIX}/share/${NAME}/"
+	@rm -rf "${DESTDIR}${PREFIX}/share/${NAME}/pymake/tests"
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -exec chmod 755 {} \;
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -exec chmod 644 {} \;
+	@chmod 755 "${DESTDIR}${PREFIX}/share/${NAME}/pymake/make.py"
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type d -name .git -delete
+	@find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -name ".*ignore" -delete
+
+uninstall_pymake:
+	@rm -rf "${DESTDIR}${PREFIX}/share/${NAME}/pymake"
+
+install: generate install_pymake
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -48,7 +64,7 @@ install: generate
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
 
-uninstall:
+uninstall: uninstall_pymake
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${ALIAS}"
 	@-rmdir "${DESTDIR}${PREFIX}/bin" 2>/dev/null || true

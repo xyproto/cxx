@@ -10,9 +10,11 @@ patch_paths ?= 0
 run ?= 0
 
 std ?= c++17
-MAKE ?= @@MAKE@@
+PYMAKE ?= @@PYMAKE@@
 PREFIX ?= @@PREFIX@@
 system_include_dir ?= ${PREFIX}/include
+
+CXX ?= c++
 
 # the name of the installed executable and related directories
 NAME ?= $(shell basename $(CURDIR))
@@ -55,7 +57,7 @@ all: build
 
 version:
 	@echo sakemake @@VERSION@@
-	@${MAKE} --version | head -1
+	@${PYMAKE} --version | head -1
 	@echo '   SCons '$$(scons --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5)
 
 build:
