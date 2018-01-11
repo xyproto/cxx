@@ -40,3 +40,7 @@ pkg/
 
 # Valgrind files
 callgrind.out.*
+
+# Generated files
+build.sh
+clean.sh
