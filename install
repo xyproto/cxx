@@ -1,0 +1,2 @@
+#!/bin/sh
+python2 src/pymake/make.py -f Makefile install

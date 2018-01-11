@@ -1,4 +1,4 @@
-.PHONY: clean generate install_pymake src/Makefile src/pymake/make.py src/sakemake uninstall uninstall_pymake
+.PHONY: clean generate install_pymake src/Makefile src/pymake/make.py src/sakemake uninstall uninstall_pymake unpatch
 
 NAME := sakemake
 ALIAS := sm
@@ -42,6 +42,9 @@ src/sakemake: src/sakemake.in
 src/pymake/make.py:
 	@sed 's/env python$$/env python2/g' -i $@
 
+unpatch:
+	@sed 's/env python2$$/env python/g' -i src/pymake/make.py
+
 install_pymake:
 	@cp -r "${SRCDIR}/pymake" "${DESTDIR}${PREFIX}/share/${NAME}/"
 	@rm -rf "${DESTDIR}${PREFIX}/share/${NAME}/pymake/tests"
@@ -54,7 +57,7 @@ install_pymake:
 uninstall_pymake:
 	@rm -rf "${DESTDIR}${PREFIX}/share/${NAME}/pymake"
 
-install: generate install_pymake
+install: generate install_pymake unpatch
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
