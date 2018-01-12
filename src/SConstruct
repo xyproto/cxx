@@ -13,8 +13,8 @@ from subprocess import check_output
 from sys import argv, exit, stdout
 from urllib import quote
 
-LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include"]
-LOCAL_COMMON_PATHS = ["common", "../common"]
+LOCAL_COMMON_PATHS = ["common", "../common", "Common", "../Common"]
+LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include", "Include", "../Include"] + LOCAL_COMMON_PATHS
 PATHLIST = os.environ["PATH"].split(os.pathsep)  # split on ":"
 SPECIAL_SYMBOLS = "@@@@@"  # string that is unlikely to appear in an include line or a build flag
 # skip compilation-related packages when searching for includes

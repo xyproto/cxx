@@ -8,6 +8,7 @@ sloppy ?= 0
 win64 ?= $(shell grep -q -F '\#include <windows.h>' main.* 2>/dev/null && echo 1 || echo 0)
 patch_paths ?= 0
 run ?= 0
+wayland ?= 0
 
 std ?= c++17
 MAKE ?= @@MAKE@@
