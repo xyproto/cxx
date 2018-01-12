@@ -13,18 +13,14 @@ namespace sdl2 {
 // https://eb2.co/blog/2014/04/c-plus-plus-14-and-sdl2-managing-resources/
 template <typename Creator, typename Destructor, typename... Arguments>
 auto make_resource(Creator c, Destructor d, Arguments&&... args) {
-  auto r = c(forward<Arguments>(args)...);
-  return unique_ptr<decay_t<decltype(*r)>, decltype(d)>(r, d);
+    auto r = c(forward<Arguments>(args)...);
+    return unique_ptr<decay_t<decltype(*r)>, decltype(d)>(r, d);
 }
 
 // make_window constructs an SDL2 Window that will be destroyed when
 // deconstructed
 using window_ptr_t = unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
-window_ptr_t make_window(const char* title,
-                         int x,
-                         int y,
-                         int w,
-                         int h,
+window_ptr_t make_window(const char* title, int x, int y, int w, int h,
                          Uint32 flags);
 
 // make_renderer constructs an SDL2 Renderer that will be destroyed when
@@ -57,4 +53,4 @@ void Delay(int ms);
 // Return the SDL_Error, if any
 const char* Error();
 
-}  // namespace sdl2
+} // namespace sdl2

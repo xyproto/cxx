@@ -215,7 +215,7 @@ valgrind: main
 
 fmt:
 	@-for ext in cpp cc cxx h hpp; do \
-	  clang-format --style=Chromium -i *.$$ext 2>/dev/null ; \
+	  clang-format -style='{BasedOnStyle: LLVM, IndentWidth: 4, Language: Cpp, DerivePointerAlignment: false, PointerAlignment: Left}' -i *.$$ext 2>/dev/null ; \
 	done || true
 
 make:

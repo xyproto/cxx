@@ -42,6 +42,6 @@ const std::string os = "Hello, Other operating system!"s;
 #endif
 
 auto main() -> int {
-  std::cout << os << std::endl;
-  return 0;
+    std::cout << os << std::endl;
+    return 0;
 }
