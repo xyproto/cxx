@@ -1218,8 +1218,8 @@ def sakemake_main():
             if key == 'std':
                 env.Append(CXXFLAGS=' -std=' + value)
 
-    # imgdir/datadir/shaderdir/sharedir is set?
-    for dirname in ["img", "data", "shader", "share"]:
+    # imgdir/datadir/shaderdir/sharedir/resourcedir is set?
+    for dirname in ["img", "data", "shader", "share", "resource"]:
         if ARGUMENTS.get(dirname + 'dir', ""):
             # only add system directories that have local equivalents (same or parent directory, singular or plural)
             if os.path.exists(dirname) or os.path.exists(os.path.join("..", dirname)) or os.path.exists(dirname + "s") or os.path.exists(os.path.join("..", dirname + "s")):
