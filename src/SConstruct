@@ -13,8 +13,8 @@ from subprocess import check_output
 from sys import argv, exit, stdout
 from urllib import quote
 
-LOCAL_COMMON_PATHS = ["common", "../common", "Common", "../Common"]
-LOCAL_INCLUDE_PATHS = [".", "include", "..", "../include", "Include", "../Include"] + LOCAL_COMMON_PATHS
+LOCAL_COMMON_PATHS = ["common", "Common", "../common", "../Common"]
+LOCAL_INCLUDE_PATHS = [".", "include", "Include", "..", "../include", "../Include"] + LOCAL_COMMON_PATHS
 PATHLIST = os.environ["PATH"].split(os.pathsep)  # split on ":"
 SPECIAL_SYMBOLS = "@@@@@"  # string that is unlikely to appear in an include line or a build flag
 # skip compilation-related packages when searching for includes
@@ -451,7 +451,7 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(sourcefilename, system_include_dir, win64):
+def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
 
@@ -530,12 +530,14 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
                 first_word = include.split(os.path.sep)[0].strip().lower()
             if os.path.exists("/Library/Frameworks/" + first_word + ".framework"):
                 # Found it!
-                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework " + first_word
-                if new_flags:
-                    if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
-                        flag_dict[include] = new_flags
+                new_flags = ""
+                if "/usr/local/include" not in compiler_includes:
+                    new_flags = "-I/usr/local/include "
+                new_flags += "-F/Library/Frameworks -framework " + first_word
+                if include in flag_dict:
+                    flag_dict[include] += " " + new_flags
+                else:
+                    flag_dict[include] = new_flags
 
     # If the include exists in /usr/include, what is the first word, in lowercase?
     if not win64:
@@ -734,7 +736,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
-                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
+                new_flags = ""
+                if "/usr/local/include" not in compiler_includes:
+                    new_flags = "-I/usr/local/include "
+                new_flags += "-F/Library/Frameworks -framework OpenGL"
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
                 else:
@@ -769,7 +774,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
-                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework OpenGL"
+                new_flags = ""
+                if "/usr/local/include" not in compiler_includes:
+                    new_flags = "-I/usr/local/include "
+                new_flags += "-F/Library/Frameworks -framework OpenGL"
                 if also_glu:
                     new_flags += " -framework GLUT"
                 if include in flag_dict:
@@ -818,7 +826,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64):
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks") and not win64:
                 # Found it, add the OpenGL framework as well
-                new_flags = "-I/usr/local/include -F/Library/Frameworks -framework GLUT"
+                new_flags = ""
+                if "/usr/local/include" not in compiler_includes:
+                    new_flags = "-I/usr/local/include "
+                new_flags += "-F/Library/Frameworks -framework GLUT"
                 if not int(ARGUMENTS.get('strict', 0)):  # if not strict=1
                     new_flags += " -Wno-deprecated-declarations"
                 if include in flag_dict:
@@ -1013,22 +1024,22 @@ def strip_ext(filenames):
     return [os.path.splitext(fname)[0] for fname in filenames]
 
 
-def add_flags(env, src_file, system_include_dir, win64):
+def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
     """Add build flags to the environment"""
-    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-        src_file, system_include_dir, win64)
+    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir, win64, compiler_includes)
     if includes:
         if "CPPPATH" in env:
-            newincs = [inc for inc in includes.split(" ") if inc not in env["CPPPATH"]]
+            newincs = [inc for inc in includes.split(" ") if inc.lower() not in str(env["CPPPATH"]).lower()]
             if newincs:
                 for newinc in newincs:
-                    env.Append(CPPPATH=newinc)
+                    if newinc not in compiler_includes:
+                        env.Append(CPPPATH=newinc)
         else:
             for include in includes.split(" "):
                 env.Append(CPPPATH=include)
     if defines:
         if "CPPDEFINES" in env:
-            newcppdefs = [cppdef for cppdef in defines.split(" ") if cppdef not in env["CPPDEFINES"]]
+            newcppdefs = [cppdef for cppdef in defines.split(" ") if cppdef not in str(env["CPPDEFINES"])]
             if newcppdefs:
                 for newdef in newcppdefs:
                     env.Append(CPPDEFINES=newdef)
@@ -1037,21 +1048,23 @@ def add_flags(env, src_file, system_include_dir, win64):
                 env.Append(CPPDEFINES=define)
     if libs:
         if "LIBS" in env:
-            newlibs = [lib for lib in libs.split(" ") if lib not in env["LIBS"]]
+            newlibs = [lib for lib in libs.split(" ") if lib not in str(env["LIBS"])]
             if newlibs:
                 env.Append(LIBS=newlibs)
         else:
             env.Append(LIBS=libs.split(" "))
-    if libpaths and libpaths not in env["LINKFLAGS"]:
+    if libpaths and libpaths not in str(env["LINKFLAGS"]):
         env.Append(LINKFLAGS=libpaths)
-    if linkflags and linkflags not in env["LINKFLAGS"]:
+    if linkflags and linkflags not in str(env["LINKFLAGS"]):
         env.Append(LINKFLAGS=linkflags)
-    if other_cxxflags and other_cxxflags not in env["CXXFLAGS"]:
+    if other_cxxflags and other_cxxflags not in str(env["CXXFLAGS"]):
         env.Append(CXXFLAGS=other_cxxflags)
-
 
 def sakemake_main():
     """The main function"""
+
+    # Include paths on the system, as reported by the compiler
+    compiler_includes = []
 
     # Test ELF-files to be generated. Don't add "test" here since it may be passed back to this file as an argument!
     test_sources = get_test_sources()
@@ -1289,7 +1302,7 @@ def sakemake_main():
                 exit(1)
     else:
         # Check if a particular C++ compiler is given, or not
-        if env["CXX"] == "c++":
+        if str(env["CXX"]) == "c++":
             gcc_binaries = ["g++-8", "g++-7", "g++-HEAD"]
             if exe("/usr/bin/pacman"):
                 # if on Arch Linux, try g++ first, since it's usually up to date
@@ -1306,6 +1319,9 @@ def sakemake_main():
             if int(ARGUMENTS.get('clang', 0)):
                 env.Replace(CXX='clang++')
 
+    # Use the selected C++ compiler to report back all system include paths it will search automatically
+    compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+
     # Windows related build flags
     if win64:
         env.Append(CXXFLAGS=' -Wno-unused-variable')
@@ -1317,6 +1333,8 @@ def sakemake_main():
     # if sloppy is set, just try to build the damn thing
     if int(ARGUMENTS.get('sloppy', 0)):
         env.Append(CXXFLAGS=' -fpermissive -w')
+        # Don't assume the compiler knows about any include directories
+        compiler_includes = []
     else:
         # if sloppy is not set, add various warnings:
 
@@ -1344,9 +1362,9 @@ def sakemake_main():
             has_new_include = False
             for INCLUDE_PATH in LOCAL_INCLUDE_PATHS:
                 for filename in dep_src + [main_source_file] + [os.path.join(INCLUDE_PATH, x) for x in includes]:
-                    if filename in examined:
+                    if filename.lower() in examined:
                         continue
-                    examined.append(filename)
+                    examined.append(filename.lower())
                     if os.path.exists(filename):
                         try:
                             new_includes = [line.split("\"")[1] for line in open(filename).read().split(
@@ -1363,16 +1381,15 @@ def sakemake_main():
                 for include in includes:
                     for COMMON_PATH in LOCAL_COMMON_PATHS:
                         for ext in [".cpp", ".cc", ".cxx"]:
-                            source_filename = os.path.join(
-                                COMMON_PATH, include.rsplit(".", 1)[0] + ext)
+                            source_filename = os.path.join(COMMON_PATH, include.rsplit(".", 1)[0] + ext)
                             if os.path.exists(source_filename):
-                                if source_filename not in dep_src:
+                                if source_filename.lower() not in [x.lower() for x in dep_src]:
                                     dep_src.append(source_filename)
 
     # Find extra CFLAGS for the sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in [main_source_file] + dep_src:
-            add_flags(env, src_file, system_include_dir, win64)
+            add_flags(env, src_file, system_include_dir, win64, compiler_includes)
 
     # If libraries are linked to, skip unused shared object dependencies.
     if "LIBS" in env and env["LIBS"]:
@@ -1389,14 +1406,14 @@ def sakemake_main():
     # Find extra CFLAGS for the test sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in test_sources:
-            add_flags(env, src_file, system_include_dir, win64)
+            add_flags(env, src_file, system_include_dir, win64, compiler_includes)
 
     # Remove non-existing includes
     includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
     # Remove duplicate includes (in terms of pointing to the same directory)
     includemap = {}
     for include in includes:
-        key = os.path.normpath(include)
+        key = os.path.normpath(include).lower()
         if key in includemap:
             # use the shortest includepath, if several are specified for the same directory
             if len(include) < len(includemap[key]):
