@@ -1,28 +1,28 @@
 // Based on:
 // https://github.com/lowlevel86/3D-Game-Programming/tree/master/3DCrate
 
-#include <cstdio>
-#include <cstdlib>
 #include <sys/stat.h>
 #include <windows.h>
+#include <cstdio>
+#include <cstdlib>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#define WIN_WIDTH 640 // window size
+#define WIN_WIDTH 640  // window size
 #define WIN_HEIGHT 400
-#define IMGBUFF_WIDTH 256 // max bmp image size
+#define IMGBUFF_WIDTH 256  // max bmp image size
 #define IMGBUFF_HEIGHT 256
 
 #define IMGOBJCNT 1
 #define OBJCNT 1
 
-#define OPCNT 128 // max number of operations that can be done on an object
+#define OPCNT 128  // max number of operations that can be done on an object
 
-#define CRATEIMG 0 // image id
-#define CRATE 0    // object id
+#define CRATEIMG 0  // image id
+#define CRATE 0     // object id
 
-#define IMGOBJ -1 // object operations
+#define IMGOBJ -1  // object operations
 #define HIDE 0
 #define XROT 1
 #define YROT 2
@@ -47,14 +47,16 @@ BITMAPINFO pbmi[40];
 BYTE canvas[(WIN_WIDTH * 3 + WIN_WIDTH % 4) * WIN_HEIGHT];
 
 int imgObj[IMGOBJCNT][IMGBUFF_WIDTH * IMGBUFF_HEIGHT];
-int objOps[OBJCNT][OPCNT];        // object operations
-float objOpValues[OBJCNT][OPCNT]; // object operation values
+int objOps[OBJCNT][OPCNT];         // object operations
+float objOpValues[OBJCNT][OPCNT];  // object operation values
 
 // unit circle coordinates buffers
 float hUcRotValues[OPCNT];
 float vUcRotValues[OPCNT];
 
-inline double round(double val) { return floor(val + 0.5); }
+inline double round(double val) {
+    return floor(val + 0.5);
+}
 
 void loadImg(int imgObjNum, char* imgFile) {
     int x, y;
@@ -80,14 +82,12 @@ void loadImg(int imgObjNum, char* imgFile) {
     // read image file to buffer
     headerSize = stat_p.st_size - imgWidth * imgWidth * 3;
     fseek(bmpFile, headerSize + 1, SEEK_CUR);
-    for (y = IMGBUFF_HEIGHT / 2 - imgWidth / 2;
-         y < imgWidth + IMGBUFF_HEIGHT / 2 - imgWidth / 2; y++) {
-        for (x = IMGBUFF_WIDTH / 2 - imgWidth / 2;
-             x < imgWidth + IMGBUFF_WIDTH / 2 - imgWidth / 2; x++) {
-            if ((x >= 0) && (x < IMGBUFF_WIDTH) && (y >= 0) &&
-                (y < IMGBUFF_HEIGHT))
-                imgObj[imgObjNum][IMGBUFF_WIDTH * y + x] =
-                    (int)fgetc(bmpFile) / 128 * 255;
+    for (y = IMGBUFF_HEIGHT / 2 - imgWidth / 2; y < imgWidth + IMGBUFF_HEIGHT / 2 - imgWidth / 2;
+         y++) {
+        for (x = IMGBUFF_WIDTH / 2 - imgWidth / 2; x < imgWidth + IMGBUFF_WIDTH / 2 - imgWidth / 2;
+             x++) {
+            if ((x >= 0) && (x < IMGBUFF_WIDTH) && (y >= 0) && (y < IMGBUFF_HEIGHT))
+                imgObj[imgObjNum][IMGBUFF_WIDTH * y + x] = (int)fgetc(bmpFile) / 128 * 255;
 
             fseek(bmpFile, 2, SEEK_CUR);
         }
@@ -103,7 +103,7 @@ void rot(float* horiP, float* vertP, float degrees) {
     float hLine1, vLine1;
     float hLine2, vLine2;
 
-    if (degrees != degrees) // check if NaN
+    if (degrees != degrees)  // check if NaN
         return;
 
     hUc = cos(degrees * (M_PI * 2.0 / 360.0));
@@ -126,10 +126,10 @@ void ucRot(float hUc, float vUc, float* hP, float* vP) {
     float hLine1, vLine1;
     float hLine2, vLine2;
 
-    if (hUc != hUc) // check if NaN
+    if (hUc != hUc)  // check if NaN
         return;
 
-    if (vUc != vUc) // check if NaN
+    if (vUc != vUc)  // check if NaN
         return;
 
     hLine1 = hUc;
@@ -144,12 +144,11 @@ void ucRot(float hUc, float vUc, float* hP, float* vP) {
     *vP = v;
 }
 
-void applyObjOps(int objNum, int opNum, int x, int y, int* xDelta, int* yDelta,
-                 int* brightness) {
+void applyObjOps(int objNum, int opNum, int x, int y, int* xDelta, int* yDelta, int* brightness) {
     int i;
     float xPt, yPt, zPt;
     float perspctv = 350;
-    float cameraLens = 200; // less than perspctv
+    float cameraLens = 200;  // less than perspctv
     float cameraDistance = -200;
     xPt = x - IMGBUFF_WIDTH / 2;
     yPt = y - IMGBUFF_HEIGHT / 2;
@@ -229,15 +228,14 @@ void objsToCanvas() {
             if (objOps[i][j] == END)
                 break;
 
-            if ((objOps[i][j] == XROT) || (objOps[i][j] == YROT) ||
-                (objOps[i][j] == ZROT)) {
+            if ((objOps[i][j] == XROT) || (objOps[i][j] == YROT) || (objOps[i][j] == ZROT)) {
                 hUcRotValues[j] = cos(objOpValues[i][j] * (M_PI * 2.0 / 360.0));
                 vUcRotValues[j] = sin(objOpValues[i][j] * (M_PI * 2.0 / 360.0));
             }
         }
 
         for (j = 0; j < OPCNT; j++) {
-            if (objOps[i][j] == END) // Don't draw if "END" or "HIDE"
+            if (objOps[i][j] == END)  // Don't draw if "END" or "HIDE"
                 break;
 
             if (objOps[i][j] == IMGOBJ) {
@@ -246,20 +244,17 @@ void objsToCanvas() {
                 for (y = 0; y < IMGBUFF_HEIGHT; y++) {
                     for (x = 0; x < IMGBUFF_WIDTH; x++) {
                         if (imgObjNum < IMGOBJCNT)
-                            brightness =
-                                imgObj[imgObjNum][IMGBUFF_WIDTH * y + x];
+                            brightness = imgObj[imgObjNum][IMGBUFF_WIDTH * y + x];
 
                         if (brightness) {
-                            applyObjOps(i, j + 1, x, y, &xDelta, &yDelta,
-                                        &brightness);
+                            applyObjOps(i, j + 1, x, y, &xDelta, &yDelta, &brightness);
 
                             canvasDataLoc = xDelta * 3 + bytesWidth * yDelta;
 
-                            if ((xDelta >= 0) && (xDelta < canvasWidth) &&
-                                (yDelta >= 0) && (yDelta < canvasHeight))
-                                if (brightness >
-                                    canvas[0 + canvasDataLoc]) // draw only if
-                                                               // brighter
+                            if ((xDelta >= 0) && (xDelta < canvasWidth) && (yDelta >= 0) &&
+                                (yDelta < canvasHeight))
+                                if (brightness > canvas[0 + canvasDataLoc])  // draw only if
+                                                                             // brighter
                                 {
                                     canvas[0 + canvasDataLoc] = brightness;
                                     canvas[1 + canvasDataLoc] = brightness;
@@ -284,8 +279,7 @@ void chgObj(int obj, int opNum, int op, float opValue) {
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 TCHAR szAppName[] = TEXT("Crate");
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
-                   int iCmdShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
     HWND hwnd;
     MSG msg;
     WNDCLASS wndclass;
@@ -302,8 +296,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.lpszClassName = szAppName;
 
     RegisterClass(&wndclass);
-    hwnd = CreateWindow(szAppName, szAppName,
-                        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, 0, 0,
+    hwnd = CreateWindow(szAppName, szAppName, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, 0, 0,
                         WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
@@ -314,8 +307,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     return msg.wParam;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
-                         LPARAM lParam) {
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static HDC hdc;
     static PAINTSTRUCT ps;
     static int opInc;
@@ -371,7 +363,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
         yMouseLocSave = yMouseLoc;
 
         opInc = 0;
-        chgObj(CRATE, opInc++, IMGOBJ, CRATEIMG); // draw crate
+        chgObj(CRATE, opInc++, IMGOBJ, CRATEIMG);  // draw crate
         chgObj(CRATE, opInc++, ZLOC, 64);
         chgObj(CRATE, opInc++, XROT, xCrateRot);
         chgObj(CRATE, opInc++, YROT, yCrateRot);
@@ -413,14 +405,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
         chgObj(CRATE, opInc++, END, 0);
 
         clearCanvas();
-        objsToCanvas(); // draw objects to screen
+        objsToCanvas();  // draw objects to screen
 
         InvalidateRect(hwnd, NULL, TRUE);
         UpdateWindow(hwnd);
 
         hdc = GetDC(hwnd);
-        SetDIBitsToDevice(hdc, 0, 0, canvasWidth, canvasHeight, 0, 0, 0,
-                          canvasHeight, canvas, pbmi, DIB_RGB_COLORS);
+        SetDIBitsToDevice(hdc, 0, 0, canvasWidth, canvasHeight, 0, 0, 0, canvasHeight, canvas, pbmi,
+                          DIB_RGB_COLORS);
         ReleaseDC(hwnd, hdc);
 
         return 0;
@@ -458,7 +450,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam,
         // printf("keydown value %i\n", LOWORD(wParam));
         // fflush(stdout);
 
-        if (LOWORD(wParam) == 27 || LOWORD(wParam) == 81) // Esc or q
+        if (LOWORD(wParam) == 27 || LOWORD(wParam) == 81)  // Esc or q
         {
             KillTimer(hwnd, ID_TIMER);
             PostQuitMessage(0);

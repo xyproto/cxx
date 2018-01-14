@@ -1,6 +1,6 @@
+#include <iostream>
 #include "sdl2init.h"
 #include "sdl2wrap.h"
-#include <iostream>
 
 int main() {
     using std::cout;
@@ -12,15 +12,14 @@ int main() {
         return 1;
     }
 
-    auto win = sdl2::make_window("Hello, World!", 100, 100, 960, 540,
-                                 SDL_WINDOW_SHOWN);
+    auto win = sdl2::make_window("Hello, World!", 100, 100, 960, 540, SDL_WINDOW_SHOWN);
     if (win.get() == nullptr) {
         cout << "Error creating window: " << sdl2::Error() << endl;
         return 1;
     }
 
-    auto ren = sdl2::make_renderer(
-        win.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    auto ren =
+        sdl2::make_renderer(win.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren.get() == nullptr) {
         cout << "Error creating renderer: " << sdl2::Error() << endl;
         return 1;

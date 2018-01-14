@@ -20,8 +20,7 @@ auto make_resource(Creator c, Destructor d, Arguments&&... args) {
 // make_window constructs an SDL2 Window that will be destroyed when
 // deconstructed
 using window_ptr_t = unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)>;
-window_ptr_t make_window(const char* title, int x, int y, int w, int h,
-                         Uint32 flags);
+window_ptr_t make_window(const char* title, int x, int y, int w, int h, Uint32 flags);
 
 // make_renderer constructs an SDL2 Renderer that will be destroyed when
 // deconstructed
@@ -53,4 +52,4 @@ void Delay(int ms);
 // Return the SDL_Error, if any
 const char* Error();
 
-} // namespace sdl2
+}  // namespace sdl2

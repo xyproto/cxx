@@ -1,8 +1,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-static gboolean check_escape(GtkWidget* widget, GdkEventKey* event,
-                             gpointer data) {
+static gboolean check_escape(GtkWidget* widget, GdkEventKey* event, gpointer data) {
     if (event->keyval == GDK_KEY_Escape || event->keyval == GDK_KEY_q) {
         g_application_quit(G_APPLICATION(data));
         return true;

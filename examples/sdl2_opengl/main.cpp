@@ -44,9 +44,8 @@ bool Init() {
     }
 
     // Create our window centered at 512x512 resolution
-    mainWindow =
-        SDL_CreateWindow(programName.c_str(), SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL);
+    mainWindow = SDL_CreateWindow(programName.c_str(), SDL_WINDOWPOS_CENTERED,
+                                  SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL);
 
     // Check that everything worked out okay
     if (!mainWindow) {
@@ -79,8 +78,7 @@ bool SetOpenGLAttributes() {
     // Set our OpenGL version.
     // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions
     // are disabled
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     // 3.2 is part of the modern versions of OpenGL, but most video cards whould
     // be able to run it
@@ -129,30 +127,30 @@ void RunGame() {
 
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
-                case SDLK_ESCAPE:
-                case SDLK_q:
-                    loop = false;
-                    break;
-                case SDLK_r:
-                    // Cover with red and update
-                    glClearColor(1.0, 0.0, 0.0, 1.0);
-                    glClear(GL_COLOR_BUFFER_BIT);
-                    SDL_GL_SwapWindow(mainWindow);
-                    break;
-                case SDLK_g:
-                    // Cover with green and update
-                    glClearColor(0.0, 1.0, 0.0, 1.0);
-                    glClear(GL_COLOR_BUFFER_BIT);
-                    SDL_GL_SwapWindow(mainWindow);
-                    break;
-                case SDLK_b:
-                    // Cover with blue and update
-                    glClearColor(0.0, 0.0, 1.0, 1.0);
-                    glClear(GL_COLOR_BUFFER_BIT);
-                    SDL_GL_SwapWindow(mainWindow);
-                    break;
-                default:
-                    break;
+                    case SDLK_ESCAPE:
+                    case SDLK_q:
+                        loop = false;
+                        break;
+                    case SDLK_r:
+                        // Cover with red and update
+                        glClearColor(1.0, 0.0, 0.0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT);
+                        SDL_GL_SwapWindow(mainWindow);
+                        break;
+                    case SDLK_g:
+                        // Cover with green and update
+                        glClearColor(0.0, 1.0, 0.0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT);
+                        SDL_GL_SwapWindow(mainWindow);
+                        break;
+                    case SDLK_b:
+                        // Cover with blue and update
+                        glClearColor(0.0, 0.0, 1.0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT);
+                        SDL_GL_SwapWindow(mainWindow);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

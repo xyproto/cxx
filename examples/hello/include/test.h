@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
-template <typename T> void equal(T a, T b) {
+template <typename T>
+void equal(T a, T b) {
     if (a == b) {
         std::cout << "YES" << std::endl;
     } else {

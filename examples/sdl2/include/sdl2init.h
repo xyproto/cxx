@@ -4,14 +4,14 @@ namespace sdl2 {
 
 // Init is a class to keep track of if SDL2 has been initialized or not
 class Init {
-  private:
+   private:
     bool _initialized = false;
 
-  public:
+   public:
     Init();
     ~Init();
     bool Initialized();
 
-}; // class System
+};  // class System
 
-} // namespace sdl2
+}  // namespace sdl2
