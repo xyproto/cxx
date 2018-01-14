@@ -237,9 +237,9 @@ An alternative method to using defines (defined with `-D` when building) is to u
 
 ## C++17 on macOS
 
-For installing a recent enough version of C++ on macOS, installing GCC with Homebrew and the `--HEAD` flag is one possible approach:
+For installing a recent enough version of C++ on macOS, installing gcc 7 with `brew` is one possible approach:
 
-    brew install gcc --HEAD
+    brew install gcc@7
 
 The other requirements can be installed with:
 
