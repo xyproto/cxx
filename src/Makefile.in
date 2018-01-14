@@ -101,7 +101,7 @@ run:
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}"resourcedir="${PREFIX}/share/${NAME}/resources"
+	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}" resourcedir="${PREFIX}/share/${NAME}/resources"
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
