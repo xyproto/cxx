@@ -103,7 +103,7 @@ def split_cxxflags(given_cxxflags, win64):
                 other += flag + " "
         elif flag.lower().startswith("-f"):
             new_flag = flag.replace("-framework" + SPECIAL_SYMBOLS, "-framework ")
-            if not win64 and " " + new_flag + " " not in linkflags:
+            if not win64 and (" " + new_flag + " " not in linkflags):
                 if "-framework" in new_flag:
                     encountered_framework = True
                 linkflags += new_flag + " "
@@ -1185,10 +1185,10 @@ def sakemake_main():
                 print("wine " + main_executable + " " + " ".join(given_args.split()))
             os.execvp("wine", ["wine", main_executable] + given_args.split())
         else:
-            exe = os.path.join(".", main_executable)
+            executable = os.path.join(".", main_executable)
             if len(given_args) > 1:
-                print(exe + " " + " ".join(given_args.split()))
-            os.execvp(exe, [exe] + given_args.split())
+                print(executable + " " + " ".join(given_args.split()))
+            os.execvp(executable, [executable] + given_args.split())
         exit(0)
 
     # Set the number of jobs to the number of CPUs
@@ -1290,15 +1290,18 @@ def sakemake_main():
     else:
         # Check if a particular C++ compiler is given, or not
         if env["CXX"] == "c++":
-            # Use the HEAD version of GCC as installed with Homebrew, if available
-            if which("g++-HEAD"):
-                env.Replace(CXX="g++-HEAD")
+            gcc_binaries = ["g++-8", "g++-7", "g++-HEAD"]
+            if exe("/usr/bin/pacman"):
+                # if on Arch Linux, try g++ first, since it's usually up to date
+                gcc_binaries = ["g++"] + gcc_binaries
             else:
-                # try g++, g++9, g++8 and g++7
-                for compiler in ["g++", "g++9", "g++8", "g++7"]:
-                    if which(compiler):
-                        # Use the compiler if it exists in path
-                        env.Replace(CXX=compiler)
+                # on other platforms, try the higher version numbers first, then g++
+                gcc_binaries += ["g++"]
+            for compiler in gcc_binaries:
+                if which(compiler):
+                    # Use the compiler if it exists in path
+                    env.Replace(CXX=compiler)
+                    break
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
                 env.Replace(CXX='clang++')
