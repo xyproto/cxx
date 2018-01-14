@@ -228,7 +228,7 @@ valgrind: main
 fmt:
 	@-for ext in cpp cc cxx h hpp; do \
 	  for dir in . include common; do \
-	    clang-format -style='{BasedOnStyle: LLVM, IndentWidth: 4, Language: Cpp, DerivePointerAlignment: false, PointerAlignment: Left, ColumnLimit: 100}' -i "$$dir/*.$$ext" 2>/dev/null ; \
+	    clang-format -style='{BasedOnStyle: LLVM, IndentWidth: 4, Language: Cpp, DerivePointerAlignment: false, PointerAlignment: Left, ColumnLimit: 100, SortIncludes: true, SortUsingDeclarations: true, AlignTrailingComments: true}' -i "$$dir/*.$$ext" 2>/dev/null ; \
 	  done ; \
 	done || true
 
