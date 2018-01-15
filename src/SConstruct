@@ -1343,8 +1343,8 @@ def sakemake_main():
                 if found_compiler:
                     break
             else:
-                print("ERROR: found no C++ compiler with support for C++17, C++14 or C++11")
-                sys.exit(1)
+                print("WARNING: found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
+                #exit(1)
 
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
