@@ -1123,11 +1123,11 @@ def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
         else:
             env.Append(LIBS=libs.split(" "))
     if libpaths and libpaths not in str(env["LINKFLAGS"]):
-        env.Append(LINKFLAGS=libpaths)
+        env.Append(LINKFLAGS=" " + libpaths)
     if linkflags and linkflags not in str(env["LINKFLAGS"]):
-        env.Append(LINKFLAGS=linkflags)
+        env.Append(LINKFLAGS=" " + linkflags)
     if other_cxxflags and other_cxxflags not in str(env["CXXFLAGS"]):
-        env.Append(CXXFLAGS=other_cxxflags)
+        env.Append(CXXFLAGS=" " + other_cxxflags)
 
 def supported(cxx, std):
     """Check if the given compiler supports the given sandard. Example: supported("g++", "c++17")"""
@@ -1328,15 +1328,13 @@ def sakemake_main():
                 # if on Arch Linux, try g++ first, since it's usually up to date
                 compiler_binaries = ["g++"] + compiler_binaries
 
-            found_compiler = False
+            found_compiler = ""
+            found_cppstd = ""
             for std in "c++17", "c++14", "c++11":
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
-                        # Use the compiler if it exists in path and supports the standard
-                        env.Replace(CXX=compiler)
-                        if "-std=" not in str(env["CXXFLAGS"]):
-                            env.Append(CXXFLAGS=' -std=' + std)
-                        found_compiler = True
+                        found_compiler = compiler
+                        found_cppstd = std
                         break
                 else:
                     print("WARNING: No compiler with support for " + std + " was found")
@@ -1345,6 +1343,13 @@ def sakemake_main():
             else:
                 print("WARNING: found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
                 exit(1)
+
+            if found_compiler:
+                # Use the compiler if it exists in path and supports the standard
+                env.Replace(CXX=compiler)
+            if found_cppstd:
+                if "-std=" not in str(env["CXXFLAGS"]):
+                    env.Append(CXXFLAGS=' -std=' + found_cppstd)
 
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
@@ -1368,7 +1373,7 @@ def sakemake_main():
                     print("WARNING:", value, "is not supported for", str(env["CXX"]) + ", using", value_sub_3)
                     if supported(str(env["CXX"]), value_sub_3):
                         if value in str(env["CXXFLAGS"]):
-                            new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3)
+                            new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
                             env.Replace(CXXFLAGS=new_cxxflags)
                         else:
                             env.Append(CXXFLAGS=' -std=' + value_sub_3)
