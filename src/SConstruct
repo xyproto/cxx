@@ -178,7 +178,10 @@ def arch_recommend_package(missing_include):
     if not os.path.exists(missing_include):
         if which("pkgfile"):
             cmd = "LC_ALL=C pkgfile " + missing_include
-            packages = os.popen2(cmd)[1].read().strip().split("\n")
+            try:
+                packages = os.popen2(cmd)[1].read().strip().split("\n")
+            except OSError:
+                packages = []
             for package in packages:
                 if package:
                     if "/" in package:
@@ -206,18 +209,24 @@ def arch_include_path_to_cxxflags(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
-    package = os.popen2(cmd)[1].read().strip()
-    if package in SKIP_PACKAGES:
-        return ""
+    try:
+        package = os.popen2(cmd)[1].read().strip()
+    except OSError:
+        package = ""
     if not package:
         print("ERROR: No package owns: " + include_path)
         exit(1)
+    if package in SKIP_PACKAGES:
+        return ""
     cmd = '/usr/bin/pacman -Ql ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
-        cached_pc_files[package] = pc_files
+        try:
+            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            cached_pc_files[package] = pc_files
+        except OSError:
+            pc_files = []
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -256,8 +265,10 @@ def freebsd_recommend_package(missing_include):
             last_part = os.path.basename(missing_include)
             cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
-            packages = [x.strip() for x in os.popen2(
-                cmd)[1].read().strip().split("\n") if x.strip() and x.strip() not in SKIP_PACKAGES]
+            try:
+                packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip() and x.strip() not in SKIP_PACKAGES]
+            except OSError:
+                packages = []
             if packages:
                 print("\nERROR: Could not find package for missing include \"" +
                       missing_include + "\".\n       It could belong to one of these:")
@@ -277,18 +288,24 @@ def freebsd_include_path_to_cxxflags(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1-'
-    package = os.popen2(cmd)[1].read().strip()
-    if package in SKIP_PACKAGES:
-        return ""
+    try:
+        package = os.popen2(cmd)[1].read().strip()
+    except OSError:
+        package = ""
     if not package:
         print("ERROR: No package owns: " + include_path)
         exit(1)
+    if package in SKIP_PACKAGES:
+        return ""
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
         cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
-        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
-        cached_pc_files[package] = pc_files
+        try:
+            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            cached_pc_files[package] = pc_files
+        except OSError:
+            pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -307,6 +324,7 @@ def freebsd_include_path_to_cxxflags(include_path):
         try:
             cxxflags = os.popen2(cmd)[1].read().strip()
         except OSError:
+            # Let cxxflags remain empty
             pass
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
@@ -323,7 +341,10 @@ def deb_recommend_package(missing_include):
     if not os.path.exists(missing_include):
         if which("apt-file"):
             cmd = "LC_ALL=C apt-file find -Fl " + missing_include
-            package = os.popen2(cmd)[1].read().strip()
+            try:
+                package = os.popen2(cmd)[1].read().strip()
+            except OSError:
+                package = ""
             if package in SKIP_PACKAGES:
                 return
             if package:
@@ -346,18 +367,24 @@ def deb_include_path_to_cxxflags(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -S ' + include_path + ' | /usr/bin/cut -d: -f1'
-    package = os.popen2(cmd)[1].read().strip()
-    if package in SKIP_PACKAGES:
-        return ""
+    try:
+        package = os.popen2(cmd)[1].read().strip()
+    except OSError:
+        package = ""
     if not package:
         print("ERROR: No package owns: " + include_path)
         exit(1)
+    if package in SKIP_PACKAGES:
+        return ""
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
-        cached_pc_files[package] = pc_files
+        try:
+            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            cached_pc_files[package] = pc_files
+        except OSError:
+            pc_files = []
     if not pc_files:
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -422,8 +449,11 @@ def brew_include_path_to_cxxflags(include_path):
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
-        cached_pc_files[package] = pc_files
+        try:
+            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            cached_pc_files[package] = pc_files
+        except OSError:
+            pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
@@ -557,7 +587,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                     if os.path.sep in include:
                         first_word = include.split(os.path.sep)[0].lower()
                     cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    try:
+                        new_flags = os.popen2(cmd)[1].read().strip()
+                    except OSError:
+                        new_flags = ""
                     if new_flags:
                         if include in flag_dict:
                             flag_dict[include] += " " + new_flags
@@ -604,13 +637,17 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            include_path = os.popen2(cmd)[1].read().strip()
-            new_flags = deb_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+            try:
+                include_path = os.popen2(cmd)[1].read().strip()
+            except OSError:
+                include_path = ""
+            if include_path:
+                new_flags = deb_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
     if has_pkg_config and exe("/usr/bin/pacman"):
@@ -632,13 +669,17 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             # Search /usr/include
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            include_path = os.popen2(cmd)[1].read().strip()
-            new_flags = arch_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+            try:
+                include_path = os.popen2(cmd)[1].read().strip()
+            except OSError:
+                include_path = ""
+            if include_path:
+                new_flags = arch_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on FreeBSD
     if has_pkg_config and exe("/usr/sbin/pkg"):
@@ -660,13 +701,17 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             # Search system_include_dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            include_path = os.popen2(cmd)[1].read().strip()
-            new_flags = freebsd_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+            try:
+                include_path = os.popen2(cmd)[1].read().strip()
+            except OSError:
+                include_path = ""
+            if include_path:
+                new_flags = freebsd_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on macOS with Homebrew and pkg-config installed
     if has_pkg_config and which("brew"):
@@ -676,13 +721,19 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                 continue
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
             cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" -maxdepth 4 | tail -1'
-            include_path = os.popen2(cmd)[1].read().strip()
+            try:
+                include_path = os.popen2(cmd)[1].read().strip()
+            except OSError:
+                include_path = ""
             if not include_path:
                 # Could not find the include file in the system include dir, try searching /usr/local/Cellar for frameworks, and then headers
                 # This is much faster than searching for the header file directly, and it makes
                 # sense to look for the latest framework version before searching all of them.
                 cmd = 'find /usr/local/Cellar/ -name Frameworks -type d -maxdepth 3 | sort -V'
-                framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                try:
+                    framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                except OSError:
+                    framework_dirs = []
                 # If directories named "Frameworks" were found, sort them by version number and then search
                 # the directories of the ones with the highest version numbers for the include file
                 if framework_dirs:
@@ -696,7 +747,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                     # and look for the include file in question:
                     for framework_dir in framework_dict.values():
                         cmd = 'find -L "' + framework_dir + '" -type f -maxdepth 4 -name "' + include + '" | tail -1'
-                        include_path = os.popen2(cmd)[1].read().strip()
+                        try:
+                            include_path = os.popen2(cmd)[1].read().strip()
+                        except OSError:
+                            include_path = ""
                         if include_path:
                             # Now use the existing function for getting build flags from a found include file
                             new_flags = brew_include_path_to_cxxflags(include_path)
@@ -759,7 +813,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs gl 2>/dev/null"
-                new_flags = os.popen2(cmd)[1].read().strip()
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
@@ -799,7 +856,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                 cmd = "pkg-config --cflags --libs gl 2>/dev/null"
                 if also_glu:
                     cmd = cmd.replace(" gl ", " gl glu ")
-                new_flags = os.popen2(cmd)[1].read().strip()
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
                 if new_flags:
                     if include in flag_dict:
                         if new_flags not in flag_dict[include]:
@@ -858,7 +918,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glu 2>/dev/null"
-                new_flags = os.popen2(cmd)[1].read().strip()
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
                 if new_flags:
                     if include in flag_dict:
                         if new_flags not in flag_dict[include]:
@@ -868,7 +931,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                 else:
                     # Try pkg-config with freeglut
                     cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    try:
+                        new_flags = os.popen2(cmd)[1].read().strip()
+                    except OSError:
+                        new_flags = ""
                     if new_flags:
                         if include in flag_dict:
                             if new_flags not in flag_dict[include]:
@@ -890,7 +956,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
             if has_pkg_config:
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glew 2>/dev/null"
-                new_flags = os.popen2(cmd)[1].read().strip()
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
                 if new_flags:
                     if include in flag_dict:
                         if new_flags not in flag_dict[include]:
@@ -1060,6 +1129,17 @@ def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
     if other_cxxflags and other_cxxflags not in str(env["CXXFLAGS"]):
         env.Append(CXXFLAGS=other_cxxflags)
 
+def supported(cxx, std):
+    """Check if the given compiler supports the given sandard. Example: supported("g++", "c++17")"""
+    # Tested with clang++ and g++-7
+    cmd="echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
+    try:
+        return os.popen2(cmd)[1].read().strip() == "YES"
+    except OSError:
+        # Assume that this is an unknown compiler and that it does support the given standard.
+        # This lets the compiler fail by itself a bit further in the process, instead of stopping a working compiler from being used.
+        return True
+
 def sakemake_main():
     """The main function"""
 
@@ -1220,16 +1300,87 @@ def sakemake_main():
     if 'CXX' in ARGUMENTS:
         env.Replace(CXX=ARGUMENTS['CXX'])
 
+    # If "win64" is set, use the mingw32 g++ compiler
+    if win64:
+        # Check if looks like no Windows-related compiler is given, or not
+        if env["CXX"] in ["g++", "c++"]:
+            # Assume that a Windows-related compiler is not specified
+            if which("x86_64-w64-mingw32-g++"):
+                env.Replace(CXX="x86_64-w64-mingw32-g++")
+            elif which("docker"):
+                docker_image = "jhasse/mingw:2017-10-19"
+                print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
+                # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
+                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
+                env.Replace(CXX=docker_cxx)
+            else:
+                print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
+                print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
+                exit(1)
+    else:
+        # Check if a particular C++ compiler is given, or not
+        if str(env["CXX"]) == "c++":
+            compiler_binaries = ["g++-8", "g++-7", "g++-HEAD", "g++"]
+            if platform.system() == "Darwin":
+                # if on macOS, try clang++ first
+                compiler_binaries = ["clang++"] + compiler_binaries
+            elif exe("/usr/bin/pacman"):
+                # if on Arch Linux, try g++ first, since it's usually up to date
+                compiler_binaries = ["g++"] + compiler_binaries
+
+            found_compiler = False
+            for std in "c++17", "c++14", "c++11":
+                for compiler in compiler_binaries:
+                    if which(compiler) and supported(compiler, std):
+                        # Use the compiler if it exists in path and supports the standard
+                        env.Replace(CXX=compiler)
+                        if "-std=" not in str(env["CXXFLAGS"]):
+                            env.Append(CXXFLAGS=' -std=' + std)
+                        found_compiler = True
+                        break
+                else:
+                    print("WARNING: No compiler with support for " + std + " was found")
+                if found_compiler:
+                    break
+            else:
+                print("ERROR: found no C++ compiler with support for C++17, C++14 or C++11")
+                sys.exit(1)
+
+            # clang is set?
+            if int(ARGUMENTS.get('clang', 0)):
+                env.Replace(CXX='clang++')
+
     # std is not set, use the latest C++ standard
     if not ARGUMENTS.get('std', ''):
         # Use C++17
-        env.Append(CXXFLAGS=' -std=c++17')
+        if "-std=" not in str(env["CXXFLAGS"]):
+            env.Append(CXXFLAGS=' -std=c++17')
     else:
         # if std is something else, use that
         args = []
         for key, value in ARGLIST:
             if key == 'std':
-                env.Append(CXXFLAGS=' -std=' + value)
+                if supported(str(env["CXX"]), value):
+                    if "-std=" + value not in str(env["CXXFLAGS"]):
+                        env.Append(CXXFLAGS=' -std=' + value)
+                else:
+                    value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
+                    print("WARNING:", value, "is not supported for", str(env["CXX"]) + ", using", value_sub_3)
+                    if supported(str(env["CXX"]), value_sub_3):
+                        if value in str(env["CXXFLAGS"]):
+                            new_cxxflags = str(env["CXXFLAGS"]).replace(value, value_sub_3)
+                            env.Replace(CXXFLAGS=new_cxxflags)
+                        else:
+                            env.Append(CXXFLAGS=' -std=' + value_sub_3)
+                    else:
+                        print("WARNING:", value_sub_3, "is not supported for", str(env["CXX"]))
+
+    # Use the selected C++ compiler to report back all system include paths it will search automatically
+    compiler_includes = []
+    try:
+        compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+    except OSError:
+        pass
 
     # imgdir/datadir/shaderdir/sharedir/resourcedir is set?
     for dirname in ["img", "data", "shader", "share", "resource"]:
@@ -1282,45 +1433,6 @@ def sakemake_main():
     # Use -pipe for a possible speed increase when compiling
     # and -fPIC for position independent code
     env.Append(CXXFLAGS=' -pipe -fPIC')
-
-    # If "win64" is set, use the mingw32 g++ compiler
-    if win64:
-        # Check if looks like no Windows-related compiler is given, or not
-        if env["CXX"] in ["g++", "c++"]:
-            # Assume that a Windows-related compiler is not specified
-            if which("x86_64-w64-mingw32-g++"):
-                env.Replace(CXX="x86_64-w64-mingw32-g++")
-            elif which("docker"):
-                docker_image = "jhasse/mingw:2017-10-19"
-                print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
-                # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
-                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
-                env.Replace(CXX=docker_cxx)
-            else:
-                print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
-                print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
-                exit(1)
-    else:
-        # Check if a particular C++ compiler is given, or not
-        if str(env["CXX"]) == "c++":
-            gcc_binaries = ["g++-8", "g++-7", "g++-HEAD"]
-            if exe("/usr/bin/pacman"):
-                # if on Arch Linux, try g++ first, since it's usually up to date
-                gcc_binaries = ["g++"] + gcc_binaries
-            else:
-                # on other platforms, try the higher version numbers first, then g++
-                gcc_binaries += ["g++"]
-            for compiler in gcc_binaries:
-                if which(compiler):
-                    # Use the compiler if it exists in path
-                    env.Replace(CXX=compiler)
-                    break
-            # clang is set?
-            if int(ARGUMENTS.get('clang', 0)):
-                env.Replace(CXX='clang++')
-
-    # Use the selected C++ compiler to report back all system include paths it will search automatically
-    compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
 
     # Windows related build flags
     if win64:
