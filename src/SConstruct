@@ -1320,7 +1320,7 @@ def sakemake_main():
     else:
         # Check if a particular C++ compiler is given, or not
         if str(env["CXX"]) == "c++":
-            compiler_binaries = ["g++-8", "g++-7", "g++-HEAD", "g++"]
+            compiler_binaries = ["g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
@@ -1344,7 +1344,7 @@ def sakemake_main():
                     break
             else:
                 print("WARNING: found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
-                #exit(1)
+                exit(1)
 
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
