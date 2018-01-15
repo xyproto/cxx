@@ -56,6 +56,10 @@ for cmd in $cmds; do
       echo "Skipping $rel_dir"
       continue
     fi
+    if [ "sfml" == "$(basename "$rel_dir")" ]; then
+      echo "Skipping $rel_dir"
+      continue
+    fi
     echo "------- $rel_dir -------"
     if [ $cmd == clean -o $cmd == fastclean ]; then
       # without $args when cleaning
