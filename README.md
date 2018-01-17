@@ -1,18 +1,18 @@
 # [🍶](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE) [![Buildsystem](https://img.shields.io/badge/buildsystem-config--free-brightgreen.svg)](https://github.com/xyproto/sakemake)
 
-Configuration-free build system for developers on Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, that just want to work with C++17 code for building one or more executables, not build configuration and not compilation flags. Required packages must still be installed manually.
+Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. Required packages must still be installed manually and will not be done by *Sakemake*.
 
 *Sakemake* also provides a way to structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
-
-**No configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`.
+It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go. It may be rewritten to use fewer dependencies in the future.
 
 Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *Sakemake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
-The latest versions of both GCC (g++) and Clang (clang++) are supported.
+**No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *Sakemake*-compatible directory structure is recommended.
 
-If you are developing a C++ library, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system executables written in C++17, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. The only way to be sure is to give it a spin.
+The latest versions of both GCC (g++) and Clang (clang++) are always supported. Create an issue if there are problems.
+
+If you are developing a C++ **library**, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system **executables** written in **C++17**, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. *The only way to be sure is to give it a spin*.
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if `x86_64-w64-mingw32-g++` is missing: `jhasse/mingw:2017-10-19`.
 
@@ -347,7 +347,7 @@ If you have a project written in C++17 that you think should build with `sakemak
 
     [🍶](https://github.com/xyproto/sakemake)
 
-## Other proejcts that builds with Sakemake
+## Other projects that builds with Sakemake
 
 * [glskeleton](https://github.com/xyproto/glskeleton), OpenGL shader example application, uses `glfw`, `glew` and `glm`.
 * [vulkan_minimal_compute](https://github.com/xyproto/vulkan_minimal_compute), uses Vulkan for computations on the GPU.

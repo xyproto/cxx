@@ -1130,7 +1130,7 @@ def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
         env.Append(CXXFLAGS=" " + other_cxxflags)
 
 def supported(cxx, std):
-    """Check if the given compiler supports the given sandard. Example: supported("g++", "c++17")"""
+    """Check if the given compiler supports the given standard. Example: supported("g++", "c++17")"""
     # Tested with clang++ and g++-7
     cmd="echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
     try:
@@ -1268,7 +1268,7 @@ def sakemake_main():
             os.linesep) if not "up to date" in line]).strip()
         if output:
             print(output)
-        # Get arguments pased with args="..." (the arguments after -- on the sm command line)
+        # Get arguments passed with args="..." (the arguments after -- on the sm command line)
         given_args = []
         if 'args' in ARGUMENTS:
             given_args = ARGUMENTS['args']
@@ -1287,7 +1287,7 @@ def sakemake_main():
     # Set the number of jobs to the number of CPUs
     SetOption('num_jobs', cpu_count())
 
-    # Random build-order, for the possiblity of using the cache better
+    # Random build-order, for the possibility of using the cache better
     SetOption('random', 1)
 
     # Create an environment
