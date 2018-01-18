@@ -1,17 +1,72 @@
 FROM base/devel
 
-# Update and install packages
+ENV PACKAGE_SERVER_1 mirror.neuf.no/archlinux
+ENV PACKAGE_SERVER_2 arch-mirror.wtako.net
+
+# Use package server 1 and 2
+RUN echo 'Server = http://'"$PACKAGE_SERVER_1"'/$repo/os/$arch' >/etc/pacman.d/mirrorlist && echo 'Server = http://'"$PACKAGE_SERVER_2"'/$repo/os/$arch' >>/etc/pacman.d/mirrorlist
+
+# Update and upgrade packages
 RUN pacman -Syu --noconfirm
-RUN pacman -S --noconfirm --needed base-devel figlet freeglut git glew gtk3 make qt5 scons sdl2 sfml
+
+# Install dependencies
+RUN pacman -S --noconfirm --needed base-devel expac figlet freeglut gcc-ada git glew gtk3 jshon make ppl qt5 scons sdl2 sfml
 
 # Set up a user, just for running makepkg as non-root (it complains otherwise)
-RUN useradd -m -G wheel -s /bin/bash makepkg
+RUN useradd -m -G wheel -s /bin/bash aur
 
-# Install packer from AUR
-RUN mkdir -p packer && cd packer && curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=packer' && sudo -u makepkg makepkg && pacman -U packer*.pkg.* --noconfirm
+# Set up a directory for building packages
+RUN mkdir -p aur && chown aur aur
 
-# Install mingw-w64-gcc and mingw-w64-sdl2
-RUN packer -S mingw-w64-gcc mingw-w64-sdl2 --noconfirm
+# Download, build and install mingw-w64-binutils
+ENV pkg mingw-w64-binutils
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install isl
+ENV pkg isl
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install osl
+ENV pkg osl
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install cloog
+ENV pkg cloog
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install mingw-w64-headers
+ENV pkg mingw-w64-headers
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and all mingw-w64-headers-bootstrap
+ENV pkg mingw-w64-headers-bootstrap
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and all mingw-w64-gcc-base
+ENV pkg mingw-w64-gcc-base
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install mingw-w64-crt
+ENV pkg mingw-w64-crt
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+
+# Download, build and install mingw-w64-winpthreads
+ENV pkg mingw-w64-winpthreads
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm --force && rm aur/*.pkg.*
+
+# Download, build and install mingw-w64-gcc
+ENV pkg mingw-w64-gcc
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
