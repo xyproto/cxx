@@ -481,7 +481,7 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes):
+def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes, cxx=None):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
 
@@ -804,6 +804,11 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes)
                         flag_dict[include] += " -stdlib=libc++"
                     else:
                         flag_dict[include] = " -stdlib=libc++"
+                else:
+                    # SFML is likely to fail with g++ on macOS, unfortunately
+                    # If clang has not been specified, check CXX and give a warning
+                    if cxx and cxx.startswith("g"):
+                        print("WARNING: Compiling an application that uses SFML may require clang. Try: sm rebuild clang=1")
             elif win64:
                 new_flags = "-lopengl32"
                 if include in flag_dict:
@@ -1095,7 +1100,7 @@ def strip_ext(filenames):
 
 def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
     """Add build flags to the environment"""
-    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir, win64, compiler_includes)
+    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir, win64, compiler_includes, str(env["CXX"]))
     if includes:
         if "CPPPATH" in env:
             newincs = [inc for inc in includes.split(" ") if inc.lower() not in str(env["CPPPATH"]).lower()]
@@ -1346,7 +1351,7 @@ def sakemake_main():
                 if found_compiler:
                     break
             else:
-                print("WARNING: found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
+                print("WARNING: Found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
                 exit(1)
 
             if found_compiler:

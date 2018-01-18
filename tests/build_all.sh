@@ -56,23 +56,25 @@ for cmd in $cmds; do
       echo "Skipping $rel_dir"
       continue
     fi
-    if [ "sfml" == "$(basename "$rel_dir")" ]; then
-      echo "Skipping $rel_dir"
-      continue
-    fi
     echo "------- $rel_dir -------"
+    if [ "$(basename "$rel_dir")" == "sfml" ] && [ "$(uname -s)" == "Darwin" ]; then
+      # Should use clang for this combination
+      extraflag="clang=1"
+    else
+      extraflag=
+    fi
     if [ $cmd == clean -o $cmd == fastclean ]; then
       # without $args when cleaning
       echo sm -C "$rel_dir" $cmd
       sm -C "$rel_dir" $cmd
     elif [ $cmd != build ]; then
       # with both $cmd and $args
-      echo sm -C "$rel_dir" $cmd $args
-      sm -C "$rel_dir" $cmd $args
+      echo sm -C "$rel_dir" $cmd $args $extraflag
+      sm -C "$rel_dir" $cmd $args $extraflag
     else
       # without $cmd
-      echo sm -C "$rel_dir" $args
-      sm -C "$rel_dir" $args
+      echo sm -C "$rel_dir" $args $extraflag
+      sm -C "$rel_dir" $args $extraflag
     fi
     echo
   done
