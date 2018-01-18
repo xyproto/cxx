@@ -3,7 +3,7 @@ class Sakemake < Formula
   homepage "https://github.com/xyproto/sakemake"
   url "https://github.com/xyproto/sakemake.git",
       :tag => "1.45",
-      :revision => "1050ddd2f60bcde4d8a1485fc66cfa14a91d275b"
+      :revision => "e80f42483faa0997460e0ee6192963d707e3244b"
   sha256 "f1627ed11e84890befbf244828aff7a56a17157f721b445804e18b5461e3b8f3"
   version_scheme 1
   head "https://github.com/xyproto/sakemake.git"
@@ -18,16 +18,17 @@ class Sakemake < Formula
   depends_on "make" => :run
   depends_on "scons" => :run
   depends_on "pkg-config" => :run
-  depends_on "gcc@7" => :recommended
+  # gcc@7
+  depends_on "gcc" => :recommended
   depends_on "clang-format" => :recommended
   depends_on "mingw-w64" => :recommended
   depends_on "wine" => :optional
   depends_on "valgrind" => :optional
   depends_on "gprof2dot" => :optional
   depends_on "graphviz" => :optional
-  depends_on "kcachegrind" => :optional
 
   def install
+    #rm "LICENSE"
     system "make", "PREFIX=#{prefix}", "install"
   end
 
