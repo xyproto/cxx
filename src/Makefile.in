@@ -241,23 +241,27 @@ fmt:
 
 make:
 	@test -f Makefile && echo 'ERROR: Makefile already exists, will not overwrite' && exit 1 || true
-	@echo -e ".PHONY: clean\n\n${NAME}:" > Makefile
-	@echo -n 'Generating Makefile... '
-	@sm rebuild | grep -v "Discovering" | grep -v "Removed" | sed 's/^/\t/g' >> Makefile
-	@echo -e "\nclean:\n\trm -f ${NAME} *.o common/*.o include/*.o\n" >> Makefile
+	@printf ".PHONY: clean\n\n" > Makefile
+	@echo "${NAME}:" >> Makefile
+	@printf 'Generating Makefile... '
+	@sm rebuild | grep -v "Discovering" | grep -v "Removed" | \
+	  sed 's/^/	/g;s/^WARN/@echo WARN/g;s/^ERR/@echo ERR/g' >> Makefile
+	@printf "\nclean:\n" >> Makefile
+	@printf "\trm -f ${NAME} *.o common/*.o include/*.o\n" >> Makefile
 	@echo 'OK'
 
 script:
 	@test -f build.sh && echo 'ERROR: build.sh already exists, will not overwrite' && exit 1 || true
 	@test -f clean.sh && echo 'ERROR: clean.sh already exists, will not overwrite' && exit 1 || true
-	@echo -n 'Generating build.sh... '
-	@echo -e '#!/bin/sh\necho -n "Building... "' > build.sh
-	@sm rebuild | grep -v "Discovering" | grep -v "Removed" >> build.sh
+	@printf 'Generating build.sh... '
+	@printf '#!/bin/sh\nprintf "Building... "\n' > build.sh
+	@sm rebuild | grep -v "Discovering" | grep -v "Removed" | \
+	  sed 's/^WARN/# WARN/g;s/^ERR/# ERR/g' >> build.sh
 	@echo 'test $$? -eq 0 && echo OK' >> build.sh
 	@chmod +x build.sh
 	@echo OK
-	@echo -n 'Generating clean.sh... '
-	@echo -e "#!/bin/sh\necho -n 'Cleaning... '\nrm -f ${NAME} *.o common/*.o include/*.o" > clean.sh
+	@printf 'Generating clean.sh... '
+	@printf "#!/bin/sh\nprintf 'Cleaning... '\nrm -f ${NAME} *.o common/*.o include/*.o\n" > clean.sh
 	@echo 'test $$? -eq 0 && echo OK' >> clean.sh
 	@chmod +x clean.sh
 	@echo OK
