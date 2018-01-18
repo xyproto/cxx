@@ -46,7 +46,7 @@ install: generate
 	@install -m644 "${SRCDIR}/Makefile" "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
 	@install -m644 "${SRCDIR}/SConstruct" "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
-	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
 
 uninstall:
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
@@ -55,7 +55,7 @@ uninstall:
 	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/Makefile"
 	@-rm -f "${DESTDIR}${PREFIX}/share/${NAME}/SConstruct"
 	@-rmdir "${DESTDIR}${PREFIX}/share/${NAME}" 2>/dev/null || true
-	@-rm -f "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE"
+	@-rm -f "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
 	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}" 2>/dev/null || true
 
 clean:
