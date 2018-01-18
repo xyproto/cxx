@@ -1417,7 +1417,7 @@ def sakemake_main():
     # debug is set?
     if int(ARGUMENTS.get('debug', 0)):
         env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
-        if not int(ARGUMENTS.get('clang', 0)):
+        if platform.system() != "Darwin":
             env.Append(CXXFLAGS=' -static-libasan')
         env.Append(LINKFLAGS=' -fsanitize=address')
     # small is set?
