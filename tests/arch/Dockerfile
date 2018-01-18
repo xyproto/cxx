@@ -61,7 +61,7 @@ RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 # Download, build and install mingw-w64-winpthreads
 ENV pkg mingw-w64-winpthreads
 RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm --force && rm aur/*.pkg.*
+RUN (yes | pacman -U aur/*.pkg.* --force) && rm aur/*.pkg.*
 
 # Download, build and install mingw-w64-gcc
 ENV pkg mingw-w64-gcc
