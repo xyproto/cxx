@@ -1300,6 +1300,9 @@ def sakemake_main():
     if 'CXX' in ARGUMENTS:
         env.Replace(CXX=ARGUMENTS['CXX'])
 
+    # check if "clean" is being run
+    cleaning = env.GetOption('clean') or ('clean' in COMMAND_LINE_TARGETS)
+
     # If "win64" is set, use the mingw32 g++ compiler
     if win64:
         # Check if looks like no Windows-related compiler is given, or not
@@ -1330,6 +1333,8 @@ def sakemake_main():
 
             found_compiler = ""
             found_cppstd = ""
+
+            # Only check if the compiler supports the std if no "std=" is given
             for std in "c++17", "c++14", "c++11":
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
@@ -1347,7 +1352,7 @@ def sakemake_main():
             if found_compiler:
                 # Use the compiler if it exists in path and supports the standard
                 env.Replace(CXX=compiler)
-            if found_cppstd:
+            if found_cppstd and not ARGUMENTS.get('std', ''):
                 if "-std=" not in str(env["CXXFLAGS"]):
                     env.Append(CXXFLAGS=' -std=' + found_cppstd)
 
@@ -1355,116 +1360,116 @@ def sakemake_main():
             if int(ARGUMENTS.get('clang', 0)):
                 env.Replace(CXX='clang++')
 
-    # std is not set, use the latest C++ standard
-    if not ARGUMENTS.get('std', ''):
-        # Use C++17
-        if "-std=" not in str(env["CXXFLAGS"]):
-            env.Append(CXXFLAGS=' -std=c++17')
-    else:
-        # if std is something else, use that
-        args = []
-        for key, value in ARGLIST:
-            if key == 'std':
-                if supported(str(env["CXX"]), value):
-                    if "-std=" + value not in str(env["CXXFLAGS"]):
-                        env.Append(CXXFLAGS=' -std=' + value)
-                else:
-                    value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
-                    print("WARNING:", value, "is not supported for", str(env["CXX"]) + ", using", value_sub_3)
-                    if supported(str(env["CXX"]), value_sub_3):
-                        if value in str(env["CXXFLAGS"]):
-                            new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
-                            env.Replace(CXXFLAGS=new_cxxflags)
-                        else:
-                            env.Append(CXXFLAGS=' -std=' + value_sub_3)
-                    else:
-                        print("WARNING:", value_sub_3, "is not supported for", str(env["CXX"]))
-
-    # Use the selected C++ compiler to report back all system include paths it will search automatically
-    compiler_includes = []
-    try:
-        compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
-    except OSError:
-        pass
-
-    # imgdir/datadir/shaderdir/sharedir/resourcedir is set?
-    for dirname in ["img", "data", "shader", "share", "resource"]:
-        if ARGUMENTS.get(dirname + 'dir', ""):
-            # only add system directories that have local equivalents (same or parent directory, singular or plural)
-            if os.path.exists(dirname) or os.path.exists(os.path.join("..", dirname)) or os.path.exists(dirname + "s") or os.path.exists(os.path.join("..", dirname + "s")):
-                dir = os.path.normpath(ARGUMENTS[dirname + "dir"]) + os.path.sep
-                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+    if not cleaning:
+        if not bool(ARGUMENTS.get('std', '')):
+            # std is not set, use the latest C++ standard
+            if "-std=" not in str(env["CXXFLAGS"]):
+                env.Append(CXXFLAGS=' -std=c++17')
         else:
-            # not specified on the commandline
-            if os.path.exists(dirname):  # same directory
-                dir = os.path.normpath(dirname) + os.path.sep
-                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
-            elif os.path.exists(os.path.join("..", dirname)):  # parent directory
-                dir = os.path.normpath(os.path.join("..", dirname)) + os.path.sep
-                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
-            elif os.path.exists(dirname + "s"):  # same directory, plural
-                dir = os.path.normpath(dirname + "s") + os.path.sep
-                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
-            elif os.path.exists(os.path.join("..", dirname + "s")):  # parent directory, plural
-                dir = os.path.normpath(os.path.join("..", dirname + "s")) + os.path.sep
-                env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+            # if std is something else, use that
+            args = []
+            for key, value in ARGLIST:
+                if key == 'std':
+                    if supported(str(env["CXX"]), value):
+                        if "-std=" + value not in str(env["CXXFLAGS"]):
+                            env.Append(CXXFLAGS=' -std=' + value)
+                    else:
+                        value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
+                        print("WARNING:", value, "is not supported for", str(env["CXX"]) + ", using", value_sub_3)
+                        if supported(str(env["CXX"]), value_sub_3):
+                            if value in str(env["CXXFLAGS"]):
+                                new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
+                                env.Replace(CXXFLAGS=new_cxxflags)
+                            else:
+                                env.Append(CXXFLAGS=' -std=' + value_sub_3)
+                        else:
+                            print("WARNING:", value_sub_3, "is not supported for", str(env["CXX"]))
 
-    system_include_dir = "/usr/include"
-    # Set system_include_dir to the given value, or keep it as /usr/include
-    if ARGUMENTS.get('system_include_dir', ''):
-        system_include_dir = ARGUMENTS['system_include_dir']
-
-    # debug is set?
-    if int(ARGUMENTS.get('debug', 0)):
-        env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
-        if platform.system() != "Darwin":
-            env.Append(CXXFLAGS=' -static-libasan')
-        env.Append(LINKFLAGS=' -fsanitize=address')
-    # small is set?
-    elif int(ARGUMENTS.get('small', 0)):
-        env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
-        env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
-    # opt is set?
-    elif int(ARGUMENTS.get('opt', 0)):
-        # Enable more optimization flags than O3 + link time optimization
-        env.Append(CXXFLAGS=' -Ofast')
-        # Use -flto for link-time optimization
-        env.Append(CXXFLAGS=' -flto')
-        env.Append(LINKFLAGS=' -Wl,-flto')
-    else:
-        # Default optimization level
-        env.Append(CXXFLAGS=' -O2')
-
-    # Use -pipe for a possible speed increase when compiling
-    # and -fPIC for position independent code
-    env.Append(CXXFLAGS=' -pipe -fPIC')
-
-    # Windows related build flags
-    if win64:
-        env.Append(CXXFLAGS=' -Wno-unused-variable')
-        env.Append(CPPFLAGS=' -mwindows -lm')
-        env.Append(LINKFLAGS=' -mwindows -lm')
-        # This could also work, for automatically adding ".exe":
-        # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
-
-    # if sloppy is set, just try to build the damn thing
-    if int(ARGUMENTS.get('sloppy', 0)):
-        env.Append(CXXFLAGS=' -fpermissive -w')
-        # Don't assume the compiler knows about any include directories
+        # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
-    else:
-        # if sloppy is not set, add various warnings:
+        try:
+            compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+        except OSError:
+            pass
 
-        # pretty strict + fail at first error
-        env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wno-parentheses -Wfatal-errors')
+        # imgdir/datadir/shaderdir/sharedir/resourcedir is set?
+        for dirname in ["img", "data", "shader", "share", "resource"]:
+            if ARGUMENTS.get(dirname + 'dir', ""):
+                # only add system directories that have local equivalents (same or parent directory, singular or plural)
+                if os.path.exists(dirname) or os.path.exists(os.path.join("..", dirname)) or os.path.exists(dirname + "s") or os.path.exists(os.path.join("..", dirname + "s")):
+                    dir = os.path.normpath(ARGUMENTS[dirname + "dir"]) + os.path.sep
+                    env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+            else:
+                # not specified on the commandline
+                if os.path.exists(dirname):  # same directory
+                    dir = os.path.normpath(dirname) + os.path.sep
+                    env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+                elif os.path.exists(os.path.join("..", dirname)):  # parent directory
+                    dir = os.path.normpath(os.path.join("..", dirname)) + os.path.sep
+                    env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+                elif os.path.exists(dirname + "s"):  # same directory, plural
+                    dir = os.path.normpath(dirname + "s") + os.path.sep
+                    env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
+                elif os.path.exists(os.path.join("..", dirname + "s")):  # parent directory, plural
+                    dir = os.path.normpath(os.path.join("..", dirname + "s")) + os.path.sep
+                    env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
 
-        # if strict is set, enable even more warnings
-        if int(ARGUMENTS.get('strict', 0)):
-            env.Append(CXXFLAGS=' -Wextra -Wconversion -Wparentheses -Weffc++')
+        system_include_dir = "/usr/include"
+        # Set system_include_dir to the given value, or keep it as /usr/include
+        if ARGUMENTS.get('system_include_dir', ''):
+            system_include_dir = ARGUMENTS['system_include_dir']
 
-    # Append any given CXXFLAGS after the other flags, to be able to override them
-    if 'CXXFLAGS' in ARGUMENTS:
-        env.Append(CXXFLAGS=ARGUMENTS['CXXFLAGS'])
+        # debug is set?
+        if int(ARGUMENTS.get('debug', 0)):
+            env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
+            if platform.system() != "Darwin":
+                env.Append(CXXFLAGS=' -static-libasan')
+            env.Append(LINKFLAGS=' -fsanitize=address')
+        # small is set?
+        elif int(ARGUMENTS.get('small', 0)):
+            env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
+            env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
+        # opt is set?
+        elif int(ARGUMENTS.get('opt', 0)):
+            # Enable more optimization flags than O3 + link time optimization
+            env.Append(CXXFLAGS=' -Ofast')
+            # Use -flto for link-time optimization
+            env.Append(CXXFLAGS=' -flto')
+            env.Append(LINKFLAGS=' -Wl,-flto')
+        else:
+            # Default optimization level
+            env.Append(CXXFLAGS=' -O2')
+
+        # Use -pipe for a possible speed increase when compiling
+        # and -fPIC for position independent code
+        env.Append(CXXFLAGS=' -pipe -fPIC')
+
+        # Windows related build flags
+        if win64:
+            env.Append(CXXFLAGS=' -Wno-unused-variable')
+            env.Append(CPPFLAGS=' -mwindows -lm')
+            env.Append(LINKFLAGS=' -mwindows -lm')
+            # This could also work, for automatically adding ".exe":
+            # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
+
+        # if sloppy is set, just try to build the damn thing
+        if int(ARGUMENTS.get('sloppy', 0)):
+            env.Append(CXXFLAGS=' -fpermissive -w')
+            # Don't assume the compiler knows about any include directories
+            compiler_includes = []
+        else:
+            # if sloppy is not set, add various warnings:
+
+            # pretty strict + fail at first error
+            env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wno-parentheses -Wfatal-errors')
+
+            # if strict is set, enable even more warnings
+            if int(ARGUMENTS.get('strict', 0)):
+                env.Append(CXXFLAGS=' -Wextra -Wconversion -Wparentheses -Weffc++')
+
+        # Append any given CXXFLAGS after the other flags, to be able to override them
+        if 'CXXFLAGS' in ARGUMENTS:
+            env.Append(CXXFLAGS=ARGUMENTS['CXXFLAGS'])
 
     # add path to the include files
     env.Append(CPPPATH=LOCAL_INCLUDE_PATHS)
