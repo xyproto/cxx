@@ -1,4 +1,4 @@
-.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug export fastclean opt rebuild run sloppy strict test testbuild version
+.PHONY: all build clang clangdebug clangsloppy clangstrict clean debug debugbuild export fastclean opt rebuild run sloppy strict test testbuild version
 
 clang ?= 0
 strict ?= 0
@@ -92,8 +92,12 @@ clangsloppy:
 clangdebug:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
+debugbuild:
+	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
 debug:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@-lldb -o run "${NAME}" || gdb "${NAME}"
 
 run:
 	@scons ${SCONSFILEARG} -Q run clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))"

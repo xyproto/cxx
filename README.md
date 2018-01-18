@@ -205,6 +205,7 @@ void equal(T a, T b) {
 * `make`
 * `pkg-config`
 * `g++` with support for c++17 (version 7.2 or higher should work)
+* `lldb` or `gdb` for debugging
 
 #### Optional requirements
 
