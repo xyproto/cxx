@@ -7,7 +7,7 @@ examples_dir="$root_dir/../examples"
 figlet=$(which figlet 2>/dev/null || echo)
 cmds="clean build"
 args=
-skip=
+skip=()
 
 sm version
 
@@ -26,11 +26,36 @@ elif [ "$1" == fastbuild ] || [ "$1" == fast ]; then
   shift
   args="$@"
 elif [ "$1" == "skipwin" ]; then
-  skip="win64crate"
+  skip=(win64crate)
   shift
 elif [ "$1" != build ] && [ "$1" != "" ]; then
   cmds="$@"
 fi
+
+# Check for additional arguments now that many of the other first arguments has been shifted
+if [ "$1" == "skipsfml" ]; then
+  skip+=(sfml)
+  shift
+elif [ "$1" == "skipwin" ]; then
+  skip+=(sfml win64crate)
+  shift
+fi
+
+# contains checks if a bash array contains a given value
+# returns "y" and error code 0 if yes; "n" and 1 of not
+# thanks https://stackoverflow.com/q/3685970/131264
+function contains() {
+  local n=$#
+  local value=${!n}
+  for ((i=1;i < $#;i++)) {
+    if [ "${!i}" == "${value}" ]; then
+      echo "y"
+      return 0
+    fi
+  }
+  echo "n"
+  return 1
+}
 
 # Perform all commands
 for cmd in $cmds; do
@@ -52,7 +77,8 @@ for cmd in $cmds; do
   fi
   for example_dir in "$examples_dir"/*; do
     rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir" 2>/dev/null || echo $example_dir)"
-    if [ "$skip" == "$(basename "$rel_dir")" ]; then
+    name="$(basename "$rel_dir")"
+    if [ $(contains "${skip[@]}" "$name") == "y" ]; then
       echo "Skipping $rel_dir"
       continue
     fi

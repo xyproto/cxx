@@ -1,2 +1,2 @@
 #!/bin/sh
-sakemake/tests/build_all.sh skipwin
+sakemake/tests/build_all.sh skipwin skipsfml

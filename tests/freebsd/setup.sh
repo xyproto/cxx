@@ -28,5 +28,4 @@ pkg install -y bash figlet freeglut gcc7 git glew gmake gtk3 pkgconf qt5 scons s
 # Clone and install Sakemake
 rm -rf sakemake || true
 git clone https://github.com/xyproto/sakemake
-#(cd sakemake; git checkout freebsd)
 gmake -C sakemake install
