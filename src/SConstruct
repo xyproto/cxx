@@ -946,6 +946,19 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                                 flag_dict[include] += " " + new_flags
                         elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
+                    else:
+                        # Try pkg-config with just "glut". Needed on NetBSD.
+                        cmd = "pkg-config --cflags --libs glut 2>/dev/null"
+                        try:
+                            new_flags = os.popen2(cmd)[1].read().strip()
+                        except OSError:
+                            new_flags = ""
+                        if new_flags:
+                            if include in flag_dict:
+                                if new_flags not in flag_dict[include]:
+                                    flag_dict[include] += " " + new_flags
+                            elif new_flags not in flag_dict.values():
+                                flag_dict[include] = new_flags
 
         # If one of the includes mention GLEW, add flags for GLEW
         if include.endswith("/glew.h"):
