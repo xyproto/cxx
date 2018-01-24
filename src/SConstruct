@@ -162,7 +162,7 @@ def generic_include_path_to_cxxflags(include_path):
     # If a library in /usr/include/../lib matches the name of the directory in the system include directory, link with that
     for package in packages:
         possible_lib_name = "lib" + package + ".so"
-        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/include"]:
             if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
                 return "-l" + package
@@ -569,7 +569,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                 else:
                     flag_dict[include] = new_flags
 
-    # If the include exists in /usr/include, what is the first word, in lowercase?
+    # If the include exists in one of the include directories: what is the first word, in lowercase?
     if not win64:
         for include in includes:
             if include in flag_dict:
@@ -662,11 +662,11 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
-        # Try the same with pacman, but now using find to search deeper in /usr/include
+        # Try the same with pacman, but now using find to search deeper in the system include dir
         for include in includes:
             if include in flag_dict:
                 continue
-            # Search /usr/include
+            # Search the system include dir
             cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             try:
