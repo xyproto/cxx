@@ -910,8 +910,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                 elif new_flags not in flag_dict.values():
                     flag_dict[include] = new_flags
             else:
-                # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
+                # /usr/X11R7/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib"]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
                         if include in flag_dict:
@@ -934,8 +935,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
                 else:
-                    # Try pkg-config with glut and freeglut first. Needed on NetBSD.
-                    cmd = "pkg-config --cflags --libs glut freeglut 2>/dev/null"
+                    # Try pkg-config with freeglut and glut first. Needed on NetBSD.
+                    cmd = "pkg-config --cflags --libs freeglut glut 2>/dev/null"
                     try:
                         new_flags = os.popen2(cmd)[1].read().strip()
                     except OSError:
@@ -947,7 +948,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                         elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
                     else:
-                        # Try pkg-config with freeglut
+                        # Try pkg-config with just freeglut
                         cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
                         try:
                             new_flags = os.popen2(cmd)[1].read().strip()
