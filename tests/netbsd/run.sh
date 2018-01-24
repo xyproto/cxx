@@ -1,2 +1,2 @@
 #!/bin/sh
-vagrant up --provision
+vagrant up --provision --provider virtualbox
