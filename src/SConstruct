@@ -934,8 +934,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
                 else:
-                    # Try pkg-config with freeglut
-                    cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
+                    # Try pkg-config with glut. Needed on NetBSD.
+                    cmd = "pkg-config --cflags --libs glut 2>/dev/null"
                     try:
                         new_flags = os.popen2(cmd)[1].read().strip()
                     except OSError:
@@ -947,8 +947,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                         elif new_flags not in flag_dict.values():
                             flag_dict[include] = new_flags
                     else:
-                        # Try pkg-config with just "glut". Needed on NetBSD.
-                        cmd = "pkg-config --cflags --libs glut 2>/dev/null"
+                        # Try pkg-config with freeglut
+                        cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
                         try:
                             new_flags = os.popen2(cmd)[1].read().strip()
                         except OSError:
