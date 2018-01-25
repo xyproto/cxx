@@ -234,7 +234,7 @@ fmt:
 	  for dir in . include common; do \
 	    for f in $$dir/*.$$ext; do \
 		  test -f "$$f" && \
-	      clang-format -style='{BasedOnStyle: Chromium, IndentWidth: 4, Language: Cpp, DerivePointerAlignment: false, PointerAlignment: Left, ColumnLimit: 100, SortIncludes: true, SortUsingDeclarations: true, AlignTrailingComments: true}' -i "$$f" ; \
+		  clang-format -style='{BasedOnStyle: Chromium, ColumnLimit: 100, IndentWidth: 4}' -i "$$f" ; \
 	    done ; \
 	  done ; \
 	done || true
