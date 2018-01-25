@@ -388,7 +388,8 @@ def deb_include_path_to_cxxflags(include_path):
     if not pc_files:
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
         possible_lib_name = "lib" + package + ".so"
-        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+        machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
+        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
             if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
                 return "-l" + package
