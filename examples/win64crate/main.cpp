@@ -411,8 +411,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         UpdateWindow(hwnd);
 
         hdc = GetDC(hwnd);
-        SetDIBitsToDevice(hdc, 0, 0, canvasWidth, canvasHeight, 0, 0, 0, canvasHeight, canvas, pbmi,
-                          DIB_RGB_COLORS);
+        SetDIBitsToDevice(hdc, 0, 0, canvasWidth, canvasHeight, 0, 0, 0, canvasHeight, canvas,
+                          pbmi, DIB_RGB_COLORS);
         ReleaseDC(hwnd, hdc);
 
         return 0;
