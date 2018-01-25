@@ -912,8 +912,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] = new_flags
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
-                # /usr/X11R7/lib, link with that
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib"]:
+                # /usr/X11R7/lib, or /usr/lib + machine_name; link with that
+                machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
                         if include in flag_dict:
