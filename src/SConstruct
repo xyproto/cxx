@@ -619,7 +619,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         exit(1)
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
-    if has_pkg_config and exe("/usr/bin/dpkg-query"):
+    if has_pkg_config and exe("/usr/bin/dpkg-query") and not exe("/usr/bin/pacman"):
         has_package_manager = True
         for include in includes:
             if include in flag_dict:
@@ -1363,11 +1363,12 @@ def sakemake_main():
                         found_cppstd = std
                         break
                 else:
-                    print("WARNING: No compiler with support for " + std + " was found")
+                    print("ERROR: No compiler with support for " + std + " was found")
+                    exit(1)
                 if found_compiler:
                     break
             else:
-                print("WARNING: Found no C++ compiler with support for C++17, C++14 or C++11, tried these: " + str(compiler_binaries))
+                print("ERROR: No compiler with support for C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
                 exit(1)
 
             if found_compiler:
