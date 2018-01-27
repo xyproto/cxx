@@ -1335,7 +1335,16 @@ def sakemake_main():
                 docker_image = "jhasse/mingw:2017-10-19"
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
-                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home" -c /usr/bin/x86_64-w64-mingw32-g++ $_'
+                try:
+                    docker_major_version = int(os.popen2("docker --version")[1].read().split(" ")[2].split(".")[0])
+                except:
+                    docker_major_version = 0
+                if docker_major_version >= 18:
+                    # For newer versions of docker
+                    docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" -w /home --rm " + docker_image + " x86_64-w64-mingw32-g++"
+                else:
+                    # For older versions of docker
+                    docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
                 env.Replace(CXX=docker_cxx)
             else:
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
