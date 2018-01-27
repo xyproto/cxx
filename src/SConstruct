@@ -1335,7 +1335,7 @@ def sakemake_main():
                 docker_image = "jhasse/mingw:2017-10-19"
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
-                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
+                docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home" -c /usr/bin/x86_64-w64-mingw32-g++ $_'
                 env.Replace(CXX=docker_cxx)
             else:
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
@@ -1363,12 +1363,11 @@ def sakemake_main():
                         found_cppstd = std
                         break
                 else:
-                    print("ERROR: No compiler with support for " + std + " was found")
-                    exit(1)
+                    print("WARNING: No compiler with support for " + std + " was found")
                 if found_compiler:
                     break
             else:
-                print("ERROR: No compiler with support for C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
+                print("WARNING: No compiler with support for C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
                 exit(1)
 
             if found_compiler:
