@@ -318,6 +318,18 @@ Rules for Configuration-free projects:
 * When running `sm test`, the `_test.*` files will be compiled and run.
 * `*_test.*` files must each contain a `main` function.
 
+#### CMake
+
+* Projects that uses CMake (and need no extra command line arguments when running `cmake`) are also Sakemake compatible and can be built with:
+
+    sm cmake
+
+* Or if using CMake + Ninja:
+
+    sm ninja
+
+Only building projects with CMake is supported, not clearing, installing and packaging files.
+
 ## Source code formatting
 
 * `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Chromium"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
