@@ -263,12 +263,23 @@ script:
 
 cmake:
 	@test -f CMakeLists.txt || (echo 'ERROR: Could not find CmakeLists.txt' && exit 1)
-	@-rm -rf build
+	@-rm -rf build/
 	@mkdir -p build && cd build && cmake ..
 	@${MAKE} -C build
 
+cmake_install:
+	@DESTDIR="${DESTDIR}" PREFIX="${PREFIX}" ${MAKE} -C build install
+
+cmake_clean:
+	@-test -f CMakeLists.txt && echo Removing build/ && rm -rf build/ || true
+
 ninja:
 	@test -f CMakeLists.txt || (echo 'ERROR: Could not find CmakeLists.txt' && exit 1)
-	@-rm -rf build
+	@-rm -rf build/
 	@mkdir -p build && cd build && cmake .. -GNinja
 	@ninja -C build
+
+ninja_install:
+	@DESTDIR="${DESTDIR}" PREFIX="${PREFIX}" ninja -C build install
+
+ninja_clean: cmake_clean
