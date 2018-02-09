@@ -1164,6 +1164,8 @@ def supported(cxx, std):
 def sakemake_main():
     """The main function"""
 
+    SConsignFile("/tmp/sakemake") # will be stored as /tmp/sakemake.dblite
+
     # Include paths on the system, as reported by the compiler
     compiler_includes = []
 
