@@ -190,12 +190,12 @@ int main() {
 
 template<typename T>
 void equal(T a, T b) {
-    if (a == b) {
-        std::cout << "YES" << std::endl;
-    } else {
-        std::cout << "NO" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+  if (a == b) {
+    std::cout << "YES" << std::endl;
+  } else {
+    std::cout << "NO" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
 ```
 
@@ -231,10 +231,13 @@ These defines are passed to the compiler, if the corresponding directories exist
 * `IMGDIR` is defined to `./img` or `../img` (when developing) and `$PREFIX/share/application_name/img` (at installation time)
 * `SHADERDIR` is defined to `./shaders` or `../shaders` (when developing) and `$PREFIX/share/application_name/shaders` (at installation time)
 * `SHAREDIR` is defined to `./share` or `../share` (when developing) and `$PREFIX/share/application_name` (at installation time)
+* `RESOURCEDIR` is defined to `./resources` or `../resources` (when developing) and `$PREFIX/share/application_name/resources` (at installation time)
 
 This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
 
 See `examples/sdl2` and `examples/win64crate` for examples that uses `IMGDIR`.
+
+See `examples/mixer` for an example that uses `RESOURCEDIR`.
 
 An alternative method to using defines (defined with `-D` when building) is to use something like `SDL_GetBasePath()`. Example: [res_path.h](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
 
@@ -369,6 +372,6 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 ## General info
 
-* Version: 1.48
+* Version: 1.5.0
 * License: MIT
 * Author: Alexander F Rødseth &lt;xyproto@archlinux.org&gt;
