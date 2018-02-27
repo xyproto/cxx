@@ -4,10 +4,10 @@
 using namespace std::literals;
 
 void hello_test() {
-    equal(hello(), "Hello, World!"s);
+  equal(hello(), "Hello, World!"s);
 }
 
 int main() {
-    hello_test();
-    return 0;
+  hello_test();
+  return 0;
 }

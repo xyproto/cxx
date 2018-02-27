@@ -3,5 +3,5 @@
 using namespace std::literals;
 
 std::string hello() {
-    return "Hello, World!"s;
+  return "Hello, World!"s;
 }
