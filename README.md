@@ -14,7 +14,7 @@ Dependencies are discovered automatically, and the correct flags are given to th
 
 The latest versions of both GCC (g++) and Clang (clang++) are always supported. Create an issue if there are problems.
 
-If you are developing a C++ **library**, *Sakemake* is not for you, yet. However, if you are looking for a configuration-free build system **executables** written in **C++17**, on Linux, macOS or FreeBSD, *Sakemake* **might** be for you. *The only way to be sure is to give it a spin*.
+If you are developing a C++ **library**, *Sakemake* is not for you, yet. If you are looking for a configuration-free build system for **executables**, on Linux, macOS or FreeBSD, *Sakemake* might be for you. *(The only way to be sure is to give it a spin)*.
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if `x86_64-w64-mingw32-g++` is missing: `jhasse/mingw:2017-10-19`.
 
