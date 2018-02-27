@@ -886,6 +886,34 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                             flag_dict[include] = new_flags
                         break
 
+        # If one of the includes mentions "SDL2/SDL_*", add flags for "SDL2_*"
+        if include.startswith("SDL2/SDL_"):
+            word = "SDL2_" + include[9:].split(".")[0]
+            if has_pkg_config:
+                # Try pkg-config
+                cmd = "pkg-config --cflags --libs " + word + " 2>/dev/null"
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
+                if new_flags:
+                    if include in flag_dict:
+                        if new_flags not in flag_dict[include]:
+                            flag_dict[include] += " " + new_flags
+                    elif new_flags not in flag_dict.values():
+                        flag_dict[include] = new_flags
+            else:
+                # if the SDL2_* library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                    if os.path.exists(os.path.join(libpath, "lib" + word + ".so")):
+                        new_flags = "-l" + word
+                        if include in flag_dict:
+                            if new_flags not in flag_dict[include]:
+                                flag_dict[include] += " " + new_flags
+                        elif new_flags not in flag_dict.values():
+                            flag_dict[include] = new_flags
+                        break
+
         # If one of the includes just mention GLUT, add flags for GLUT or glu
         if include.startswith("GLUT/") or include.endswith("/glut.h"):
             new_flags = ""

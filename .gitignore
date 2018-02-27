@@ -32,6 +32,7 @@ examples/win64crate/win64crate
 examples/args/args
 examples/thread/thread
 examples/sfml/sfml
+examples/mixer/mixer
 
 # Test installs
 pkg/
