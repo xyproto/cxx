@@ -370,6 +370,16 @@ If you have a project written in C++17 that you think should build with `sakemak
 * [glskeleton](https://github.com/xyproto/glskeleton), OpenGL shader example application, uses `glfw`, `glew` and `glm`.
 * [vulkan_minimal_compute](https://github.com/xyproto/vulkan_minimal_compute), uses Vulkan for computations on the GPU.
 
+## Editor configuration
+
+If using syntastic and ViM, it may complain about defines that are supplied at build-time. Here is one way to silence the errors.
+
+Adjust to your preferences:
+
+    let g:syntastic_quiet_messages = {
+        \ "!level": "errors",
+        \ "regex":  [ 'RESOURCEDIR', 'DATADIR', 'IMGDIR', 'SHADERDIR', 'expected .*).* before string constant' ] }
+
 ## General info
 
 * Version: 1.5.0
