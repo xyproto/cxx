@@ -40,7 +40,7 @@ RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
 # Download, build and install mingw-w64-headers
 ENV pkg mingw-w64-headers
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck --skipchecksums
 RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
 # Download, build and all mingw-w64-headers-bootstrap
