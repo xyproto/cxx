@@ -30,7 +30,7 @@ examples/sdl2_opengl/sdl2_opengl
 examples/tinyhello/tinyhello
 examples/win64crate/win64crate
 examples/args/args
-examples/thread/thread
+examples/async/async
 examples/sfml/sfml
 examples/mixer/mixer
 
