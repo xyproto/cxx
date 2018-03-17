@@ -1,7 +1,9 @@
 # TODO
 
-- [ ] Void Linux support
+- [ ] Rewrite everything in a single language.
+- [ ] Add "sm init" to init flags, checksum source code etc. Add "sm build" to build. Just "sm" should do both "init" and "build".
 - [ ] Document `sm script` and `sm make`
+- [ ] Void Linux support
 - [ ] Add `sm kdev` for exporting a KDevelop project file
 - [ ] Add support for a `doc` directory that will be installed to the right place upon installation.
 
