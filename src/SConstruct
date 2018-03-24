@@ -1205,12 +1205,16 @@ def sakemake_main():
 
     # Check if we are compiling for 64-bit Windows or not
     win64 = bool(int(ARGUMENTS.get('win64', 0)))  # win64=1
+    # Check if the main source file uses OpenMP
+    openmp = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
             if line.strip() in ('#include <windows.h>', '#include "windows.h"'):
                 win64 = True
-                break
+            # Check if OpenMP is used in the main source file
+            if "#pragma omp" in line:
+                openmp = True
     except IOError:
         pass
 
@@ -1496,6 +1500,9 @@ def sakemake_main():
             # Use -flto for link-time optimization
             env.Append(CXXFLAGS=' -flto')
             env.Append(LINKFLAGS=' -Wl,-flto')
+        elif openmp:
+            # Use -O3 is OpenMP is in use
+            env.Append(CXXFLAGS=' -O3')
         else:
             # Default optimization level
             env.Append(CXXFLAGS=' -O2')
@@ -1511,6 +1518,11 @@ def sakemake_main():
             env.Append(LINKFLAGS=' -mwindows -lm')
             # This could also work, for automatically adding ".exe":
             # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
+
+        # OpenMP related build flags
+        if openmp:
+            env.Append(CXXFLAGS=' -fopenmp')
+            env.Append(LINKFLAGS=' -lomp')
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
