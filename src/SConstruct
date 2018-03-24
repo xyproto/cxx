@@ -1522,7 +1522,7 @@ def sakemake_main():
         # OpenMP related build flags
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
-            env.Append(LINKFLAGS=' -lomp')
+            env.Append(LINKFLAGS=' -fopenmp -lpthread')
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
