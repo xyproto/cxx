@@ -11,10 +11,6 @@
 *.zip
 *.exe
 
-# Generated files
-src/sakemake
-src/Makefile
-
 # Executables
 hello_test
 main
@@ -33,6 +29,12 @@ examples/args/args
 examples/async/async
 examples/sfml/sfml
 examples/mixer/mixer
+examples/smallpt/smallpt
+
+# Generated files
+src/sakemake
+src/Makefile
+examples/smallpt/*.png
 
 # Test installs
 pkg/
