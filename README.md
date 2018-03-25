@@ -309,7 +309,7 @@ Rules for Configuration-free projects:
 
 * `include/` should contain all include files belonging to the project.
 * `common/` should contain all source code that can be shared between multiple executables.
-* The top level directory, or `src/`, or a custom direct should contain at least one source file containing a `main` function.
+* The top level directory, or `src/`, or a custom directory should contain at least one source file containing a `main` function.
 * The name of the produced executable will be the same as the name of the parent directory, or `main` if the parent directory is `src`.
 * `img/` should contain all images.
 * `shaders/` should contain all shaders.
@@ -340,9 +340,7 @@ Only building projects with CMake is supported; not clearing, installing and pac
 
 ## Feedback
 
-The ideal is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
-
-Installing required packages still needs to be handled manually.
+The dream is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
 If you have a project written in C++17 that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
