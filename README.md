@@ -2,21 +2,21 @@
 
 Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
-Required libraries must be installed manually.
+Required libraries must still be installed manually.
 
 *Sakemake* also provides a way to structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go. It may be rewritten to use fewer dependencies in the future.
+It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go. *Sakemake* may be rewritten to not depend on these tools in the future.
 
 Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *Sakemake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
 **No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *Sakemake*-compatible directory structure is recommended.
 
-The latest versions of both GCC (g++) and Clang (clang++) are always supported. Create an issue if there are problems.
+The latest versions of both GCC (g++) and Clang (clang++) are always supported, and the latest released C++ standard. Create an issue if there are problems.
 
 If you are developing a C++ **library**, *Sakemake* is not for you, yet. If you are looking for a configuration-free build system for **executables**, on Linux, macOS or FreeBSD, *Sakemake* might be for you. *(The only way to be sure is to give it a spin)*.
 
-`x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if `x86_64-w64-mingw32-g++` is missing: `jhasse/mingw:2017-10-19`.
+`x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if the `x86_64-w64-mingw32-g++` executable is missing: `jhasse/mingw:2017-10-19`.
 
 ## Usage
 
@@ -93,7 +93,7 @@ The name of the current directory will be used as the executable name.
 * **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
 * **Auto-detection** of include, define and library flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
-* Uses the caching that is supplied by SCons, no ccache needed.
+* Uses the caching that is supplied by SCons, no ccache is needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
 * Only tested on Linux, FreeBSD and macOS. Should be easy to port to other systems that also has a package manager and pkg-config (or equivalent way to discover build flags).
 * Your include files are expected to be found in `./include` or `../include`.
@@ -101,6 +101,7 @@ The name of the current directory will be used as the executable name.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * See the `hello` example in the `examples` directory for the suggested directory structure.
 * For now, *Sakemake* is only meant to be able to build executables, not libraries.
+* The dependency discovery is reasonably fast, the compilation itself still takes the longest. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
 
 ## Suggested directory structure
 
@@ -204,7 +205,7 @@ void equal(T a, T b) {
 * `scons`
 * `make`
 * `pkg-config`
-* `g++` with support for c++17 (version 7.2 or higher should work)
+* `g++` with support for c++17 (gcc version 7.2 or higher should work)
 * `lldb` or `gdb` for debugging
 
 #### Optional requirements
@@ -219,19 +220,19 @@ void equal(T a, T b) {
 * `gprof2dot` and `dot`, for producing a graph from the information produced by valgrind.
 * `vagrant`, for testing *sakemake* on other operating systems.
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
-* Development packages for `SDL2`, `OpenGL`, `glut`, `GTK+3` and `Qt5`, for building and running the examples.
+* Development packages for `SDL2`, `OpenGL`, `glut`, `glfw`, `sfml`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
-* `clang-format` for `sm fmt`
+* `clang-format` for `sm fmt`.
 
 ## Defines
 
-These defines are passed to the compiler, if the corresponding directories exist (or will exist, when packaging):
+These defines are passed to the compiler, if the corresponding paths exist (or will exist, when packaging):
 
-* `DATADIR` is defined to `./data` or `../data` (when developing) and `$PREFIX/share/application_name/data` (at installation time)
-* `IMGDIR` is defined to `./img` or `../img` (when developing) and `$PREFIX/share/application_name/img` (at installation time)
-* `SHADERDIR` is defined to `./shaders` or `../shaders` (when developing) and `$PREFIX/share/application_name/shaders` (at installation time)
-* `SHAREDIR` is defined to `./share` or `../share` (when developing) and `$PREFIX/share/application_name` (at installation time)
-* `RESOURCEDIR` is defined to `./resources` or `../resources` (when developing) and `$PREFIX/share/application_name/resources` (at installation time)
+* `DATADIR` is defined as `./data` or `../data` (when developing) and `$PREFIX/share/application_name/data` (at installation time)
+* `IMGDIR` is defined as `./img` or `../img` (when developing) and `$PREFIX/share/application_name/img` (at installation time)
+* `SHADERDIR` is defined as `./shaders` or `../shaders` (when developing) and `$PREFIX/share/application_name/shaders` (at installation time)
+* `SHAREDIR` is defined as `./share` or `../share` (when developing) and `$PREFIX/share/application_name` (at installation time)
+* `RESOURCEDIR` is defined as `./resources` or `../resources` (when developing) and `$PREFIX/share/application_name/resources` (at installation time)
 
 This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
 
@@ -331,7 +332,7 @@ Rules for Configuration-free projects:
 
     sm ninja
 
-Only building projects with CMake is supported, not clearing, installing and packaging files.
+Only building projects with CMake is supported; not clearing, installing and packaging files.
 
 ## Source code formatting
 
@@ -374,7 +375,7 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 If using syntastic and ViM, it may complain about defines that are supplied at build-time. Here is one way to silence the errors.
 
-Adjust to your preferences:
+Adjust your ViM preferences:
 
     let g:syntastic_quiet_messages = {
         \ "!level": "errors",
