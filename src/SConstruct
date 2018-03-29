@@ -161,11 +161,11 @@ def generic_include_path_to_cxxflags(include_path):
             return ""
     # If a library in /usr/include/../lib matches the name of the directory in the system include directory, link with that
     for package in packages:
-        possible_lib_name = "lib" + package + ".so"
-        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/include"]:
-            if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
-                # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                return "-l" + package
+        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
+            for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/include"]:
+                if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                    # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                    return "-l" + possible_lib_name[3:-3]
     # Out of ideas
     return ""
 
@@ -223,17 +223,17 @@ def arch_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
-        possible_lib_name = "lib" + package + ".so"
         libpath = "/usr/lib"
-        if os.path.exists(os.path.join(libpath, possible_lib_name)):
-            # Found a good candidate, matching the name of the package that owns the include file. Try that.
-            return "-l" + package
+        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
+            if os.path.exists(os.path.join(libpath, possible_lib_name)):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                return "-l" + possible_lib_name[3:-3]
         print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -266,7 +266,8 @@ def freebsd_recommend_package(missing_include):
             cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             try:
-                packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n") if x.strip() and x.strip() not in SKIP_PACKAGES]
+                packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n")
+                            if x.strip() and x.strip() not in SKIP_PACKAGES]
             except OSError:
                 packages = []
             if packages:
@@ -302,18 +303,18 @@ def freebsd_include_path_to_cxxflags(include_path):
     else:
         cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
         try:
-            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
-        possible_lib_name = "lib" + package + ".so"
-        if not os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
-            print("WARNING: No pkg-config files for: " + package)
-            return ""
-        # Found a good candidate, matching the name of the package that owns the include file. Try that.
-        return "-l" + package
+        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
+            if os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                return "-l" + possible_lib_name[3:-3]
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -381,18 +382,18 @@ def deb_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
     if not pc_files:
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
-        possible_lib_name = "lib" + package + ".so"
-        machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
-        for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
-            if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
-                # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                return "-l" + package
+        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
+            machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
+            for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
+                if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                    # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                    return "-l" + possible_lib_name[3:-3]
         # Did not find a suitable library file, nor .pc file
         print("WARNING: No pkg-config files for: " + package)
         return ""
@@ -451,18 +452,18 @@ def brew_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = os.popen2(cmd)[1].read().strip().split(os.linesep)
+            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
-        possible_lib_name = "lib" + package + ".so"
-        if not os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
-            print("WARNING: No pkg-config files for: " + package)
-            return ""
-        # Found a good candidate, matching the name of the package that owns the include file. Try that.
-        return "-l" + package
+        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
+            if os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                return "-l" + possible_lib_name[3:-3]
+        print("WARNING: No pkg-config files for: " + package)
+        return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
     for pc_file in pc_files:
@@ -1043,7 +1044,6 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             elif new_flags not in flag_dict.values():
                 flag_dict[include] = new_flags
 
-
     # List includes that were not found
     missing_includes = [
         include for include in includes if include not in flag_dict and include not in global_flag_dict]
@@ -1144,7 +1144,8 @@ def strip_ext(filenames):
 
 def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
     """Add build flags to the environment"""
-    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(src_file, system_include_dir, win64, compiler_includes, str(env["CXX"]))
+    includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
+        src_file, system_include_dir, win64, compiler_includes, str(env["CXX"]))
     if includes:
         if "CPPPATH" in env:
             newincs = [inc for inc in includes.split(" ") if inc.lower() not in str(env["CPPPATH"]).lower()]
@@ -1178,10 +1179,11 @@ def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
     if other_cxxflags and other_cxxflags not in str(env["CXXFLAGS"]):
         env.Append(CXXFLAGS=" " + other_cxxflags)
 
+
 def supported(cxx, std):
     """Check if the given compiler supports the given standard. Example: supported("g++", "c++17")"""
     # Tested with clang++ and g++-7
-    cmd="echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
+    cmd = "echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
     try:
         return os.popen2(cmd)[1].read().strip() == "YES"
     except OSError:
@@ -1189,10 +1191,11 @@ def supported(cxx, std):
         # This lets the compiler fail by itself a bit further in the process, instead of stopping a working compiler from being used.
         return True
 
+
 def sakemake_main():
     """The main function"""
 
-    SConsignFile("/tmp/sakemake") # will be stored as /tmp/sakemake.dblite
+    SConsignFile("/tmp/sakemake")  # will be stored as /tmp/sakemake.dblite
 
     # Include paths on the system, as reported by the compiler
     compiler_includes = []
@@ -1375,10 +1378,14 @@ def sakemake_main():
                     docker_major_version = 0
                 if docker_major_version >= 18:
                     # For newer versions of docker
-                    docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" -w /home --rm " + docker_image + " x86_64-w64-mingw32-g++"
+                    docker_cxx = "docker run -v \"" + \
+                        os.path.abspath(os.path.curdir) + ":/home\" -w /home --rm " + \
+                        docker_image + " x86_64-w64-mingw32-g++"
                 else:
                     # For older versions of docker
-                    docker_cxx = "docker run -v \"" + os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
+                    docker_cxx = "docker run -v \"" + \
+                        os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + \
+                        ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
                 env.Replace(CXX=docker_cxx)
             else:
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
@@ -1439,7 +1446,8 @@ def sakemake_main():
                             env.Append(CXXFLAGS=' -std=' + value)
                     else:
                         value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
-                        print("WARNING:", value, "is not supported by", str(env["CXX"]) + " on this system, using", value_sub_3)
+                        print("WARNING:", value, "is not supported by", str(
+                            env["CXX"]) + " on this system, using", value_sub_3)
                         if supported(str(env["CXX"]), value_sub_3):
                             if value in str(env["CXXFLAGS"]):
                                 new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
@@ -1452,7 +1460,8 @@ def sakemake_main():
         # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
         try:
-            compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+            compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[
+                1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
         except OSError:
             pass
 

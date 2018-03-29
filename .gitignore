@@ -30,6 +30,7 @@ examples/async/async
 examples/sfml/sfml
 examples/mixer/mixer
 examples/smallpt/smallpt
+examples/soil/soil
 
 # Generated files
 src/sakemake
