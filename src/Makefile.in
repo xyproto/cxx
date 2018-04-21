@@ -28,6 +28,10 @@ else
   pkgdir ?= ${PWD}/pkg
 endif
 
+ifeq (${clang},1)
+  CXX=clang++
+endif
+
 # building the main executable, or the tests
 CMD := $(shell test -f main.cpp -o -f main.cc -o -f main.cxx || echo testbuild)
 
@@ -76,16 +80,21 @@ test:
 	@scons ${SCONSFILEARG} -Q test clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clang:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangstrict:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 strict=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangsloppy:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 sloppy=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 sloppy=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
 clangdebug:
-	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+clangtest:
+	@scons ${SCONSFILEARG} -Q test clang=1 win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
+clangrebuild: clean clang
 
 debugbuild:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
