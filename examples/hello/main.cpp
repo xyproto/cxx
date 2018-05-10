@@ -1,7 +1,8 @@
-#include <iostream>
 #include "hello.h"
+#include <iostream>
 
-int main() {
-  std::cout << hello() << std::endl;
-  return 0;
+int main()
+{
+    std::cout << hello() << std::endl;
+    return 0;
 }

@@ -41,7 +41,8 @@ const std::string os = "Hello, Plan9!"s;
 const std::string os = "Hello, Other operating system!"s;
 #endif
 
-auto main() -> int {
-  std::cout << os << std::endl;
-  return 0;
+auto main() -> int
+{
+    std::cout << os << std::endl;
+    return 0;
 }

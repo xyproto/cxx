@@ -31,6 +31,7 @@ examples/sfml/sfml
 examples/mixer/mixer
 examples/smallpt/smallpt
 examples/soil/soil
+examples/config/config
 
 # Generated files
 src/sakemake
