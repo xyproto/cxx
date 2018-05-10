@@ -336,7 +336,7 @@ Only building projects with CMake is supported; not clearing, installing and pac
 
 ## Source code formatting
 
-* `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Chromium"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
+* `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
 
 ## Feedback
 
