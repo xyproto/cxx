@@ -230,10 +230,14 @@ def arch_include_path_to_cxxflags(include_path):
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         libpath = "/usr/lib"
-        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
-            if os.path.exists(os.path.join(libpath, possible_lib_name)):
+        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+            if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                return "-l" + possible_lib_name[3:-3]
+                if os.path.exists(os.path.dirname(include_path)):
+                    # Also found an include directory
+                    return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
+                return "-l" + possible_lib_name
+        # Did not find a suitable library file, nor .pc file
         print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -309,10 +313,15 @@ def freebsd_include_path_to_cxxflags(include_path):
             pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
-        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
-            if os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+        libpath = "/usr/local/lib"
+        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+            if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                return "-l" + possible_lib_name[3:-3]
+                if os.path.exists(os.path.dirname(include_path)):
+                    # Also found an include directory
+                    return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
+                return "-l" + possible_lib_name
+        # Did not find a suitable library file, nor .pc file
         print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -387,13 +396,16 @@ def deb_include_path_to_cxxflags(include_path):
         except OSError:
             pc_files = []
     if not pc_files:
+        machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
-        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
-            machine_name = os.popen2("gcc -dumpmachine")[1].read().strip()
+        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
-                if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                    return "-l" + possible_lib_name[3:-3]
+                    if os.path.exists(os.path.dirname(include_path)):
+                        # Also found an include directory
+                        return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
+                    return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
         print("WARNING: No pkg-config files for: " + package)
         return ""
@@ -458,10 +470,14 @@ def brew_include_path_to_cxxflags(include_path):
             pc_files = []
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
-        for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
-            if os.path.exists(os.path.join("/usr/local/lib", possible_lib_name)):
+        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+            if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
-                return "-l" + possible_lib_name[3:-3]
+                if os.path.exists(os.path.dirname(include_path)):
+                    # Also found an include directory
+                    return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
+                return "-l" + possible_lib_name
+        # Did not find a suitable library file, nor .pc file
         print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
