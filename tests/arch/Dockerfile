@@ -20,7 +20,7 @@ RUN mkdir -p aur && chown aur aur
 
 # Download, build and install mingw-w64-binutils
 ENV pkg mingw-w64-binutils
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
+RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && curl -sLo 0200-remove-provide-qualifiers.patch	'https://aur.archlinux.org/cgit/aur.git/plain/0200-remove-provide-qualifiers.patch?h=mingw-w64-binutils' && sudo -u aur makepkg --skippgpcheck
 RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
 # Download, build and install isl
