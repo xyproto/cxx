@@ -88,7 +88,7 @@ The name of the current directory will be used as the executable name.
 
     sm fmt
 
-#### Export a QtCreator project file:
+#### Generate a qmake / QtCreator project file:
 
     sm pro
 
@@ -141,7 +141,8 @@ For a "Hello, World!" program that places the text-generation in a `string hello
 #include <iostream>
 #include "hello.h"
 
-int main() {
+int main()
+{
     std::cout << hello() << std::endl;
     return 0;
 }
@@ -164,8 +165,9 @@ std::string hello();
 
 using namespace std::literals;
 
-std::string hello() {
-  return "Hello, World!"s;
+std::string hello()
+{
+    return "Hello, World!"s;
 }
 ```
 
@@ -177,13 +179,15 @@ std::string hello() {
 
 using namespace std::literals;
 
-void hello_test() {
-  equal(hello(), "Hello, World!"s);
+void hello_test()
+{
+    equal(hello(), "Hello, World!"s);
 }
 
-int main() {
-  hello_test();
-  return 0;
+int main()
+{
+    hello_test();
+    return 0;
 }
 ```
 
@@ -196,13 +200,14 @@ int main() {
 #include <cstdlib>
 
 template<typename T>
-void equal(T a, T b) {
-  if (a == b) {
-    std::cout << "YES" << std::endl;
-  } else {
-    std::cout << "NO" << std::endl;
-    exit(EXIT_FAILURE);
-  }
+void equal(T a, T b)
+{
+    if (a == b) {
+      std::cout << "YES" << std::endl;
+    } else {
+      std::cerr << "NO" << std::endl;
+      exit(EXIT_FAILURE);
+    }
 }
 ```
 
