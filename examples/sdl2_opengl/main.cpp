@@ -22,13 +22,15 @@
 // SDL2 Headers
 #include <SDL2/SDL.h>
 
-std::string programName = "Headerphile SDL2 - OpenGL thing";
+using namespace std::string_literals;
+
+static std::string programName = "Headerphile SDL2 - OpenGL thing"s;
 
 // Our SDL_Window ( just like with SDL2 wihout OpenGL)
-SDL_Window* mainWindow;
+static SDL_Window* mainWindow;
 
 // Our opengl context handle
-SDL_GLContext mainContext;
+static SDL_GLContext mainContext;
 
 bool SetOpenGLAttributes();
 void Print_OpenGL_Version();
@@ -94,7 +96,7 @@ bool SetOpenGLAttributes()
     return true;
 }
 
-int main(int argc, char* argv[])
+int main()
 {
     if (!Init())
         return -1;
