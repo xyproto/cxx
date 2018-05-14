@@ -1670,17 +1670,12 @@ def sakemake_main():
         # Don't treat warnings as errors when using QtCreator, since it's very good at highlighting warnings by itself
         project_file.write("QMAKE_CXXFLAGS += " + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + "\n")
         project_file.write("QMAKE_LFLAGS += " + " ".join(env['LINKFLAGS']) + "\n\n")
-        # Thanks https://stackoverflow.com/a/2583548/131264
-        project_file.write("Release:DESTDIR = release\n");
-        project_file.write("Release:OBJECTS_DIR = release/.obj\n");
-        project_file.write("Release:MOC_DIR = release/.moc\n");
-        project_file.write("Release:RCC_DIR = release/.rcc\n");
-        project_file.write("Release:UI_DIR = release/.ui\n\n");
-        project_file.write("Debug:DESTDIR = debug\n");
-        project_file.write("Debug:OBJECTS_DIR = debug/.obj\n");
-        project_file.write("Debug:MOC_DIR = debug/.moc\n");
-        project_file.write("Debug:RCC_DIR = debug/.rcc\n");
-        project_file.write("Debug:UI_DIR = debug/.ui\n");
+        #project_file.write("release: DESTDIR = $$OUT_PWD/release\n");
+        #project_file.write("debug:   DESTDIR = $$OUT_PWD/debug\n");
+        #project_file.write("OBJECTS_DIR = $$DESTDIR/.obj\n");
+        #project_file.write("MOC_DIR = $$DESTDIR/.moc\n");
+        #project_file.write("RCC_DIR = $$DESTDIR/.qrc\n");
+        #project_file.write("UI_DIR = $$DESTDIR/.ui\n");
         project_file.close()
         exit(0)
 
