@@ -50,3 +50,9 @@ callgrind.out.*
 # Generated files
 build.sh
 clean.sh
+
+# qmake and QtCreator
+examples/build-*-Debug/
+*.pro
+*.pro.user
+.qmake.stash
