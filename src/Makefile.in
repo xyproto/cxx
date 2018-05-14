@@ -79,6 +79,9 @@ testbuild:
 test:
 	@scons ${SCONSFILEARG} -Q test clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 
+pro:
+	@scons ${SCONSFILEARG} -Q pro clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+
 clang:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
 

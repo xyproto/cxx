@@ -1646,10 +1646,30 @@ def sakemake_main():
             else:
                 includemap[key] = include
     new_includes = includemap.values()
+
     env.Append(CPPFLAGS=" " + " ".join(["-I" + x for x in new_includes if x != "." and x != ".."]))
     env.Replace(CPPPATH=[])
     # This also work for adding includes, but SConstruct changes them to longer versions of the same path names
     # env.Replace(CPPPATH=new_includes)
+
+    # Generate a QtCreator project file if "pro" is an argument
+    if 'pro' in COMMAND_LINE_TARGETS:
+        name = main_executable
+        if name.endswith(".exe"):
+            name = name[:-4]
+        project_file = open(name + ".pro", "w")
+        project_file.write("TEMPLATE = app\n")
+        project_file.write("CONFIG += c++17\n")
+        project_file.write("CONFIG -= app_bundle\n")
+        project_file.write("CONFIG -= qt\n")
+        project_file.write("CONFIG += console\n")
+        project_file.write("QMAKE_CXX = " + env['CXX'] + "\n")
+        project_file.write("QMAKE_CXXFLAGS += " + " ".join(env['CXXFLAGS']) + "\n")
+        project_file.write("SOURCES += " + main_source_file + " " + " ".join(dep_src) + "\n")
+        project_file.write("INCLUDEPATH += " + " ".join(new_includes) + "\n")
+        project_file.write("LINKFLAGS += " + " ".join(env['LINKFLAGS']) + "\n")
+        project_file.close()
+        exit(0)
 
     # Set up non-default targets for all the test executables (based on *_test sources)
     for test_src in test_sources:

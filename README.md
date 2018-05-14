@@ -88,6 +88,12 @@ The name of the current directory will be used as the executable name.
 
     sm fmt
 
+#### Export a QtCreator project file:
+
+    sm pro
+
+Tested with QtCreator 4.6 on Arch Linux.
+
 ## Features and limitations
 
 * **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
