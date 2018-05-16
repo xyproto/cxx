@@ -112,7 +112,7 @@ run:
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}" resourcedir="${PREFIX}/share/${NAME}/resources"
+	@scons ${SCONSFILEARG} -Q clang=${clang} win64=${win64} strict=${strict} debug=${debug} opt=${opt} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}" resourcedir="${PREFIX}/share/${NAME}/resources" resdir="${PREFIX}/share/${NAME}/res"
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
@@ -121,21 +121,24 @@ main: $(wildcard main.c*)
 # ../data
 # ../shaders
 # ../resources
+# ../res
 # ./img
 # ./data
 # ./shaders
 # ./resources
+# ./res
 # "img/
 # "data/
 # "shaders/
 # "resources/
+# "res/
 #
 patch:
 	@if [ ${patch_paths} = 1 ]; then \
 	  for ext in cpp cc cxx; do \
 	    test -f main.$$ext && \
 		cp -f -v main.$$ext main.$$ext.bak && \
-		sed "s:\.\./img:${PREFIX}/share/${NAME}/img:g;s:\./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:\.\./data:${PREFIX}/share/${NAME}/data:g;s:\./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:\.\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\"shaders/:\"${PREFIX}/share/${NAME}/shaders/:g;s:\.\./resources:${PREFIX}/share/${NAME}/resources:g;s:\./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g" < main.$$ext.bak > main.$$ext; \
+		sed "s:\.\./img:${PREFIX}/share/${NAME}/img:g;s:\./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:\.\./data:${PREFIX}/share/${NAME}/data:g;s:\./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:\.\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\"shaders/:\"${PREFIX}/share/${NAME}/shaders/:g;s:\.\./resources:${PREFIX}/share/${NAME}/resources:g;s:\./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g;s:\.\./res:${PREFIX}/share/${NAME}/res:g;s:\./res:${PREFIX}/share/${NAME}/res:g;s:\"res/:\"${PREFIX}/share/${NAME}/res/:g" < main.$$ext.bak > main.$$ext; \
 	  done || \
 	  true; \
 	fi
@@ -149,7 +152,7 @@ unpatch:
 	  done; \
 	fi
 
-# install the executable, data/*, img/*, shaders/*, resources/* or share/* into a shared directory, also install the license, if available
+# install the executable, data/*, img/*, shaders/*, resources/*, res/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@if [ ${win64} = 0 ]; then \
@@ -193,6 +196,10 @@ install: patch main unpatch
 	@test -d resource && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/resources" && \
 	  cp -r resource/* "${DESTDIR}${PREFIX}/share/${NAME}/resources/" || \
+	  true
+	@test -d res && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/res" && \
+	  cp -r res/* "${DESTDIR}${PREFIX}/share/${NAME}/res/" || \
 	  true
 	@test -d share && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}" && \

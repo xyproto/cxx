@@ -244,6 +244,7 @@ These defines are passed to the compiler, if the corresponding paths exist (or w
 * `SHADERDIR` is defined as `./shaders` or `../shaders` (when developing) and `$PREFIX/share/application_name/shaders` (at installation time)
 * `SHAREDIR` is defined as `./share` or `../share` (when developing) and `$PREFIX/share/application_name` (at installation time)
 * `RESOURCEDIR` is defined as `./resources` or `../resources` (when developing) and `$PREFIX/share/application_name/resources` (at installation time)
+* `RESDIR` is defined as `./res` or `../res` (when developing) and `$PREFIX/share/application_name/res` (at installation time)
 
 This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
 

@@ -1657,6 +1657,9 @@ def sakemake_main():
         name = main_executable
         if name.endswith(".exe"):
             name = name[:-4]
+        if os.path.exists(name + ".pro"):
+            print("File already exists: " + name + ".pro")
+            exit(1)
         project_file = open(name + ".pro", "w")
         project_file.write("TEMPLATE = app\n\n")
         project_file.write("CONFIG += c++17\n")
@@ -1674,6 +1677,15 @@ def sakemake_main():
             project_file.write("QMAKE_CXXFLAGS += " + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + "\n")
         if 'LINKFLAGS' in env:
             project_file.write("QMAKE_LFLAGS += " + " ".join(env['LINKFLAGS']) + "\n\n")
+        if 'CPPDEFINES' in env:
+            s = "DEFINES += "
+            for define in env['CPPDEFINES']:
+                if "=" in define:
+                    name, value = define.split("=", 1)
+                    s += name + '="' + value.replace(r'"', r'\"').replace("'\\\"", "'\\\"" + "$$_PRO_FILE_PWD_/") + '" '
+                else:
+                    s += define + ' '
+            project_file.write(s.strip() + "\n")
         project_file.close()
         exit(0)
 
