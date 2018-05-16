@@ -10,7 +10,7 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_1"'/$repo/os/$arch' >/etc/pacman.d/m
 RUN pacman -Syu --noconfirm
 
 # Install dependencies
-RUN pacman -S --noconfirm --needed base-devel expac figlet freeglut gcc-ada git glew gtk3 jshon make ppl qt5 scons sdl2 sfml
+RUN pacman -S --noconfirm --needed base-devel expac figlet freeglut gcc-ada git glew gnupg gtk3 jshon make pacutils perl perl-data-dump perl-json perl-libwww perl-lwp-protocol-https perl-term-readline-gnu perl-term-ui ppl qt5 scons sdl2 sfml
 
 # Set up a user, just for running makepkg as non-root (it complains otherwise)
 RUN useradd -m -G wheel -s /bin/bash aur
@@ -18,55 +18,16 @@ RUN useradd -m -G wheel -s /bin/bash aur
 # Set up a directory for building packages
 RUN mkdir -p aur && chown aur aur
 
-# Download, build and install mingw-w64-binutils
-ENV pkg mingw-w64-binutils
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && curl -sLo 0200-remove-provide-qualifiers.patch	'https://aur.archlinux.org/cgit/aur.git/plain/0200-remove-provide-qualifiers.patch?h=mingw-w64-binutils' && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and install isl
-ENV pkg isl
+# Download, build and install trizen
+ENV pkg trizen
 RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
 RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
-# Download, build and install osl
-ENV pkg osl
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+# Trust Nick Clifton, for installing mingw-w64
+RUN yes | gpg --recv-keys 13FCEF89DD9E3C4F
 
-# Download, build and install cloog
-ENV pkg cloog
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and install mingw-w64-headers
-ENV pkg mingw-w64-headers
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck --skipchecksums
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and all mingw-w64-headers-bootstrap
-ENV pkg mingw-w64-headers-bootstrap
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and all mingw-w64-gcc-base
-ENV pkg mingw-w64-gcc-base
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and install mingw-w64-crt
-ENV pkg mingw-w64-crt
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
-
-# Download, build and install mingw-w64-winpthreads
-ENV pkg mingw-w64-winpthreads
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN (yes | pacman -U aur/*.pkg.* --force) && rm aur/*.pkg.*
-
-# Download, build and install mingw-w64-gcc
-ENV pkg mingw-w64-gcc
-RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
-RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
+# Download build and install mingw-w64-binutils isl osl cloog mingw-w64-headers mingw-w64-gcc-base and wingw-w64-gcc
+RUN sudo -u aur trizen -S mingw-w64-binutils isl osl cloog mingw-w64-headers mingw-w64-gcc-base and wingw-w64-gcc
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
