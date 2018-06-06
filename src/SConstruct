@@ -1536,6 +1536,22 @@ def sakemake_main():
         # and -fPIC for position independent code
         env.Append(CXXFLAGS=' -pipe -fPIC')
 
+        # Linux related build flags
+        if platform.system() == "Linux":
+            #
+            # Many options are avilable:
+            #
+            # _GNU_SOURCE
+            # _XOPEN_SOURCE=700
+            # _POSIX_C_SOURCE=200809L
+            # _DEFAULT_SOURCE
+            #
+            # See:
+            # https://stackoverflow.com/a/5583764/131264
+            # https://stackoverflow.com/a/29201732/131264
+            #
+            env.Append(CPPDEFINES=["_GNU_SOURCE", "_BSD_SOURCE", "_DEFAULT_SOURCE"])
+
         # Windows related build flags
         if win64:
             env.Append(CXXFLAGS=' -Wno-unused-variable')
