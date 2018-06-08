@@ -1539,7 +1539,7 @@ def sakemake_main():
         # Linux related build flags, for C (not C++)
         #if platform.system() == "Linux":
         #    #
-        #    # Many options are avilable:
+        #    # Many options are available:
         #    #
         #    # _GNU_SOURCE
         #    # _XOPEN_SOURCE=700
