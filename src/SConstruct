@@ -1077,7 +1077,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             elif which("dpkg"):  # Debian / Ubuntu
                 for missing_include in missing_includes:
                     deb_recommend_package(missing_include)
-            elif which("pacman"):
+            elif which("pacman"): # Arch
                 for missing_include in missing_includes:
                     arch_recommend_package(missing_include)
             print("ERROR: missing include: {}".format(missing_includes[0]))
@@ -1115,17 +1115,17 @@ def get_main_source_file(test_sources=None):
         # Look at the one source file that was found
         fname = all_sources[0]
         try:
-            if "main(" in open(fname).read():
+            if " main(" in open(fname).read():
                 return fname
         except:
             print("Could not read " + fname)
             exit(1)
-        # The one source file that was found did not contain "main("
+        # The one source file that was found did not contain " main("
         return ""
-    # Multiple candidates for the main source file, use the one that contains the word "main("
+    # Multiple candidates for the main source file, use the one that contains " main("
     for fname in all_sources:
         try:
-            if "main(" in open(fname).read():
+            if " main(" in open(fname).read():
                 return fname
         except:
             print("Could not read " + fname)
@@ -1226,6 +1226,8 @@ def sakemake_main():
     win64 = bool(int(ARGUMENTS.get('win64', 0)))  # win64=1
     # Check if the main source file uses OpenMP
     openmp = False
+    # Check if the main source file lets GLFW include Vulkan
+    glfw_vulkan = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
@@ -1234,6 +1236,9 @@ def sakemake_main():
             # Check if OpenMP is used in the main source file
             if "#pragma omp" in line:
                 openmp = True
+            # Check if GLFW_INCLUDE_VULKAN is defined in the main source file
+            if "#define GLFW_INCLUDE_VULKAN" in line:
+                glfw_vulkan = True
     except IOError:
         pass
 
@@ -1526,15 +1531,18 @@ def sakemake_main():
             env.Append(CXXFLAGS=' -flto')
             env.Append(LINKFLAGS=' -Wl,-flto')
         elif openmp:
-            # Use -O3 is OpenMP is in use
+            # Use -O3 if OpenMP is in use
             env.Append(CXXFLAGS=' -O3')
         else:
             # Default optimization level
             env.Append(CXXFLAGS=' -O2')
 
         # Use -pipe for a possible speed increase when compiling
-        # and -fPIC for position independent code
+        # and -fPIC for position independent code.
         env.Append(CXXFLAGS=' -pipe -fPIC')
+
+        # Add two flags that are added by default if using qmake.
+        env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)
         #if platform.system() == "Linux":
@@ -1564,6 +1572,10 @@ def sakemake_main():
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
             env.Append(LINKFLAGS=' -fopenmp -lpthread')
+
+        # GLFW + Vulkan related build flags
+        if glfw_vulkan:
+            env.Append(LINKFLAGS=' -lvulkan')
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
