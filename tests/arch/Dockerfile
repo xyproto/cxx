@@ -23,6 +23,7 @@ ENV pkg trizen
 RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
 RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
+# Don't ask for a password when installing with sudo below
 RUN echo 'ALL ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers
 
 # Trust Nick Clifton, for installing mingw-w64
@@ -31,8 +32,11 @@ RUN yes | gpg --recv-keys 13FCEF89DD9E3C4F
 # Trust Nick Clifton, for installing mingw-w64
 RUN yes | sudo -u aur gpg --recv-keys 13FCEF89DD9E3C4F
 
+# isl
+RUN sudo -u aur trizen -S isl --noconfirm
+
 # Download build and install mingw-w64-binutils osl cloog mingw-w64-headers mingw-w64-gcc-base and wingw-w64-gcc
-RUN sudo -u aur trizen -S mingw-w64-binutils osl cloog mingw-w64-headers mingw-w64-gcc-base and wingw-w64-gcc
+RUN sudo -u aur trizen -S mingw-w64-binutils osl cloog mingw-w64-headers mingw-w64-gcc-base and wingw-w64-gcc --noconfirm
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
