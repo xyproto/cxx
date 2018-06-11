@@ -41,6 +41,8 @@ elif [ "$1" == "skipwin" ]; then
   shift
 fi
 
+args=( "$@" )
+
 # contains checks if a bash array contains a given value
 # returns "y" and error code 0 if yes; "n" and 1 of not
 # thanks https://stackoverflow.com/q/3685970/131264
@@ -79,7 +81,11 @@ for cmd in $cmds; do
     rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir" 2>/dev/null || echo $example_dir)"
     name="$(basename "$rel_dir")"
     if [ $(contains "${skip[@]}" "$name") == "y" ]; then
-      echo "Skipping $rel_dir"
+      echo "Skipping (1) $rel_dir"
+      continue
+    fi
+    if [ $(contains "${args[@]}" "skip$name") == "y" ]; then
+      echo "Skipping (2) $rel_dir"
       continue
     fi
     echo "------- $rel_dir -------"
