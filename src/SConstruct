@@ -1077,7 +1077,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             elif which("dpkg"):  # Debian / Ubuntu
                 for missing_include in missing_includes:
                     deb_recommend_package(missing_include)
-            elif which("pacman"): # Arch
+            elif which("pacman"):  # Arch
                 for missing_include in missing_includes:
                     arch_recommend_package(missing_include)
             print("ERROR: missing include: {}".format(missing_includes[0]))
@@ -1467,8 +1467,8 @@ def sakemake_main():
                             env.Append(CXXFLAGS=' -std=' + value)
                     else:
                         value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
-                        print("WARNING:", value, "is not supported by", str(
-                            env["CXX"]) + " on this system, using", value_sub_3)
+                        print("WARNING: " + value + " is not supported by " +
+                              str(env["CXX"]) + " on this system, using: " + value_sub_3)
                         if supported(str(env["CXX"]), value_sub_3):
                             if value in str(env["CXXFLAGS"]):
                                 new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
@@ -1546,7 +1546,7 @@ def sakemake_main():
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)
-        #if platform.system() == "Linux":
+        # if platform.system() == "Linux":
         #    #
         #    # Many options are available:
         #    #
