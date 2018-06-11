@@ -1542,7 +1542,8 @@ def sakemake_main():
         env.Append(CXXFLAGS=' -pipe -fPIC')
 
         # Add two flags that are added by default if using qmake.
-        env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
+        if platform.system() == "Linux":
+            env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)
         #if platform.system() == "Linux":
