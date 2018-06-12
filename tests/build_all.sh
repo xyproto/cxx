@@ -66,6 +66,7 @@ for example_dir in "$examples_dir"/*; do
   if [ $(contains "$@" "skip$name") == "y" ]; then
      skip+=($name)
      args=`for word in $args; do case $word in "skip$name") ;; *) echo -n "$word " ;; esac; done`
+     cmds=`for word in $cmds; do case $word in "skip$name") ;; *) echo -n "$word " ;; esac; done`
   fi
 done
 
