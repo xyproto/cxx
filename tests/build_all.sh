@@ -57,6 +57,7 @@ function contains() {
 if [ $(contains "$@" skipwin) == "y" ]; then
   skip+=(win64crate)
   args=`for word in $args; do case $word in "skipwin") ;; *) echo -n "$word " ;; esac; done`
+  cmds=`for word in $cmds; do case $word in "skipwin") ;; *) echo -n "$word " ;; esac; done`
 fi
 # Go through all the directory names in the examples directory
 for example_dir in "$examples_dir"/*; do
