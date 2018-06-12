@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+# TODO: Rewrite in a proper programming language
+
 cur_dir="$(pwd)"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 examples_dir="$root_dir/../examples"
@@ -25,23 +27,11 @@ elif [ "$1" == fastbuild ] || [ "$1" == fast ]; then
   cmds="fastclean build"
   shift
   args="$@"
-elif [ "$1" == "skipwin" ]; then
-  skip=(win64crate)
-  shift
 elif [ "$1" != build ] && [ "$1" != "" ]; then
   cmds="$@"
 fi
 
-# Check for additional arguments now that many of the other first arguments has been shifted
-if [ "$1" == "skipsfml" ]; then
-  skip+=(sfml)
-  shift
-elif [ "$1" == "skipwin" ]; then
-  skip+=(sfml win64crate)
-  shift
-fi
-
-args=( "$@" )
+args="$@"
 
 # contains checks if a bash array contains a given value
 # returns "y" and error code 0 if yes; "n" and 1 of not
@@ -58,6 +48,25 @@ function contains() {
   echo "n"
   return 1
 }
+
+#
+# Skip what should be skipped, collect the other arguments
+#
+
+# A special case:
+if [ $(contains "$@" skipwin) == "y" ]; then
+  skip+=(win64crate)
+  args=`for word in $args; do case $word in "skipwin") ;; *) echo -n "$word " ;; esac; done`
+fi
+# Go through all the directory names in the examples directory
+for example_dir in "$examples_dir"/*; do
+  rel_dir="$(realpath --relative-to="$cur_dir" "$example_dir" 2>/dev/null || echo $example_dir)"
+  name="$(basename "$rel_dir")"
+  if [ $(contains "$@" "skip$name") == "y" ]; then
+     skip+=($name)
+     args=`for word in $args; do case $word in "skip$name") ;; *) echo -n "$word " ;; esac; done`
+  fi
+done
 
 # Perform all commands
 for cmd in $cmds; do
@@ -84,7 +93,7 @@ for cmd in $cmds; do
       echo "Skipping (1) $rel_dir"
       continue
     fi
-    if [ $(contains "${args[@]}" "skip$name") == "y" ]; then
+    if [ $(contains "$@" "skip$name") == "y" ]; then
       echo "Skipping (2) $rel_dir"
       continue
     fi
