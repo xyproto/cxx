@@ -1390,7 +1390,7 @@ def sakemake_main():
             if which("x86_64-w64-mingw32-g++"):
                 env.Replace(CXX="x86_64-w64-mingw32-g++")
             elif which("docker"):
-                docker_image = "jhasse/mingw:2017-10-19"
+                docker_image = "jhasse/mingw:latest"
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
                 try:
@@ -1542,7 +1542,8 @@ def sakemake_main():
         env.Append(CXXFLAGS=' -pipe -fPIC')
 
         # Add two flags that are added by default if using qmake.
-        if platform.system() == "Linux":
+        # Don't use the flags if building for win64 with mingw.
+        if not win64 and (platform.system() == "Linux"):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)

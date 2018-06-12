@@ -16,7 +16,6 @@
 
 #define IMGOBJCNT 1
 #define OBJCNT 1
-
 #define OPCNT 128 // max number of operations that can be done on an object
 
 #define CRATEIMG 0 // image id
@@ -37,7 +36,6 @@
 
 #define TRUE 1
 #define FALSE 0
-
 #define ID_TIMER 1
 
 int canvasWidth;
@@ -70,6 +68,7 @@ void loadImg(int imgObjNum, char* imgFile)
 
     // open file for read
     bmpFile = fopen(imgFile, "rb");
+
     if (!bmpFile)
         return;
 
@@ -257,8 +256,8 @@ void objsToCanvas()
 
                             if ((xDelta >= 0) && (xDelta < canvasWidth) && (yDelta >= 0)
                                 && (yDelta < canvasHeight))
-                                if (brightness > canvas[0 + canvasDataLoc]) // draw only if
-                                                                            // brighter
+                                if (brightness
+                                    > canvas[0 + canvasDataLoc]) // draw only if brighter
                                 {
                                     canvas[0 + canvasDataLoc] = brightness;
                                     canvas[1 + canvasDataLoc] = brightness;
