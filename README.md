@@ -92,7 +92,15 @@ The name of the current directory will be used as the executable name.
 
     sm pro
 
-Tested with QtCreator 4.6 on Arch Linux.
+#### Guided optimization
+
+Build the executable with profiling enabled then run it and record the profiling data:
+
+    sm rec
+
+Build the executable and use the profiling data, if available:
+
+    sm
 
 ## Features and limitations
 
@@ -345,6 +353,10 @@ Rules for Configuration-free projects:
     sm ninja
 
 Only building projects with CMake is supported; not clearing, installing and packaging files.
+
+#### QtCreator
+
+The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Arch Linux.
 
 ## Source code formatting
 

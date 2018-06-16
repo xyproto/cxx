@@ -1271,6 +1271,18 @@ def sakemake_main():
         if win64 and os.path.exists(main_executable + ".exe"):
             os.remove(main_executable + ".exe")
             print("Removed {}.exe".format(main_executable))
+        # Remove all profiling files
+        for fn in list(chain(iglob("*.profraw"), iglob("*.gcda"), iglob("*.gcno"))):
+            os.remove(fn)
+            print("Removed {}".format(fn))
+        # Remove scons files
+        for fn in list(iglob(".sconsign.dblite")):
+            os.remove(fn)
+            print("Removed {}".format(fn))
+        # Remove all object files, not just the one from the build graph
+        # for fn in list(iglob("*.o")):
+        #    os.remove(fn)
+        #    print("Removed {}".format(fn))
         # Replace the "clean" argument with "-c", and list all targets
         cmd = [x for x in argv if x != "clean"] + ["-c"] + [main_executable] + test_elves
         # Clean
@@ -1543,7 +1555,8 @@ def sakemake_main():
 
         # Add two flags that are added by default if using qmake.
         # Don't use the flags if building for win64 with mingw.
-        if not win64 and (platform.system() == "Linux"):
+        # Don't use the flags when in sloppy mode.
+        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)
@@ -1561,6 +1574,28 @@ def sakemake_main():
         #    # https://stackoverflow.com/a/29201732/131264
         #    #
         #    env.Append(CPPDEFINES=["_GNU_SOURCE", "_BSD_SOURCE", "_DEFAULT_SOURCE"])
+
+        # rec is set?
+        if int(ARGUMENTS.get('rec', 0)):
+            if env['CXX'] == 'g++':
+                env.Append(CXXFLAGS=' -coverage -fprofile-generate -fprofile-correction')
+                env.Append(LINKFLAGS=' -coverage -fprofile-generate -fprofile-correction')
+            elif env['CXX'] == 'clang++':
+                env.Append(CXXFLAGS=' -fprofile-generate')
+                env.Append(LINKFLAGS=' -fprofile-generate')
+        else:
+            if env['CXX'] == 'g++':
+                if list(iglob("*.gcda")):
+                    env.Append(CXXFLAGS=' -fprofile-use -fprofile-correction')
+                    env.Append(LINKFLAGS=' -fprofile-use -fprofile-correction')
+            elif env['CXX'] == 'clang++':
+                # if list(iglob("*.profraw")):
+                    #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
+                    #output = os.popen2(cmd)[1].read().strip()
+                    # print(output)
+                if list(iglob("*.gcda")):
+                    env.Append(CXXFLAGS=' -fprofile-use')
+                    env.Append(LINKFLAGS=' -fprofile-use')
 
         # Windows related build flags
         if win64:
