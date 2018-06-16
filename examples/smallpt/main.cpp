@@ -157,7 +157,7 @@ Vec radiance(const Ray& r, int depth, unsigned short* Xi)
 
 int main(int argc, char* argv[])
 {
-    int w = 720, h = 512, samps = argc == 2 ? atoi(argv[1]) / 4 : 75; // # samples
+    int w = 320, h = 200, samps = argc == 2 ? atoi(argv[1]) / 4 : 75; // # samples
     Ray cam(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
     Vec cx = Vec(w * .5135 / h), cy = (cx % cam.d).norm() * .5135, r, *c = new Vec[w * h];
 
@@ -179,9 +179,9 @@ int main(int argc, char* argv[])
                 }
     }
 
-    // Write to a PNG file
-
+    // Prepare and write to PNG
     const char* fn = "output.png";
+
     printf("\nSaving %s\n", fn);
     FILE* fp = fopen(fn, "wb");
     if (!fp) {
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
     png_write_info(png, info);
 
     // Allocate memory for one row (3 bytes per pixel - RGB)
-    png_bytep row = (png_bytep)malloc(3 * w * sizeof(png_byte));
+    png_bytep row = (png_bytep)malloc(w * 3 * sizeof(png_byte));
 
     // Write the image data to the png structure
     for (int y = 0; y < h; y++) {
