@@ -223,16 +223,16 @@ void equal(T a, T b)
 
 * `scons`
 * `make`
-* `pkg-config`
-* `g++` with support for c++17 (gcc version 7.2 or higher should work)
-* `lldb` or `gdb` for debugging
+* `g++` with support for C++17 (gcc version 7.2 or higher should work)
+* `pkg-config`, for systems where pkg-config is available
 
 #### Optional requirements
 
 * `clang++` with support for C++17 (build with `sm clang`).
+* `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
-* `x86_64-w64-mingw32-g++` or `docker`, for cross-compiling executables for 64-bit Windows.
+* `x86_64-w64-mingw32-g++` or `docker`, for cross-compiling executables for 64-bit Windows. The docker service must be up and running for this to work.
 * `wine`, for testing executables compiled for 64-bit Windows (`sm run`).
 * `valgrind`, for profiling (`sm valgrind`).
 * `kcachegrind`, for viewing the information produced by *valgrind*.
