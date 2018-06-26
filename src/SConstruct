@@ -802,7 +802,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
     # This must come last.
     for include in includes:
 
-        # SFML on macOS, add OpenGL and if clang, add -stdlib=libc++
+        # SFML on macOS, add OpenGL and if clang/zapcc, add -stdlib=libc++
         if include.split(os.path.sep)[0].strip().lower() == "sfml":
             new_flags = ""
             # Check if the macOS Frameworks path exists
@@ -817,7 +817,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                 else:
                     flag_dict[include] = new_flags
                 # if clang is set, add "-stdlib=libc++" when using SFML, on macOS
-                if int(ARGUMENTS.get('clang', 0)):
+                if int(ARGUMENTS.get('clang', 0)) or int(ARGUMENTS.get('zap', 0)):
                     if include in flag_dict:
                         flag_dict[include] += " -stdlib=libc++"
                     else:
@@ -1424,6 +1424,9 @@ def sakemake_main():
                 print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
                 print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
                 exit(1)
+    elif int(ARGUMENTS.get('zap', 0)):
+        # zapc++ looks for include files in the wrong place unless --gcc-toolchain=/usr is given
+        env.Append(CXXFLAGS=' --gcc-toolchain=/usr -std=c++14')
     else:
         # Check if a particular C++ compiler is given, or not
         if str(env["CXX"]) == "c++":
@@ -1463,13 +1466,15 @@ def sakemake_main():
             # clang is set?
             if int(ARGUMENTS.get('clang', 0)):
                 env.Replace(CXX='clang++')
+            elif int(ARGUMENTS.get('zap', 0)):
+                env.Replace(CXX='zapcc++')
 
     if not cleaning:
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest C++ standard
             if "-std=" not in str(env["CXXFLAGS"]):
                 env.Append(CXXFLAGS=' -std=c++17')
-        else:
+        elif not int(ARGUMENTS.get('zap', 0)):
             # if std is something else, use that
             args = []
             for key, value in ARGLIST:
@@ -1556,7 +1561,7 @@ def sakemake_main():
         # Add two flags that are added by default if using qmake.
         # Don't use the flags if building for win64 with mingw.
         # Don't use the flags when in sloppy mode.
-        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)):
+        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         # Linux related build flags, for C (not C++)
@@ -1580,7 +1585,7 @@ def sakemake_main():
             if env['CXX'] == 'g++':
                 env.Append(CXXFLAGS=' -coverage -fprofile-generate -fprofile-correction')
                 env.Append(LINKFLAGS=' -coverage -fprofile-generate -fprofile-correction')
-            elif env['CXX'] == 'clang++':
+            elif env['CXX'] in ('clang++', 'zapcc++'):
                 env.Append(CXXFLAGS=' -fprofile-generate')
                 env.Append(LINKFLAGS=' -fprofile-generate')
         else:
@@ -1588,7 +1593,7 @@ def sakemake_main():
                 if list(iglob("*.gcda")):
                     env.Append(CXXFLAGS=' -fprofile-use -fprofile-correction')
                     env.Append(LINKFLAGS=' -fprofile-use -fprofile-correction')
-            elif env['CXX'] == 'clang++':
+            elif env['CXX'] in ('clang++', 'zapcc++'):
                 # if list(iglob("*.profraw")):
                     #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
                     #output = os.popen2(cmd)[1].read().strip()
