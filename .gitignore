@@ -32,6 +32,7 @@ examples/mixer/mixer
 examples/smallpt/smallpt
 examples/soil/soil
 examples/config/config
+examples/validorder/validorder
 examples/vulkan/vulkan
 
 # Generated files
