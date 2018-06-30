@@ -904,6 +904,55 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                             flag_dict[include] = new_flags
                         break
 
+        # If one of the includes just mention something with OpenAL, add build flags for OpenAL
+        if include.startswith("AL/") or include.startswith("OpenAL/") or "/al.h" in include:
+            new_flags = ""
+            # Check if the macOS Frameworks path exists
+            if os.path.exists("/System/Library/Frameworks") and not win64:
+                # Found it, add the OpenAL framework as well
+                new_flags = ""
+                if "/usr/local/include" not in compiler_includes:
+                    new_flags = "-I/usr/local/include "
+                if "/System/Library/Frameworks/OpenAL.framework/Headers" not in compiler_includes:
+                    new_flags = "-I/System/Library/Frameworks/OpenAL.framework/Headers"
+                new_flags += "-F/System/Library/Frameworks -framework OpenAL"
+                if include in flag_dict:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
+                    flag_dict[include] = new_flags
+            elif win64:
+                new_flags = "-lopenal32"
+                if include in flag_dict:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
+                    flag_dict[include] = new_flags
+            if has_pkg_config:
+                # Try pkg-config
+                cmd = "pkg-config --cflags --libs openal 2>/dev/null"
+                try:
+                    new_flags = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    new_flags = ""
+                if new_flags:
+                    if include in flag_dict:
+                        if new_flags not in flag_dict[include]:
+                            flag_dict[include] += " " + new_flags
+                    elif new_flags not in flag_dict.values():
+                        flag_dict[include] = new_flags
+            else:
+                # if the libopenal library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                    if os.path.exists(os.path.join(libpath, "libopenal.so")):
+                        new_flags = "-lopenal"
+                        if include in flag_dict:
+                            if new_flags not in flag_dict[include]:
+                                flag_dict[include] += " " + new_flags
+                        elif new_flags not in flag_dict.values():
+                            flag_dict[include] = new_flags
+                        break
+
         # If one of the includes mentions "SDL2/SDL_*", add flags for "SDL2_*"
         if include.startswith("SDL2/SDL_"):
             word = "SDL2_" + include[9:].split(".")[0]
