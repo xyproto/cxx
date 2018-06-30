@@ -1,5 +1,3 @@
-Mingw was recently moved from being an official package to an unofficial package in AUR.
+# NOTE
 
-As a result, these tests stopped working.
-
-Fixing them is a work in progress.
+Mingw was previously an official package. Now it's in AUR, and the installation may be more unreliable.
