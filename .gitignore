@@ -17,6 +17,7 @@ main
 examples/glut/glut
 examples/gtk3/gtk3
 examples/hello/hello
+examples/openal/openal
 examples/platforms/platforms
 examples/qt/qt
 examples/qt4/qt4
