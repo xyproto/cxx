@@ -905,17 +905,17 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                         break
 
         # If one of the includes just mention something with OpenAL, add build flags for OpenAL
-        if include.startswith("AL/") or include.startswith("OpenAL/") or "/al.h" in include:
+        # AL/alc.h, OpenAL/OpenAL.h, OpenAL.h and OpenAL/al.h should all be detected.
+        if include.startswith("AL/") or include.startswith("OpenAL") or "/al.h" in include:
             new_flags = ""
             # Check if the macOS Frameworks path exists
             if os.path.exists("/System/Library/Frameworks") and not win64:
                 # Found it, add the OpenAL framework as well
                 new_flags = ""
-                if "/usr/local/include" not in compiler_includes:
-                    new_flags = "-I/usr/local/include "
                 if "/System/Library/Frameworks/OpenAL.framework/Headers" not in compiler_includes:
-                    new_flags = "-I/System/Library/Frameworks/OpenAL.framework/Headers"
-                new_flags += "-F/System/Library/Frameworks -framework OpenAL"
+                    new_flags += "-I/System/Library/Frameworks/OpenAL.framework/Headers "
+                if "-framework OpenAL" not in new_flags:
+                    new_flags += "-F/System/Library/Frameworks -framework OpenAL"
                 if include in flag_dict:
                     if new_flags not in flag_dict[include]:
                         flag_dict[include] += " " + new_flags
