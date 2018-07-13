@@ -35,6 +35,7 @@ examples/soil/soil
 examples/config/config
 examples/validorder/validorder
 examples/vulkan/vulkan
+examples/synth/synth
 
 # Generated files
 src/sakemake

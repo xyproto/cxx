@@ -16,7 +16,7 @@ int main()
 
         // check for SDL2 events, such as key presses
         if (check_sdl_events(event)) {
-            
+
             // quit
             quit_audio = true;
             break;
