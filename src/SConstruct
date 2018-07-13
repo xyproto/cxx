@@ -1148,8 +1148,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
 
 
 def get_main_source_file(test_sources=None):
-    """Get the main source file. It may be named main.cpp or main.cc, or be the only one, or the one containing 'main('.
-    Return a blank string if none is found."""
+    """Get the main source file. It may be named main.cpp, main.cc, main.cxx, main.c,
+    or be the only one, or the one containing 'main('. Return a blank string if none is found."""
     for ext in ["cpp", "cc", "cxx", "c"]:
         if os.path.exists("main." + ext):
             return "main." + ext
@@ -1613,6 +1613,9 @@ def sakemake_main():
         # Don't use the flags when in sloppy mode.
         if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
+
+        if main_source_file.endswith(".c"):
+            env.Append(LINKFLAGS=' -lm')
 
         # Linux related build flags, for C (not C++)
         # if platform.system() == "Linux":
