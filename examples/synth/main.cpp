@@ -12,6 +12,8 @@ int main()
 
     SDL_Event event;
 
+    std::cout << "Press some letters and see what happens." << std::endl;
+
     while (true) {
 
         // check for SDL2 events, such as key presses
