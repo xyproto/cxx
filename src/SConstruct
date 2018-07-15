@@ -1590,6 +1590,7 @@ def sakemake_main():
         elif int(ARGUMENTS.get('small', 0)):
             env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')
             env.Append(LINKFLAGS=' -ffunction-sections -fdata-sections -Wl,-s -Wl,-gc-sections')
+
         # opt is set?
         elif int(ARGUMENTS.get('opt', 0)):
             # Enable more optimization flags than O3 + link time optimization
@@ -1613,13 +1614,11 @@ def sakemake_main():
 
         # if compiling for "tiny", don't use the standard library or exceptions
         if int(ARGUMENTS.get('tiny', 0)):
-            env.Append(CXXFLAGS=' -s -nostdlib -fno-exceptions -fno-rtti')
+            env.Append(CXXFLAGS=' -s -nostdlib -fno-exceptions -fno-rtti -fno-ident')
+            env.Append(LINKFLAGS=' -Wl,-s -Wl,-z,norelro -Wl,--gc-sections')
             if main_source_file.endswith(".c"):
-                env.Append(LINKFLAGS='-Wl,-s -Wl,-z,norelro')
                 if os.path.exists("/usr/bin/diet"):
                     env.Replace(CC='diet gcc')
-            else:
-                env.Append(LINKFLAGS=' -s -z norelro')
 
         # Add two flags that are added by default if using qmake.
         # Don't use the flags if building for win64 with mingw.
