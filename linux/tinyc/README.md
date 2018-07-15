@@ -16,3 +16,5 @@ Installing dependencies on Arch Linux:
     sm tiny
 
 This will produce an executable that is only 1716 bytes large, for 64-bit x86.
+
+This is smaller than the executable produced by `tcc -Os`, which is 1984 bytes after stripping with `sstrip`.
