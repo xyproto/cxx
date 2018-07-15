@@ -5,6 +5,11 @@
 * sstrip
 * gcc
 * dietlibc (and `/usr/bin/diet`)
+* upx
+
+Installing dependencies on Arch Linux:
+
+    pacman -S --needed base-devel dietlibc upx
 
 ## Build instructions
 
