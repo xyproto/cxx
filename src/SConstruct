@@ -1605,17 +1605,33 @@ def sakemake_main():
             env.Append(CXXFLAGS=' -O2')
 
         # Use -pipe for a possible speed increase when compiling
-        # and -fPIC for position independent code.
-        env.Append(CXXFLAGS=' -pipe -fPIC')
+        env.Append(CXXFLAGS=' -pipe')
+
+        # and -fPIC for position independent code. May increase the size of the executable.
+        if not int(ARGUMENTS.get('small', 0)):
+            env.Append(CXXFLAGS=' -fPIC')
+
+        # if compiling for "tiny", don't use the standard library or exceptions
+        if int(ARGUMENTS.get('tiny', 0)):
+            env.Append(CXXFLAGS=' -s -nostdlib -fno-exceptions -fno-rtti')
+            if main_source_file.endswith(".c"):
+                env.Append(LINKFLAGS='-Wl,-s -Wl,-z,norelro')
+                if os.path.exists("/usr/bin/diet"):
+                    env.Replace(CC='diet gcc')
+            else:
+                env.Append(LINKFLAGS=' -s -z norelro')
 
         # Add two flags that are added by default if using qmake.
         # Don't use the flags if building for win64 with mingw.
         # Don't use the flags when in sloppy mode.
-        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)):
+        # Don't use the flags when in small mode.
+        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)) and not int(ARGUMENTS.get('small', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
         if main_source_file.endswith(".c"):
             env.Append(LINKFLAGS=' -lm')
+            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++17', '-std=c11').replace('-fno-rtti', '')
+            env.Append(CFLAGS=cxxflags_to_cflags)
 
         # Linux related build flags, for C (not C++)
         # if platform.system() == "Linux":
