@@ -88,8 +88,8 @@ small:
 
 tiny:
 	@scons ${SCONSFILEARG} -Q ${CMD} small=1 tiny=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-	@sstrip ${NAME} || true
-	@upx -q --brute ${NAME} 2>&1 >/dev/null || true
+	@sstrip ${NAME} && echo sstrip ${NAME} || true
+	@upx -q --brute ${NAME} 1>/dev/null 2>/dev/null && echo upx --brute ${NAME} || true
 
 tinywin:
 	@scons ${SCONSFILEARG} -Q ${CMD} small=1 tiny=1 clang=${clang} zap=${zap} win64=1 std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
