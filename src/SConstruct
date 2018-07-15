@@ -1165,7 +1165,10 @@ def get_main_source_file(test_sources=None):
         # Look at the one source file that was found
         fname = all_sources[0]
         try:
-            if " main(" in open(fname).read():
+            data = open(fname).read()
+            if " main(" in data:
+                return fname
+            elif "\nmain(" in data:
                 return fname
         except:
             print("Could not read " + fname)
