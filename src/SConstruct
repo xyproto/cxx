@@ -1368,7 +1368,7 @@ def sakemake_main():
         if output:
             print(output)
         exit(status)
-    elif 'test' in COMMAND_LINE_TARGETS:  # Build and run tests
+    elif 'test' in COMMAND_LINE_TARGETS and main_executable != "test":  # Build and run tests
         if not test_elves:
             print("Nothing to test")
             exit(0)
@@ -1847,7 +1847,6 @@ def sakemake_main():
                 print("Nothing to build")
         except AttributeError:
             pass
-
 
 sakemake_main()
 
