@@ -1617,7 +1617,7 @@ def sakemake_main():
 
         # if compiling for "tiny", don't use the standard library or exceptions
         if int(ARGUMENTS.get('tiny', 0)):
-            env.Append(CXXFLAGS=' -s -nostdlib -fno-exceptions -fno-rtti -fno-ident -fomit-frame-pointer')
+            env.Append(CXXFLAGS=' -s -nostdlib -fno-rtti -fno-ident -fomit-frame-pointer')
             env.Append(LINKFLAGS=' -Wl,-s -Wl,-z,norelro -Wl,--gc-sections')
             if main_source_file.endswith(".c"):
                 if os.path.exists("/usr/bin/diet"):
