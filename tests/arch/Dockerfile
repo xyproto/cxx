@@ -35,7 +35,7 @@ RUN yes | sudo -u aur gpg --keyserver keys2.kfwebs.net --recv-keys 93BDB53CD4EBC
 # Install isl from AUR, using an alternative download URL
 RUN mkdir -p /tmp/isl
 RUN curl -Lo /tmp/isl/isl-0.20.tar.xz https://mirror.sobukus.de/files/src/isl/isl-0.20.tar.xz
-RUN sudo -u aur yay --builddir /tmp -S isl --noconfirm
+RUN sudo -u aur yay --nocleanmenu --builddir /tmp -S isl --noconfirm
 
 # Install mingw-w64-gcc from AUR
 RUN sudo -u aur yay -S mingw-w64-gcc --noconfirm
