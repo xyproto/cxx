@@ -1525,20 +1525,21 @@ def sakemake_main():
         env.Append(CXXFLAGS=' --gcc-toolchain=/usr -std=c++14')
     else:
         # Check if a particular C++ compiler is given, or not
-        if str(env["CXX"]) == "c++":
+        if str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
             compiler_binaries = ["g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
+            elif platform.system() == "NetBSD":
+                if exe("/usr/pkg/gcc8/bin/g++"):
+                    # if on NetBSD, try /usr/bin/pkg/gcc8 first
+                    compiler_binaries = ["/usr/pkg/gcc8/bin/g++"] + compiler_binaries
+                elif exe("/usr/pkg/gcc7/bin/g++"):
+                    # if on NetBSD, try /usr/bin/pkg/gcc7 second
+                    compiler_binaries = ["/usr/pkg/gcc7/bin/g++"] + compiler_binaries
             elif exe("/usr/bin/pacman"):
                 # if on Arch Linux, try g++ first, since it's usually up to date
                 compiler_binaries = ["g++"] + compiler_binaries
-            elif exe("/usr/pkg/gcc8/bin/g++"):
-                # if on NetBSD, try /usr/bin/pkg/gcc8 first
-                compiler_binaries = ["/usr/pkg/gcc8/bin/g++"] + compiler_binaries
-            elif exe("/usr/pkg/gcc7/bin/g++"):
-                # if on NetBSD, try /usr/bin/pkg/gcc7 second
-                compiler_binaries = ["/usr/pkg/gcc7/bin/g++"] + compiler_binaries
 
             found_compiler = ""
             found_cppstd = ""
@@ -1570,8 +1571,6 @@ def sakemake_main():
                 env.Replace(CXX='clang++')
             elif int(ARGUMENTS.get('zap', 0)):
                 env.Replace(CXX='zapcc++')
-        else:
-            print("CXX is set to " + str(env["CXX"]))
 
     if not cleaning:
         if not bool(ARGUMENTS.get('std', '')):
