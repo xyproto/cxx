@@ -15,7 +15,7 @@ sudo pkgin update
 sudo pkgin -y install bash git gmake pkgconf
 
 # Install packages required for Sakemake and for building the examples
-sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut gtk3+ qt5 scons
+sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut gtk3+ libconfig qt5 scons
 
 # Clone or pull sakemake
 test -d sakemake && (cd sakemake; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/sakemake'
