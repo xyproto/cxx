@@ -61,8 +61,10 @@ def which(program):
     """Check if a program exists in PATH"""
     fpath, fname = os.path.split(program)
     if fpath:
-        if is_exe(program):
-            return program
+        exe_file = program
+        # Check if the file exists and is executable
+        if exe(exe_file):
+            return exe_file
     else:
         for path in PATHLIST:
             exe_file = os.path.join(path, program)
