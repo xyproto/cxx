@@ -637,7 +637,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         print("\nERROR: missing in PATH: pkg-config")
         exit(1)
 
-    # Guess g++ or gcc, only for running -dumpmachine when probing for which g++ to use
+    # Guess g++ or gcc, only for running -dumpmachine for machine identification
     if not (cxx and which(cxx)):
         if which("g++"):
             cxx = "g++"
@@ -645,8 +645,12 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             cxx = "gcc"
         elif which("g++8"):
             cxx = "g++8"
+        elif which("g++-8"):
+            cxx = "g++-8"
         elif which("g++7"):
             cxx = "g++7"
+        elif which("g++-7"):
+            cxx = "g++-7"
 
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
     if has_pkg_config and exe("/usr/bin/dpkg-query") and not exe("/usr/bin/pacman"):

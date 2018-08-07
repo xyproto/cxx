@@ -11,8 +11,11 @@ echo 'ftp://ftp.fr.netbsd.org/pub/pkgsrc/packages/NetBSD/amd64/7.0/All' | sudo t
 # pkgin -y is not needed for the update command, it only updates the database
 sudo pkgin update
 
-## Install packages required for Sakemake and for building the examples
-sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf bash docker freeglut gcc7 pkgin install git glew glut gmake gtk3+ pkgconf qt5 scons pkg-config
+# install basic tools
+sudo pkgin -y install bash git gmake pkgconf
+
+# Install packages required for Sakemake and for building the examples
+sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut gtk3+ qt5 scons
 
 # Clone or pull sakemake
 test -d sakemake && (cd sakemake; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/sakemake'

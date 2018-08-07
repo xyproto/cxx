@@ -10,7 +10,7 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_2"'/$repo/os/$arch' >>/etc/pacman.d/
 RUN echo 'Server = http://'"$PACKAGE_SERVER_3"'/$repo/os/$arch' >>/etc/pacman.d/mirrorlist
 
 # Install required packages
-RUN pacman -Syu --noconfirm --needed base-devel expac figlet freeglut gcc-ada git glew gnupg gtk3 jshon make pacutils perl perl-data-dump perl-json perl-libwww perl-lwp-protocol-https perl-term-readline-gnu perl-term-ui ppl qt5 scons sdl2 sfml
+RUN pacman -Syu --noconfirm --needed base-devel expac figlet freeglut git glew gnupg gtk3 go ppl qt5 scons sdl2 sfml vulkan-devel
 
 # Set up a user, just for running makepkg as non-root (it complains otherwise)
 RUN useradd -m -G wheel -s /bin/bash aur
@@ -18,8 +18,8 @@ RUN useradd -m -G wheel -s /bin/bash aur
 # Set up a directory for building packages
 RUN mkdir -p aur && chown aur aur
 
-# Download, build and install trizen
-ENV pkg trizen
+# Download, build and install yay
+ENV pkg yay
 RUN cd aur && sudo -u aur curl -sLo PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h='"$pkg" && sudo -u aur makepkg --skippgpcheck
 RUN pacman -U aur/*.pkg.* --noconfirm && rm aur/*.pkg.*
 
@@ -33,10 +33,10 @@ RUN yes | gpg --keyserver keys2.kfwebs.net --recv-keys 93BDB53CD4EBC740
 RUN yes | sudo -u aur gpg --keyserver keys2.kfwebs.net --recv-keys 93BDB53CD4EBC740
 
 # Install isl from AUR
-RUN sudo -u aur trizen -S isl --noconfirm
+RUN sudo -u aur yay -S isl --noconfirm
 
-# Install mingw-w64-binutils osl cloog mingw-w64-headers mingw-w64-gcc-base and mingw-w64-gcc from AUR
-RUN sudo -u aur trizen -S mingw-w64-binutils osl cloog mingw-w64-headers mingw-w64-gcc-base and mingw-w64-gcc --noconfirm
+# Install mingw-w64-gcc from AUR
+RUN sudo -u aur yay -S mingw-w64-gcc --noconfirm
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
