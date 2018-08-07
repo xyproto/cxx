@@ -9,8 +9,11 @@ pkg update -f
 # Upgrade packages
 pkg upgrade -y
 
+# Install basic packages for Linux-like development
+pkg install -y bash git gmake pkgconf
+
 # Install packages required for Sakemake and for building the examples
-pkg install -y bash figlet freeglut gcc7 git glew gmake gtk3 pkgconf qt5 scons sdl2 sfml libconfig
+pkg install -y figlet freeglut gcc7 glew gtk3 qt5 scons sdl2 sfml libconfig
 
 # Setup mingw32-w64 (looks like it requires ports to be set up first)
 #git clone https://github.com/takumin/ports-mingw-w64.git

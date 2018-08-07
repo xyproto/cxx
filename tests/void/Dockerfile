@@ -10,7 +10,7 @@ RUN git clone https://github.com/xyproto/sakemake && \
     make install
 
 # Clean and build all examples
-RUN sakemake/tests/build_all.sh skipwin
+RUN sakemake/tests/build_all.sh win64crate
 
 # Build and run the hello_test in hello/common
 RUN sm -C sakemake/examples/hello/common test
