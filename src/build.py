@@ -1526,7 +1526,7 @@ def sakemake_main():
     else:
         # Check if a particular C++ compiler is given, or not
         if str(env["CXX"]) == "c++":
-            compiler_binaries = ["g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "g++"]
+            compiler_binaries = ["g++-8", "g++8", "g++-7", "g++7", "/usr/pkg/gcc7/bin/g++", "g++-HEAD", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
