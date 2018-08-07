@@ -40,7 +40,7 @@ endif
 CMD := $(shell test -f main.cpp -o -f main.cc -o -f main.cxx || echo testbuild)
 
 # The Python 2 file
-SCONSFILEARG := --file="${ROOTDIR}/SConstruct"
+SCONSFILEARG := --file="${ROOTDIR}/build.py"
 
 # Thanks: https://stackoverflow.com/a/14061796/131264
 # If the first argument is "run"...
@@ -255,7 +255,8 @@ install: patch main unpatch
 	  true
 
 export:
-	@cp -i -v "${ROOTDIR}/Makefile" "${ROOTDIR}/SConstruct" .
+	@cp -i -v "${ROOTDIR}/Makefile" .
+	@cp -i -v "${ROOTDIR}/build.py" SConstruct
 
 clean:
 	@scons ${SCONSFILEARG} -Q clean win64=${win64}
