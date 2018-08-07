@@ -637,6 +637,17 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         print("\nERROR: missing in PATH: pkg-config")
         exit(1)
 
+    # Guess g++ or gcc, only for running -dumpmachine when probing for which g++ to use
+    if not (cxx and which(cxx)):
+        if which("g++"):
+            cxx = "g++"
+        elif which("gcc"):
+            cxx = "gcc"
+        elif which("g++8"):
+            cxx = "g++8"
+        elif which("g++7"):
+            cxx = "g++7"
+
     # Using the include_lines, find the correct CFLAGS on Debian/Ubuntu
     if has_pkg_config and exe("/usr/bin/dpkg-query") and not exe("/usr/bin/pacman"):
         has_package_manager = True
@@ -644,7 +655,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             if include in flag_dict:
                 continue
             include_path = os.path.join(system_include_dir, include)
-            new_flags = deb_include_path_to_cxxflags(include_path, env['CXX'])
+            new_flags = deb_include_path_to_cxxflags(include_path, cxx)
             if new_flags:
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
@@ -662,7 +673,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             except OSError:
                 include_path = ""
             if include_path:
-                new_flags = deb_include_path_to_cxxflags(include_path, env['CXX'])
+                new_flags = deb_include_path_to_cxxflags(include_path, cxx)
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
@@ -1009,7 +1020,9 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
                 # /usr/X11R7/lib, or /usr/lib + machine_name; link with that
-                machine_name = os.popen2(env['CXX'] + " -dumpmachine")[1].read().strip()
+                machine_name = ""
+                if cxx and which(cxx):
+                    machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
