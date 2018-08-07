@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -368,7 +369,7 @@ def deb_recommend_package(missing_include):
         return
 
 
-def deb_include_path_to_cxxflags(include_path):
+def deb_include_path_to_cxxflags(include_path, cxx="g++"):
     """Takes a path to a header file and returns cxxflags, or an empty string
     For Debian/Ubuntu."""
     if include_path == "":
@@ -396,7 +397,7 @@ def deb_include_path_to_cxxflags(include_path):
         except OSError:
             pc_files = []
     if not pc_files:
-        machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
+        machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
         for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
@@ -643,7 +644,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             if include in flag_dict:
                 continue
             include_path = os.path.join(system_include_dir, include)
-            new_flags = deb_include_path_to_cxxflags(include_path)
+            new_flags = deb_include_path_to_cxxflags(include_path, env['CXX'])
             if new_flags:
                 if include in flag_dict:
                     flag_dict[include] += " " + new_flags
@@ -661,7 +662,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             except OSError:
                 include_path = ""
             if include_path:
-                new_flags = deb_include_path_to_cxxflags(include_path)
+                new_flags = deb_include_path_to_cxxflags(include_path, env['CXX'])
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
@@ -1008,7 +1009,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
                 # /usr/X11R7/lib, or /usr/lib + machine_name; link with that
-                machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
+                machine_name = os.popen2(env['CXX'] + " -dumpmachine")[1].read().strip()
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
