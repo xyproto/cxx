@@ -1733,6 +1733,11 @@ def sakemake_main():
             # This could also work, for automatically adding ".exe":
             # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
 
+        # NetBSD related build flags
+        if platform.system() == "NetBSD":
+            env.Append(CPPFLAGS=' -L/usr/pkg/lib')
+            env.Append(LINKFLAGS=' -L/usr/pkg/lib')
+
         # OpenMP related build flags
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
