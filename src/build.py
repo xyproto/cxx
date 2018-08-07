@@ -630,6 +630,19 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                 else:
                     global_flag_dict[include] = "-I" + mingw_include_dir
 
+    # NetBSD include path
+    if os.path.exists("/usr/pkg/include"):
+        netbsd_include_dir = "/usr/pkg/include"
+        for include in includes:
+            if include in flag_dict:
+                continue
+            if os.path.exists(os.path.join(netbsd_include_dir, include)):
+                # Add the include directory as an -I flag if the include file was found
+                if include in global_flag_dict:
+                    global_flag_dict[include] += " -I" + netbsd_include_dir
+                else:
+                    global_flag_dict[include] = "-I" + netbsd_include_dir
+
     # If there are now missing build flags, and pkg-config is not in the path, it's a problem
     missing_includes = [
         include for include in includes if include not in flag_dict and include not in global_flag_dict]
@@ -919,8 +932,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
             else:
-                # if the libGL library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                # if the libGL library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or /usr/pkg/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
                     if os.path.exists(os.path.join(libpath, "libGL.so")):
                         new_flags = "-lGL"
                         if also_glu:
@@ -970,8 +983,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
             else:
-                # if the libopenal library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                # if the libopenal library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or /usr/pkg/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
                     if os.path.exists(os.path.join(libpath, "libopenal.so")):
                         new_flags = "-lopenal"
                         if include in flag_dict:
@@ -998,8 +1011,8 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
             else:
-                # if the SDL2_* library is in /usr/lib, /usr/lib/x86_64-linux-gnu or /usr/local/lib, link with that
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]:
+                # if the SDL2_* library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or /usr/pkg/lib, link with that
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
                     if os.path.exists(os.path.join(libpath, "lib" + word + ".so")):
                         new_flags = "-l" + word
                         if include in flag_dict:
@@ -1035,11 +1048,11 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] = new_flags
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
-                # /usr/X11R7/lib, or /usr/lib + machine_name; link with that
+                # /usr/X11R7/lib, /usr/lib + machine_name, or /usr/pkg/lib; link with that
                 machine_name = ""
                 if cxx and which(cxx):
                     machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
-                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name]:
+                for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name, "/usr/pkg/lib"]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
                         if include in flag_dict:
