@@ -160,10 +160,10 @@ def generic_include_path_to_cxxflags(include_path):
     for package in packages:
         if package in SKIP_PACKAGES:
             return ""
-    # If a library in /usr/include/../lib matches the name of the directory in the system include directory, link with that
+    # If a library matches the name of the directory in the system include directory, link with that
     for package in packages:
         for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
-            for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/include"]:
+            for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
                 if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
                     return "-l" + possible_lib_name[3:-3]
@@ -814,6 +814,18 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
+        # For NetBSD
+        if os.path.exists("/usr/pkg/include"):
+            for include in includes:
+                if include in flag_dict:
+                    continue
+                include_path = os.path.join("/usr/pkg/include", include)
+                new_flags = generic_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
 
     # Special cases - additional build flags that should be reported as bugs and added to the ".pc" files that comes with libraries.
     # This must come last.
@@ -1865,6 +1877,7 @@ def sakemake_main():
                 print("Nothing to build")
         except AttributeError:
             pass
+
 
 sakemake_main()
 
