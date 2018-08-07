@@ -396,7 +396,7 @@ def deb_include_path_to_cxxflags(include_path):
         except OSError:
             pc_files = []
     if not pc_files:
-        machine_name = os.popen2("g++ -dumpmachine")[1].read().strip()
+        machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
         for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
@@ -1008,7 +1008,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             else:
                 # if the libglut library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or
                 # /usr/X11R7/lib, or /usr/lib + machine_name; link with that
-                machine_name = os.popen2("g++ -dumpmachine")[1].read().strip()
+                machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
