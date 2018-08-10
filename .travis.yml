@@ -1,26 +1,26 @@
 language: cpp
 
-sudo: required
+#sudo: required
 
 services:
   - docker
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-7
-
-packages:
-- scons make pkg-config build-essential
-
-install:
-- sudo make install
+    #addons:
+    #  apt:
+    #    sources:
+    #      - ubuntu-toolchain-r-test
+    #    packages:
+    #      - g++-7
+    #
+    #packages:
+    #- scons make pkg-config build-essential
+    #
+    #install:
+    #- sudo make install
 
 script:
-- sm -C examples/tinyhello small=1 run CXX=g++-7
-- sm -C examples/hello/common test CXX=g++-7
-- sm -C examples/hello run CXX=g++-7
-- sm version
+  #- sm -C examples/tinyhello small=1 run CXX=g++-7
+  #- sm -C examples/hello/common test CXX=g++-7
+  #- sm -C examples/hello run CXX=g++-7
+  #- sm version
 - cd tests/arch && ./run.sh
