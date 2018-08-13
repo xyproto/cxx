@@ -1,4 +1,4 @@
-# [🍶](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE) [![Buildsystem](https://img.shields.io/badge/sake-make-orange.svg)](https://github.com/xyproto/sakemake)
+# [🐟](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/xyproto/algernon/master/LICENSE) [![Buildsystem](https://img.shields.io/badge/sake-make-orange.svg)](https://github.com/xyproto/sakemake)
 
 Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
@@ -384,9 +384,9 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 ### Emoji
 
-[🍶](https://github.com/xyproto/sakemake)
+[🐟](https://github.com/xyproto/sakemake)
 
-    [🍶](https://github.com/xyproto/sakemake)
+    [🐟](https://github.com/xyproto/sakemake)
 
 ## Other projects that builds with Sakemake
 
