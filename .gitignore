@@ -37,7 +37,7 @@ examples/validorder/validorder
 examples/vulkan/vulkan
 examples/synth/synth
 linux/tinyc/tinyc
-examples/vulkan_triangle/vulkan_triangle
+examples/vulkan_glfw/vulkan_glfw
 
 # Generated files
 src/sakemake
