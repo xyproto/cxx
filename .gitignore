@@ -38,6 +38,7 @@ examples/vulkan/vulkan
 examples/synth/synth
 linux/tinyc/tinyc
 examples/vulkan_glfw/vulkan_glfw
+examples/sfml_audio/sfml_audio
 
 # Generated files
 src/sakemake
