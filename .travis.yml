@@ -1,16 +1,10 @@
 language: cpp
 
-#sudo: required
-
 services:
   - docker
 
 script:
   - sm version
+  - (cd tests/void && ./run.sh)
   - (cd tests/arch && ./run.sh)
   - (cd tests/ubuntu && ./run.sh)
-  - (cd tests/void && ./run.sh)
-
-# Vagrant is not supported by Travis CI yet, but qemu is
-    #  - (cd tests/freebsd && ./run.sh)
-    #  - (cd tests/netbsd && ./run.sh)

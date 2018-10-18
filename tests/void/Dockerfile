@@ -1,8 +1,7 @@
 FROM voidlinux/voidlinux
 
 # Update and install packages
-RUN xbps-install -Su -y
-RUN xbps-install -S -y SDL2-devel SFML-devel boost-devel figlet gcc git glew-devel gtk+3-devel libfreeglut-devel make pkg-config qt5-devel scons
+RUN xbps-install -Su -y SDL2-devel SFML-devel boost-devel figlet gcc git glew-devel gtk+3-devel libfreeglut-devel make pkg-config qt5-devel scons
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
