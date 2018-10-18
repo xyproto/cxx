@@ -39,6 +39,7 @@ examples/synth/synth
 linux/tinyc/tinyc
 examples/vulkan_glfw/vulkan_glfw
 examples/sfml_audio/sfml_audio
+examples/boost/boost
 
 # Generated files
 src/sakemake
