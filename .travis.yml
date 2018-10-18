@@ -1,26 +1,15 @@
 language: cpp
 
-#sudo: required
+sudo: required
 
 services:
   - docker
-
-    #addons:
-    #  apt:
-    #    sources:
-    #      - ubuntu-toolchain-r-test
-    #    packages:
-    #      - g++-8
-    #
-    #packages:
-    #- scons make pkg-config build-essential
-    #
-    #install:
-    #- sudo make install
+  - vagrant
 
 script:
-  #- sm -C examples/tinyhello small=1 run CXX=g++-8
-  #- sm -C examples/hello/common test CXX=g++-8
-  #- sm -C examples/hello run CXX=g++-8
-  #- sm version
-- cd tests/arch && ./run.sh
+  - sm version
+  - cd tests/arch && ./run.sh
+  - cd tests/ubuntu && ./run.sh
+  - cd tests/void && ./run.sh
+  - cd tests/freebsd && ./run.sh
+  - cd tests/netbsd && ./run.sh

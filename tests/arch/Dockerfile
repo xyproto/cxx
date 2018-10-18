@@ -10,7 +10,7 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_2"'/$repo/os/$arch' >>/etc/pacman.d/
 RUN echo 'Server = http://'"$PACKAGE_SERVER_3"'/$repo/os/$arch' >>/etc/pacman.d/mirrorlist
 
 # Install required packages
-RUN pacman -Syu --noconfirm --needed base-devel expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal ppl qt5 scons sdl2 sfml vulkan-devel
+RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal ppl qt5 scons sdl2 sfml vulkan-devel
 
 # Install mingw-w64-gcc, using precompiled packages from Martchus. More likely to work than the AUR packages.
 RUN echo -e '[ownstuff]\nSigLevel = Optional TrustAll\nServer = http://martchus.no-ip.biz/repo/arch/$repo/os/$arch' >>/etc/pacman.conf
