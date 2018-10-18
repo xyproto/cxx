@@ -156,7 +156,10 @@ def generic_include_path_to_cxxflags(include_path):
         package_guess = include_path.split(os.path.sep)[3]
     except IndexError:
         return ""
-    packages = [package_guess, package_guess.lower()]
+    # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+    booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
+    # List of possible package names, used when searching for .so files below
+    packages = [package_guess, booststyle, package_guess.lower()]
     if not packages:
         return ""
     for package in packages:
@@ -233,7 +236,9 @@ def arch_include_path_to_cxxflags(include_path):
     if not pc_files:
         # If a library in /usr/lib matches the name of the package without .pc files, link with that
         libpath = "/usr/lib"
-        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+        # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+        booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
+        for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
                 if os.path.exists(os.path.dirname(include_path)):
@@ -241,7 +246,8 @@ def arch_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        print("WARNING: No pkg-config files for: " + package)
+        if package != "boost":  # boost is "special"
+            print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
@@ -317,7 +323,9 @@ def freebsd_include_path_to_cxxflags(include_path):
     if not pc_files:
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
         libpath = "/usr/local/lib"
-        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+        # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+        booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
+        for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
                 if os.path.exists(os.path.dirname(include_path)):
@@ -325,7 +333,8 @@ def freebsd_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        print("WARNING: No pkg-config files for: " + package)
+        if package != "boost":  # boost is "special"
+            print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
@@ -400,8 +409,10 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
             pc_files = []
     if not pc_files:
         machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
+        # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+        booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
-        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+        for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
                 if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
@@ -410,7 +421,8 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
                         return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                     return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        print("WARNING: No pkg-config files for: " + package)
+        if package != "boost":  # boost is "special"
+            print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
@@ -472,8 +484,10 @@ def brew_include_path_to_cxxflags(include_path):
         except OSError:
             pc_files = []
     if not pc_files:
+        # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+        booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
         # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
-        for possible_lib_name in [package, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+        for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             for libpath in ["/usr/local/lib", "/usr/lib"]:
                 if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
@@ -482,7 +496,8 @@ def brew_include_path_to_cxxflags(include_path):
                         return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                     return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        print("WARNING: No pkg-config files for: " + package)
+        if package != "boost":  # boost is "special"
+            print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
     all_cxxflags = ""
@@ -1320,12 +1335,14 @@ def sakemake_main():
     # Main ELF-file to be generated
     main_source_file = get_main_source_file(test_sources)
 
-    # Check if we are compiling for 64-bit Windows or not
+    # Prepare to check if we are compiling for 64-bit Windows or not
     win64 = bool(int(ARGUMENTS.get('win64', 0)))  # win64=1
-    # Check if the main source file uses OpenMP
+    # Prepare to check if the main source file uses OpenMP
     openmp = False
-    # Check if the main source file lets GLFW include Vulkan
+    # Prepare to check if the main source file lets GLFW include Vulkan
     glfw_vulkan = False
+    # Prepare to check if the main source files inludes boost
+    boost = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
@@ -1337,6 +1354,9 @@ def sakemake_main():
             # Check if GLFW_INCLUDE_VULKAN is defined in the main source file
             if "#define GLFW_INCLUDE_VULKAN" in line:
                 glfw_vulkan = True
+            # Check if boost is included
+            if "#include <boost/" in line:
+                boost = True
     except IOError:
         pass
 
@@ -1746,6 +1766,10 @@ def sakemake_main():
         # GLFW + Vulkan related build flags
         if glfw_vulkan:
             env.Append(LINKFLAGS=' -lvulkan')
+
+        # Boost related build flags
+        if boost:
+            env.Append(LINKFLAGS=' -lboost_system')
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
