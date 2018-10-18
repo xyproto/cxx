@@ -1,5 +1,8 @@
 FROM voidlinux/voidlinux
 
+# Update packages
+RUN xbps-install -Su -y
+
 # Install packages
 RUN xbps-install -S -y SDL2-devel SFML-devel boost-devel figlet gcc git glew-devel gtk+3-devel libfreeglut-devel make pkg-config qt5-devel scons
 
