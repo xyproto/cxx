@@ -673,6 +673,10 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             cxx = "g++"
         elif which("gcc"):
             cxx = "gcc"
+        elif which("g++9"):
+            cxx = "g++9"
+        elif which("g++-9"):
+            cxx = "g++-9"
         elif which("g++8"):
             cxx = "g++8"
         elif which("g++-8"):
@@ -1548,12 +1552,15 @@ def sakemake_main():
     else:
         # Check if a particular C++ compiler is given, or not
         if str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
-            compiler_binaries = ["g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "g++"]
+            compiler_binaries = ["g++-9", "g++9", "g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
             elif platform.system() == "NetBSD":
-                if exe("/usr/pkg/gcc8/bin/g++"):
+                if exe("/usr/pkg/gcc9/bin/g++"):
+                    # if on NetBSD, try /usr/bin/pkg/gcc9 first
+                    compiler_binaries = ["/usr/pkg/gcc9/bin/g++"] + compiler_binaries
+                elif exe("/usr/pkg/gcc8/bin/g++"):
                     # if on NetBSD, try /usr/bin/pkg/gcc8 first
                     compiler_binaries = ["/usr/pkg/gcc8/bin/g++"] + compiler_binaries
                 elif exe("/usr/pkg/gcc7/bin/g++"):
@@ -1769,7 +1776,10 @@ def sakemake_main():
 
         # Boost related build flags
         if boost:
-            env.Append(LINKFLAGS=' -lboost_system')
+            # check if boost_system is available from ldconfig before adding the linker flag
+            cmd = 'ldconfig -p | grep boost_system'
+            if "boost_system" in os.popen2(cmd)[1].read().strip():
+                env.Append(LINKFLAGS=' -lboost_system')
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
