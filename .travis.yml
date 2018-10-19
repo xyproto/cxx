@@ -6,5 +6,3 @@ services:
 script:
   - sm version
   - (cd tests/arch && ./run.sh || exit 1)
-  - (cd tests/ubuntu && ./run.sh || exit 1)
-    #- (cd tests/void && ./run.sh || exit 1)
