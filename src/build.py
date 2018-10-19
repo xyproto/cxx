@@ -1777,8 +1777,12 @@ def sakemake_main():
         # Boost related build flags
         if boost:
             # check if boost_system is available from ldconfig before adding the linker flag
-            cmd = 'ldconfig -p | grep boost_system'
-            if "boost_system" in os.popen2(cmd)[1].read().strip():
+            if which('ldconfig'):
+                cmd = 'ldconfig -p | grep boost_system'
+                if "boost_system" in os.popen2(cmd)[1].read().strip():
+                    env.Append(LINKFLAGS=' -lboost_system')
+            # if ldconfig is not available, check if it is in /usr/lib
+            elif os.path.exists('/usr/lib/libboost_system.so'):
                 env.Append(LINKFLAGS=' -lboost_system')
 
         # if sloppy is set, just try to build the damn thing
