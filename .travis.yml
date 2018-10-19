@@ -4,5 +4,4 @@ services:
   - docker
 
 script:
-  - sm version
-  - (cd tests/arch && ./run.sh || exit 1)
+  - tests/arch/run.sh
