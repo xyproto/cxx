@@ -4,11 +4,11 @@ FROM voidlinux/voidlinux
 RUN xbps-install -Su -y
 
 # Install packages that usually install just fine
-RUN xbps-install -S -y SDL2 gcc git glew-devel libfreeglut-devel make pkg-config scons boost-devel figlet gtk+3-devel qt5-devel
+RUN xbps-install -S -y SDL2 gcc git glew-devel libfreeglut-devel make pkg-config scons boost-devel figlet
 
 # Install packages that may fail
-#RUN xbps-install -S -y SDL2-devel
-#RUN xbps-intsall -S -y SFML-devel
+#RUN xbps-install -S -y gtk+3-devel qt5-devel
+#RUN xbps-install -S -y SDL2-devel SFML-devel
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \

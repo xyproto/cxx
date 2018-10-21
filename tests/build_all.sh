@@ -60,9 +60,7 @@ cmds="fastclean build"
 # Perform all commands
 for cmd in $cmds; do
   msg="Building all examples"
-  if [ "$cmd" == clean ]; then
-    msg="Cleaning all examples"
-  elif [ "$cmd" == clean ]; then
+  if [ "$cmd" == clean -o "$cmd" == fastclean ]; then
     msg="Cleaning all examples"
   elif [ "$cmd" == run ]; then
     msg="Running all examples"
