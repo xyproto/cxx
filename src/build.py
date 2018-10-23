@@ -138,7 +138,7 @@ def split_cxxflags(given_cxxflags, win64):
                 other += flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
-            print("WARNING: Unsupported flag: " + flag)
+            print("WARNING: Unsupported flag for configuring packages: " + flag)
             continue
     # Other CXXFLAGS can be returned as the final value here
     return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), other.strip()
@@ -704,7 +704,7 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             if include in flag_dict:
                 continue
             # Search system_include_dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
+            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             try:
                 include_path = os.popen2(cmd)[1].read().strip()
@@ -731,12 +731,11 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
-        # Try the same with pacman, but now using find to search deeper in the system include dir
-        for include in includes:
+            # Try the same with pacman, but now using find to search deeper in the system include dir
             if include in flag_dict:
                 continue
             # Search the system include dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
+            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             try:
                 include_path = os.popen2(cmd)[1].read().strip()
@@ -763,12 +762,11 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                     flag_dict[include] += " " + new_flags
                 else:
                     flag_dict[include] = new_flags
-        # Try the same, but now using find to search deeper in system_include_dir
-        for include in includes:
+            # Try the same, but now using find to search deeper in system_include_dir
             if include in flag_dict:
                 continue
             # Search system_include_dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -type f -wholename "*' + \
+            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                 include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
             try:
                 include_path = os.popen2(cmd)[1].read().strip()
