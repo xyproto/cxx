@@ -4,4 +4,5 @@ services:
   - docker
 
 script:
-  - tests/arch/run.sh
+  #- tests/arch/run.sh
+  - tests/ubuntu/run.sh
