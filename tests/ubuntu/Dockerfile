@@ -4,7 +4,7 @@ FROM ubuntu:18.10
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get upgrade && \
-    apt-get install -y -q build-essential figlet freeglut3-dev freeglut3-dev g++-mingw-w64-x86-64 git gtk+3-dev libboost-dev libboost-all-dev libboost-filesystem-dev libglew-dev libsdl2-dev libsfml-dev make mesa-common-dev qtbase5-dev qt5-default qtdeclarative5-dev scons python3 apt-utils apt-file libconfig++-dev libconfig++ libopenal-dev libglfw3-dev libvulkan-dev && \
+    apt-get install -y -q build-essential figlet freeglut3-dev freeglut3-dev g++-mingw-w64-x86-64 git gtk+3-dev libboost-dev libboost-all-dev libboost-filesystem-dev libglew-dev libsdl2-dev libsfml-dev make mesa-common-dev qtbase5-dev qt5-default qtdeclarative5-dev scons python3 apt-utils apt-file libconfig++-dev libconfig++ libopenal-dev libglfw3-dev libvulkan-dev libboost-all-dev && \
     apt-get update && \
     apt-get clean
 
