@@ -73,10 +73,13 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
         if projectdir.is_dir():
             projectname = os.path.basename(projectdir)
 
+            # informative output
+            print("\n------- " + projectdir.name + " -------", flush=True)
+
             # skip, if needed
             if projectname in skiplist:
                 if command not in ["clean", "fastclean"]:
-                    print("Skipping " + projectname + " at " + command)
+                    print("Skipping " + projectname + " at " + command, flush=True)
                 continue
 
             # special cases
@@ -87,9 +90,6 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
             # set the directory
             reldir = os.path.relpath(projectdir, Path.cwd())
             sm.set_directory(reldir)
-
-            # informative output
-            print("\n------- " + projectdir.name + " -------", flush=True)
 
             # run the command. Empty arguments are ignored
             sm.run([command, extraflag], dummy=dummyrun, verbose=True)
