@@ -19,4 +19,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
 RUN sm -C sakemake/examples/hello/common test
 
 # Clean and build some of the examples
-RUN sakemake/tests/all.py fastclean:build win64crate gtk3 qt5 sfml sdl2
+CMD sakemake/tests/all.py fastclean:build config win64crate gtk3 qt5 sfml sdl2 sfml_audio
