@@ -98,21 +98,28 @@ def main():
     # the first argument is a command, the rest are projects names to be skipped
     # possible commands: clean fastclean build run rebuild. All commands supported by sm is ok.
 
+    default_commands = ["fastclean", "build"]
+    default_skiplist = ["boson"]
+
     args = sys.argv[1:]
     if len(args) < 1:
-        command = "fastclean:build"
-        skiplist = []
+        command = ":".join(default_commands)
+        skiplist = default_skiplist
     else:
-        command = args[0] or "fastclean:build"
-        skiplist = args[1:] or []
+        command = args[0] or ":".join(default_commands)
+        skiplist = args[1:] or default_skiplist
 
+    # directory of this source file
     thisdir = Path(os.path.realpath(__file__)).parent
+
+    # ../examples
     exampledir = Path(thisdir.parent.joinpath('examples'))
 
     sm = SakeMake()
     sm.version()
 
     f = Figlet()
+
     if ":" in command:
         for cmd in command.split(":"):
             run_all(f, sm, cmd, exampledir, skiplist, dummyrun=False)

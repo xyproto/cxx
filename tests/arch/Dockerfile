@@ -24,4 +24,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
 RUN sm -C examples/hello/common test
 
 # Clean and build all examples
-RUN tests/all.py
+CMD tests/all.py

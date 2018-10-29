@@ -16,5 +16,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
 RUN sm -C sakemake/examples/hello/common test
 
 # Clean and build all examples
-RUN sakemake/tests/all.py
-
+CMD sakemake/tests/all.py
