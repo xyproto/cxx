@@ -12,7 +12,7 @@ echo 'ftp://ftp.fr.netbsd.org/pub/pkgsrc/packages/NetBSD/amd64/7.0/All' | sudo t
 sudo pkgin update
 
 # install basic tools
-sudo pkgin -y install bash git gmake pkgconf
+sudo pkgin -y install bash git gmake pkgconf python3
 
 # Install packages required for Sakemake and for building the examples
 sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut openal qt5 scons boost

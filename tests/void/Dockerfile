@@ -4,7 +4,7 @@ FROM voidlinux/voidlinux
 RUN xbps-install -Su -y
 
 # Install packages that usually install just fine
-RUN xbps-install -S -y SDL2 gcc git glew-devel libfreeglut-devel make pkg-config scons boost-devel figlet
+RUN xbps-install -S -y SDL2 gcc git glew-devel libfreeglut-devel make pkg-config scons boost-devel figlet python3
 
 # Install packages that may fail
 #RUN xbps-install -S -y gtk+3-devel qt5-devel
@@ -15,8 +15,8 @@ RUN git clone https://github.com/xyproto/sakemake && \
     cd sakemake && \
     make install
 
-# Clean and build all examples
-RUN sakemake/tests/build_all.sh win64crate
-
 # Build and run the hello_test in hello/common
 RUN sm -C sakemake/examples/hello/common test
+
+# Clean and build some of the examples
+RUN sakemake/tests/all.py fastclean:build win64crate gtk3 qt5 sfml sdl2

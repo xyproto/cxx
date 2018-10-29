@@ -10,7 +10,7 @@ pkg update -f
 pkg upgrade -y
 
 # Install basic packages for Linux-like development
-pkg install -y bash git gmake pkgconf
+pkg install -y bash git gmake pkgconf python3
 
 # Install packages required for Sakemake and for building the examples
 pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig qt5 scons sdl2
