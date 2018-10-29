@@ -1792,7 +1792,7 @@ def sakemake_main():
             # if sloppy is not set, add various warnings:
 
             # pretty strict + fail at first error
-            env.Append(CXXFLAGS=' -Wall -Wshadow -pedantic -Wno-parentheses -Wfatal-errors')
+            env.Append(CXXFLAGS=' -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla')
 
             # if strict is set, enable even more warnings
             if int(ARGUMENTS.get('strict', 0)):
