@@ -9,6 +9,7 @@ RUN xbps-install -S -y SDL2 gcc git glew-devel libfreeglut-devel make pkg-config
 # Install packages that may fail
 #RUN xbps-install -S -y gtk+3-devel qt5-devel
 #RUN xbps-install -S -y SDL2-devel SFML-devel
+# libopenal-devel
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
