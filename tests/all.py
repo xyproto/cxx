@@ -34,10 +34,12 @@ class SakeMake:
         else:
             cmd = self.command + " " + " ".join(args)
         if dummy or verbose:
-            print(cmd)
+            print(cmd, file=sys.stderr)
             if dummy:
                 return
-        os.system(cmd)
+        if os.system(cmd) != 0:
+            print("ERROR: " + cmd, file=sys.stderr)
+            sys.exit(1)
 
     def version(self):
         self.run(["version"])
@@ -86,7 +88,7 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
             sm.set_directory(reldir)
 
             # informative output
-            print("------- " + reldir + " -------")
+            print("\n------- " + projectdir.name + " -------", file=sys.stderr)
 
             # run the command. Empty arguments are ignored
             sm.run([command, extraflag], dummy=dummyrun, verbose=True)
@@ -112,8 +114,7 @@ def main():
 
     f = Figlet()
     if ":" in command:
-        commands = command.split(":")
-        for cmd in commands:
+        for cmd in command.split(":"):
             run_all(f, sm, cmd, exampledir, skiplist, dummyrun=False)
     else:
         run_all(f, sm, command, exampledir, skiplist, dummyrun=False)
