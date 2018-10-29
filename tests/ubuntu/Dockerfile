@@ -16,5 +16,5 @@ RUN git clone https://github.com/xyproto/sakemake && \
 # Build and run the hello_test in hello/common
 RUN sm -C sakemake/examples/hello/common test
 
-# Clean and build all examples
-CMD sakemake/tests/all.py fastclean:build qt5
+# Clean and build most examples
+CMD sakemake/tests/all.py fastclean:build qt5 vulkan_glfw
