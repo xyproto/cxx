@@ -34,7 +34,7 @@ class SakeMake:
         else:
             cmd = self.command + " " + " ".join(args)
         if dummy or verbose:
-            print(cmd, file=sys.stderr)
+            print(cmd)
             if dummy:
                 return
         if os.system(cmd) != 0:
@@ -75,7 +75,8 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
 
             # skip, if needed
             if projectname in skiplist:
-                print("Skipping " + projectname)
+                if command not in ["clean", "fastclean"]:
+                    print("Skipping " + projectname + " at " + command)
                 continue
 
             # special cases
@@ -88,10 +89,11 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
             sm.set_directory(reldir)
 
             # informative output
-            print("\n------- " + projectdir.name + " -------", file=sys.stderr)
+            print("\n------- " + projectdir.name + " -------", flush=True)
 
             # run the command. Empty arguments are ignored
             sm.run([command, extraflag], dummy=dummyrun, verbose=True)
+            sys.stdout.flush()
 
 
 def main():
@@ -126,7 +128,7 @@ def main():
     else:
         run_all(f, sm, command, exampledir, skiplist, dummyrun=False)
 
-    print("Done.")
+    print("Done.", flush=True)
 
 
 if __name__ == "__main__":
