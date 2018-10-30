@@ -1,6 +1,5 @@
-sudo: false
+sudo: required
 dist: bionic
-
 addons:
   apt:
     update: true
@@ -34,8 +33,7 @@ addons:
       - libglm-dev
       - libsdl2-mixer-dev
       - libboost-system-dev
-
 script:
   - make
-  - DESTDIR=. make install
-  - PATH="$PATH:$(pwd)/usr/bin" tests/all.py fastclean:build vulkan vulkan_glfw
+  - sudo make install
+  - tests/all.py fastclean:build vulkan vulkan_glfw
