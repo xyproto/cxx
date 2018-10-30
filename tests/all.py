@@ -14,9 +14,9 @@ import sys
 class SakeMake:
 
     def __init__(self):
-        self.command = shutil.which("sm")
+        self.command = shutil.which("sakemake")
         if not self.command:
-            print("sm must exist in the path")
+            print("error: sakemake must exist in PATH")
             sys.exit(1)
         self.directory = None
 
