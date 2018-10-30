@@ -1,5 +1,3 @@
-language: cpp python
-
 sudo: false
 dist: bionic
 
@@ -38,4 +36,6 @@ addons:
       - libboost-system-dev
 
 script:
+  - make
+  - make install
   - tests/all.py fastclean:build vulkan vulkan_glfw
