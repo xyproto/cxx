@@ -1,13 +1,13 @@
-sudo: no
 dist: bionic
-
-python:
-  - 3.7
+sudo: no
 
 addons:
   apt:
     update: true
+    sources:
+    - deadsnakes
     packages:
+      - python3.7-dev
       - build-essential
       - figlet
       - freeglut3-dev
@@ -45,4 +45,3 @@ script:
   - export PATH="$PATH:$PWD/usr/bin"
   - sm version
   - tests/all.py fastclean:build vulkan vulkan_glfw
-
