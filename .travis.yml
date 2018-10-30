@@ -22,7 +22,6 @@ addons:
       - qtdeclarative5-dev
       - scons
       - python3
-      - python3-pip
       - apt-utils
       - apt-file
       - libconfig++-dev
@@ -35,7 +34,6 @@ addons:
       - libsdl2-mixer-dev
       - libboost-system-dev
 script:
-  - sudo pip3 install pathlib
   - make
   - sudo make install
-  - tests/all.py fastclean:build vulkan vulkan_glfw
+  - python3 tests/all.py fastclean:build vulkan vulkan_glfw
