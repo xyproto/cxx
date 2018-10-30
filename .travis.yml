@@ -1,5 +1,7 @@
-sudo: required
+language: cpp python
+sudo: yes
 dist: bionic
+
 addons:
   apt:
     update: true
@@ -34,8 +36,9 @@ addons:
       - libglm-dev
       - libsdl2-mixer-dev
       - libboost-system-dev
+
 script:
+  - sudo pip install pathlib || sudo pip3 install pathlib || true
   - make
   - sudo make install
-  - sudo pip install pathlib
   - python3 tests/all.py fastclean:build vulkan vulkan_glfw
