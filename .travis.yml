@@ -35,10 +35,10 @@ addons:
 script:
   - export PATH="$PATH:$PWD/usr/bin"
   - curl -s "https://www.python.org/ftp/python/3.7.1/Python-3.7.1.tar.xz" | tar JxC /tmp
-  - cd /tmp/Python-3.7.1
+  - pushd /tmp/Python-3.7.1
   - ./configure --prefix="/usr"
-  - make
-  - DESTDIR=. make install
+  - popd
+  - DESTDIR=. make -C /tmp/Python-3.7.1 install
   - python3 --version
   - make
   - DESTDIR=. make install
