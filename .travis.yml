@@ -4,10 +4,7 @@ sudo: no
 addons:
   apt:
     update: true
-    sources:
-    - deadsnakes
     packages:
-      - python3.7
       - build-essential
       - figlet
       - freeglut3-dev
@@ -36,11 +33,16 @@ addons:
       - libboost-system-dev
 
 script:
+  - export PATH="$PATH:$PWD/usr/bin"
+  - curl -s "https://www.python.org/ftp/python/3.7.1/Python-3.7.1.tar.xz" | tar JxC /tmp
+  - cd /tmp/Python-3.7.1
+  - ./configure --prefix="/usr"
+  - make
+  - DESTDIR=. make install
   - python3 --version
   - make
   - DESTDIR=. make install
   - sed -i "s,/usr/share/sakemake,$PWD/usr/share/sakemake,g" usr/bin/sakemake
   - ln -sf "$PWD/usr/bin/sakemake" usr/bin/sm
-  - export PATH="$PATH:$PWD/usr/bin"
   - sm version
   - tests/all.py fastclean:build vulkan vulkan_glfw
