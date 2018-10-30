@@ -7,7 +7,7 @@ addons:
     sources:
     - deadsnakes
     packages:
-      - python3.7-dev
+      - python3.7
       - build-essential
       - figlet
       - freeglut3-dev
@@ -38,6 +38,7 @@ addons:
       - libboost-system-dev
 
 script:
+  - python3 --version
   - make
   - DESTDIR=. make install
   - sed -i "s,/usr/share/sakemake,$PWD/usr/share/sakemake,g" usr/bin/sakemake
