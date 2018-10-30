@@ -570,7 +570,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     # http://en.cppreference.com/w/cpp/thread
     for include in includes:
         if include.strip() in ("condition_variable", "future", "mutex", "new", "pthread.h", "thread"):
-            new_flags = "-pthread"
+            new_flags = "-pthread -lpthread"
             if include in flag_dict:
                 flag_dict[include] += " " + new_flags
             else:
@@ -1787,12 +1787,12 @@ def sakemake_main():
         # OpenMP related build flags
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
-            env.Append(LINKFLAGS=' -fopenmp -pthread')
+            env.Append(LINKFLAGS=' -fopenmp -pthread -lpthread')
 
         # Boost thread related build flags
         if boost:
             # TODO: Only append this if boost/thread.hpp is included?
-            env.Append(LINKFLAGS=' -pthread')
+            env.Append(LINKFLAGS=' -pthread -lpthread')
 
         # GLFW + Vulkan related build flags
         if glfw_vulkan:
