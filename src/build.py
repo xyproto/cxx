@@ -1357,7 +1357,6 @@ def sakemake_main():
     openmp = False
     # Prepare to check if the main source file lets GLFW include Vulkan
     glfw_vulkan = False
-    # Prepare to check if the main source files inludes boost
     boost = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
@@ -1789,6 +1788,11 @@ def sakemake_main():
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
             env.Append(LINKFLAGS=' -fopenmp -lpthread')
+
+        # Boost thread related build flags
+        if boost:
+            # TODO: Only append this if boost/thread.hpp is included?
+            env.Append(LINKFLAGS=' -lpthread')
 
         # GLFW + Vulkan related build flags
         if glfw_vulkan:

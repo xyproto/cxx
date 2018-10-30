@@ -40,6 +40,7 @@ linux/tinyc/tinyc
 examples/vulkan_glfw/vulkan_glfw
 examples/sfml_audio/sfml_audio
 examples/boost/boost
+examples/boost_thread/boost_thread
 
 # Generated files
 src/sakemake
