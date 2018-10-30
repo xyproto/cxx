@@ -1772,17 +1772,6 @@ def sakemake_main():
         if glfw_vulkan:
             env.Append(LINKFLAGS=' -lvulkan')
 
-        # Boost related build flags
-        if boost:
-            # check if boost_system is available from ldconfig before adding the linker flag
-            if which('ldconfig'):
-                cmd = 'ldconfig -p | grep boost_system'
-                if "boost_system" in os.popen2(cmd)[1].read().strip():
-                    env.Append(LINKFLAGS=' -lboost_system')
-            # if ldconfig is not available, check if it is in /usr/lib
-            elif os.path.exists('/usr/lib/libboost_system.so'):
-                env.Append(LINKFLAGS=' -lboost_system')
-
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
             env.Append(CXXFLAGS=' -fpermissive -w')
@@ -1851,6 +1840,20 @@ def sakemake_main():
             env.Append(LINKFLAGS=' -Wl,--as-needed')
         elif platform.system() == "Solaris":
             env.Append(LINKFLAGS=' -Wl,-zignore')
+
+        # Linking with boost_system must come last!
+        for lib in env["LIBS"]:
+            if lib.startswith("boost_") and "boost_system" not in env["LIBS"]:
+                # check if boost_system is available from ldconfig before adding the lib
+                if which('ldconfig'):
+                    cmd = 'ldconfig -p | grep boost_system'
+                    if "boost_system" in os.popen2(cmd)[1].read().strip():
+                        env["LIBS"].append("boost_system")
+                        break
+                # if ldconfig is not available, check if it is in /usr/lib
+                elif os.path.exists('/usr/lib/libboost_system.so'):
+                    env["LIBS"].append("boost_system")
+                    break
 
     # Build main executable
     if main_source_file:
