@@ -37,5 +37,6 @@ addons:
 
 script:
   - make
-  - make install
+  - DESTDIR="$(pwd)" make install
+  - export PATH="$PATH:$(pwd)/usr/bin"
   - tests/all.py fastclean:build vulkan vulkan_glfw
