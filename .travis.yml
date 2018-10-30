@@ -1,36 +1,12 @@
 dist: bionic
-sudo: no
-
-addons:
-  apt:
-    update: true
-    packages:
-      - apt-file
-      - apt-utils
-      - build-essential
-      - figlet
-      - freeglut3-dev
-      - g++-8
-      - g++-mingw-w64-x86-64
-      - git
-      - gtk+3-dev
-      - libboost-all-dev
-      - libboost-system-dev
-      - libconfig++
-      - libconfig++-dev
-      - libglew-dev
-      - libglm-dev
-      - libopenal-dev
-      - libsdl2-dev
-      - libsdl2-mixer-dev
-      - libsfml-dev
-      - make
-      - mesa-common-dev
-      - qt5-default
-      - qtbase5-dev
-      - qtdeclarative5-dev
-      - scons
-
+sudo: yes
+before_script:
+  - export DEBIAN_FRONTEND=noninteractive
+  - sudo apt-get update
+  - sudo apt-get upgrade
+  - sudo apt-get install -y -q build-essential figlet freeglut3-dev g++-mingw-w64-x86-64 git gtk+3-dev libboost-all-dev libglew-dev libsdl2-dev libsfml-dev make mesa-common-dev qtbase5-dev qt5-default qtdeclarative5-dev scons python3 apt-utils apt-file libconfig++-dev libconfig++ libopenal-dev libglfw3-dev libvulkan-dev libglm-dev libsdl2-mixer-dev libboost-system-dev
+  - sudo apt-get update
+  - sudo apt-get clean
 script:
   - export ROOTDIR="$PWD"
   - export PATH="$ROOTDIR/usr/bin:$PATH"
