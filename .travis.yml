@@ -37,5 +37,5 @@ addons:
 script:
   - make
   - sudo make install
-  - sudo pip3 install pathlib
+  - sudo pip install pathlib
   - python3 tests/all.py fastclean:build vulkan vulkan_glfw
