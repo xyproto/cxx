@@ -5,32 +5,31 @@ addons:
   apt:
     update: true
     packages:
+      - apt-file
+      - apt-utils
       - build-essential
       - figlet
       - freeglut3-dev
-      - freeglut3-dev
+      - g++-8
       - g++-mingw-w64-x86-64
       - git
       - gtk+3-dev
       - libboost-all-dev
+      - libboost-system-dev
+      - libconfig++
+      - libconfig++-dev
       - libglew-dev
+      - libglm-dev
+      - libopenal-dev
       - libsdl2-dev
+      - libsdl2-mixer-dev
       - libsfml-dev
       - make
       - mesa-common-dev
-      - qtbase5-dev
       - qt5-default
+      - qtbase5-dev
       - qtdeclarative5-dev
       - scons
-      - apt-utils
-      - apt-file
-      - libconfig++-dev
-      - libconfig++
-      - libopenal-dev
-      - libboost-all-dev
-      - libglm-dev
-      - libsdl2-mixer-dev
-      - libboost-system-dev
 
 script:
   - export ROOTDIR="$PWD"
@@ -40,8 +39,9 @@ script:
   - curl -s "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tar.xz" | tar JxC /tmp
   - pushd /tmp/Python-$PYVER
   - ./configure --prefix=/usr 2>/dev/null 1>/dev/null
-  - make
-  - DESTDIR="$ROOTDIR" PREFIX=/usr make install
+  - make 2>/dev/null 1>/dev/null
+  - DESTDIR="$ROOTDIR" PREFIX=/usr make install 2>/dev/null 1>/dev/null
+  - rm -rf /tmp/Python-$PYVER
   - python3 --version
   - popd
   - make
