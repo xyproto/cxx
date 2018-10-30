@@ -1676,12 +1676,11 @@ def sakemake_main():
             machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
             if os.path.exists("/usr/include/" + machine_name):
                 system_include_dirs.append("/usr/include/" + machine_name)
-        # Set system_include_dir to the given value, or keep it as /usr/include
+        # Set system_include_dir[0] to the given value, or keep it as /usr/include
         if ARGUMENTS.get('system_include_dir', ''):
-            system_include_dirs = [ARGUMENTS['system_include_dir']]
+            system_include_dirs[0] = ARGUMENTS['system_include_dir']
 
-        if int(ARGUMENTS.get('debug', 0)):
-            print("SYSTEM_INCLUDE_DIRS", system_include_dirs)
+        # print("SYSTEM_INCLUDE_DIRS", system_include_dirs)
 
         # debug is set?
         if int(ARGUMENTS.get('debug', 0)):
