@@ -1,5 +1,8 @@
 language: cpp python
 
+sudo: false
+dist: bionic
+
 addons:
   apt:
     update: true
