@@ -565,12 +565,12 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
 
     # Flags for standard includes must come before the skiplist check below.
 
-    # Add -lpthread for thread-related includes from stdlib (POSIX threads)
+    # Add -pthread for thread-related includes from stdlib (POSIX threads)
     # The list of includes to be checked for here is from:
     # http://en.cppreference.com/w/cpp/thread
     for include in includes:
         if include.strip() in ("condition_variable", "future", "mutex", "new", "pthread.h", "thread"):
-            new_flags = "-lpthread"
+            new_flags = "-pthread"
             if include in flag_dict:
                 flag_dict[include] += " " + new_flags
             else:
@@ -1787,12 +1787,12 @@ def sakemake_main():
         # OpenMP related build flags
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
-            env.Append(LINKFLAGS=' -fopenmp -lpthread')
+            env.Append(LINKFLAGS=' -fopenmp -pthread')
 
         # Boost thread related build flags
         if boost:
             # TODO: Only append this if boost/thread.hpp is included?
-            env.Append(LINKFLAGS=' -lpthread')
+            env.Append(LINKFLAGS=' -pthread')
 
         # GLFW + Vulkan related build flags
         if glfw_vulkan:
