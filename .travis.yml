@@ -1,27 +1,5 @@
-dist: bionic
-sudo: yes
-before_script:
-  - export DEBIAN_FRONTEND=noninteractive
-  - sudo apt-get update
-  - sudo apt-get install -y -q build-essential figlet freeglut3-dev g++-mingw-w64-x86-64 git gtk+3-dev libboost-all-dev libglew-dev libsdl2-dev libsfml-dev make mesa-common-dev qtbase5-dev qt5-default qtdeclarative5-dev scons python3 apt-utils apt-file libconfig++-dev libconfig++ libopenal-dev libglfw3-dev libvulkan-dev libglm-dev libsdl2-mixer-dev libboost-system-dev
-  - sudo apt-get update
-  - sudo apt-get clean
+services:
+  - docker
+
 script:
-  - export ROOTDIR="$PWD"
-  - export PATH="$ROOTDIR/usr/bin:$PATH"
-  - export LD_LIBRARY_PATH="$ROOTDIR/usr/lib:$LD_LIBRARY_PATH"
-  - export PYVER=3.7.1
-  - curl -s "https://www.python.org/ftp/python/$PYVER/Python-$PYVER.tar.xz" | tar JxC /tmp
-  - pushd /tmp/Python-$PYVER
-  - ./configure --prefix=/usr 2>/dev/null 1>/dev/null
-  - make 2>/dev/null 1>/dev/null
-  - DESTDIR="$ROOTDIR" PREFIX=/usr make install 2>/dev/null 1>/dev/null
-  - rm -rf /tmp/Python-$PYVER
-  - python3 --version
-  - popd
-  - make
-  - DESTDIR="$ROOTDIR" make install
-  - sed -i "s,/usr/share/sakemake,$PWD/usr/share/sakemake,g" usr/bin/sakemake
-  - ln -sf "$PWD/usr/bin/sakemake" usr/bin/sm
-  - sm version
-  - tests/all.py fastclean:build vulkan vulkan_glfw
+  - tests/ubuntu/run.sh
