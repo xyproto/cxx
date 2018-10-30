@@ -1,4 +1,4 @@
-sudo: yes
+sudo: no
 dist: bionic
 
 python:
@@ -39,5 +39,9 @@ addons:
 
 script:
   - make
-  - sudo make install
-  - python3 tests/all.py fastclean:build vulkan vulkan_glfw
+  - DESTDIR=. make install
+  - sed -i "s,/usr/share/sakemake,$PWD/usr/share/sakemake,g" usr/bin/sakemake
+  - ln -sf usr/bin/sm "$PWD/usr/bin/sakemake"
+  - export PATH="$PATH:$PWD/usr/bin"
+  - sm version
+  - tests/all.py fastclean:build vulkan vulkan_glfw
