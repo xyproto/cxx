@@ -38,6 +38,7 @@ addons:
       - libboost-system-dev
 
 script:
+  - python3.7 --version
   - python3 --version
   - make
   - DESTDIR=. make install
@@ -45,4 +46,4 @@ script:
   - ln -sf "$PWD/usr/bin/sakemake" usr/bin/sm
   - export PATH="$PATH:$PWD/usr/bin"
   - sm version
-  - tests/all.py fastclean:build vulkan vulkan_glfw
+  - python3.7 tests/all.py fastclean:build vulkan vulkan_glfw
