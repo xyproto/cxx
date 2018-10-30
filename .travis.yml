@@ -33,12 +33,12 @@ addons:
       - libboost-system-dev
 
 script:
-  - export PATH="$PATH:$PWD/usr/bin"
+  - export PATH="$PWD/usr/bin:$PATH"
   - curl -s "https://www.python.org/ftp/python/3.7.1/Python-3.7.1.tar.xz" | tar JxC /tmp
   - pushd /tmp/Python-3.7.1
-  - ./configure --prefix="/usr"
+  - ./configure --prefix="/usr" 2>/dev/null 1>/dev/null
   - popd
-  - DESTDIR=. make -C /tmp/Python-3.7.1 install
+  - DESTDIR=. make -C /tmp/Python-3.7.1 install 2>/dev/null 1>/dev/null
   - python3 --version
   - make
   - DESTDIR=. make install
