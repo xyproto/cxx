@@ -30,8 +30,6 @@ addons:
       - libconfig++-dev
       - libconfig++
       - libopenal-dev
-      - libglfw3-dev
-      - libvulkan-dev
       - libboost-all-dev
       - libglm-dev
       - libsdl2-mixer-dev
