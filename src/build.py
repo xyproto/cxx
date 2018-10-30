@@ -518,9 +518,13 @@ def brew_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
-def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes, cxx=None):
+def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes, cxx=None):
     """Given a source file, try to extract the relevant includes and get pkg-config to output relevant --cflags and --libs.
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
+
+    if type(system_include_dirs) == type(""):
+        print("ERROR: system_include_dirs is supposed to be a list")
+        sys.exit(1)
 
     if sourcefilename == "":
         return "", "", "", "", "", ""
@@ -611,28 +615,29 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         for include in includes:
             if include in flag_dict:
                 continue
-            if os.path.exists(os.path.join(system_include_dir, include)):
-                # Add the include directory as an -I flag if the include file was found
-                if include in flag_dict:
-                    global_flag_dict[include] += " -I" + system_include_dir
-                else:
-                    global_flag_dict[include] = "-I" + system_include_dir
-                # If pkg-config exists, add additional flags
-                if has_pkg_config:
-                    # Add flags from pkg-config, if available for the first word of the include
-                    first_word = include.lower()
-                    if os.path.sep in include:
-                        first_word = include.split(os.path.sep)[0].lower()
-                    cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
-                    try:
-                        new_flags = os.popen2(cmd)[1].read().strip()
-                    except OSError:
-                        new_flags = ""
-                    if new_flags:
-                        if include in flag_dict:
-                            flag_dict[include] += " " + new_flags
-                        else:
-                            flag_dict[include] = new_flags
+            for system_include_dir in system_include_dirs:
+                if os.path.exists(os.path.join(system_include_dir, include)):
+                    # Add the include directory as an -I flag if the include file was found
+                    if include in flag_dict:
+                        global_flag_dict[include] += " -I" + system_include_dir
+                    else:
+                        global_flag_dict[include] = "-I" + system_include_dir
+                    # If pkg-config exists, add additional flags
+                    if has_pkg_config:
+                        # Add flags from pkg-config, if available for the first word of the include
+                        first_word = include.lower()
+                        if os.path.sep in include:
+                            first_word = include.split(os.path.sep)[0].lower()
+                        cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
+                        try:
+                            new_flags = os.popen2(cmd)[1].read().strip()
+                        except OSError:
+                            new_flags = ""
+                        if new_flags:
+                            if include in flag_dict:
+                                flag_dict[include] += " " + new_flags
+                            else:
+                                flag_dict[include] = new_flags
 
     # Search the x86_64-w64-mingw32 path
     if win64:
@@ -692,31 +697,33 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         for include in includes:
             if include in flag_dict:
                 continue
-            include_path = os.path.join(system_include_dir, include)
-            new_flags = deb_include_path_to_cxxflags(include_path, cxx)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
-        # Try the same with dpkg-query, but now using find to search deeper in system_include_dir
-        for include in includes:
-            if include in flag_dict:
-                continue
-            # Search system_include_dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
-                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            try:
-                include_path = os.popen2(cmd)[1].read().strip()
-            except OSError:
-                include_path = ""
-            if include_path:
+            for system_include_dir in system_include_dirs:
+                include_path = os.path.join(system_include_dir, include)
                 new_flags = deb_include_path_to_cxxflags(include_path, cxx)
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+        # Try the same with dpkg-query, but now using find to search deeper in system_include_dir
+        for include in includes:
+            if include in flag_dict:
+                continue
+            # Search system_include_dir
+            for system_include_dir in system_include_dirs:
+                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
+                try:
+                    include_path = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    include_path = ""
+                if include_path:
+                    new_flags = deb_include_path_to_cxxflags(include_path, cxx)
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on Arch Linux
     if has_pkg_config and exe("/usr/bin/pacman"):
@@ -724,30 +731,32 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         for include in includes:
             if include in flag_dict:
                 continue
-            include_path = os.path.join(system_include_dir, include)
-            new_flags = arch_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
-            # Try the same with pacman, but now using find to search deeper in the system include dir
-            if include in flag_dict:
-                continue
-            # Search the system include dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
-                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            try:
-                include_path = os.popen2(cmd)[1].read().strip()
-            except OSError:
-                include_path = ""
-            if include_path:
+            for system_include_dir in system_include_dirs:
+                include_path = os.path.join(system_include_dir, include)
                 new_flags = arch_include_path_to_cxxflags(include_path)
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+            # Try the same with pacman, but now using find to search deeper in the system include dir
+            if include in flag_dict:
+                continue
+            # Search the system include dir
+            for system_include_dir in system_include_dirs:
+                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
+                try:
+                    include_path = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    include_path = ""
+                if include_path:
+                    new_flags = arch_include_path_to_cxxflags(include_path)
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on FreeBSD
     if has_pkg_config and exe("/usr/sbin/pkg"):
@@ -755,30 +764,32 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
         for include in includes:
             if include in flag_dict:
                 continue
-            include_path = os.path.join(system_include_dir, include)
-            new_flags = freebsd_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
-            # Try the same, but now using find to search deeper in system_include_dir
-            if include in flag_dict:
-                continue
-            # Search system_include_dir
-            cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
-                include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-            try:
-                include_path = os.popen2(cmd)[1].read().strip()
-            except OSError:
-                include_path = ""
-            if include_path:
+            for system_include_dir in system_include_dirs:
+                include_path = os.path.join(system_include_dir, include)
                 new_flags = freebsd_include_path_to_cxxflags(include_path)
                 if new_flags:
                     if include in flag_dict:
                         flag_dict[include] += " " + new_flags
                     else:
                         flag_dict[include] = new_flags
+            # Try the same, but now using find to search deeper in system_include_dir
+            if include in flag_dict:
+                continue
+            # Search system_include_dir
+            for system_include_dir in system_include_dirs:
+                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
+                try:
+                    include_path = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    include_path = ""
+                if include_path:
+                    new_flags = freebsd_include_path_to_cxxflags(include_path)
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
 
     # Using the include_lines, find the correct CFLAGS on macOS with Homebrew and pkg-config installed
     if has_pkg_config and which("brew"):
@@ -787,65 +798,67 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
             if include in flag_dict:
                 continue
             # Homebrew does not support finding the package that owns a file, search /usr/local/include instead
-            cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" -maxdepth 4 | tail -1'
-            try:
-                include_path = os.popen2(cmd)[1].read().strip()
-            except OSError:
-                include_path = ""
-            if not include_path:
-                # Could not find the include file in the system include dir, try searching /usr/local/Cellar for frameworks, and then headers
-                # This is much faster than searching for the header file directly, and it makes
-                # sense to look for the latest framework version before searching all of them.
-                cmd = 'find /usr/local/Cellar/ -name Frameworks -type d -maxdepth 3 | sort -V'
+            for system_include_dir in system_include_dirs:
+                cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" -maxdepth 4 | tail -1'
                 try:
-                    framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                    include_path = os.popen2(cmd)[1].read().strip()
                 except OSError:
-                    framework_dirs = []
-                # If directories named "Frameworks" were found, sort them by version number and then search
-                # the directories of the ones with the highest version numbers for the include file
-                if framework_dirs:
-                    # Collect the frameworks path in a dictionary, indexed by the part of the path with a framework name
-                    framework_dict = {}
-                    for framework_dir in framework_dirs:
-                        path_components = framework_dir.split(os.path.sep)
-                        if len(path_components) >= 5:
-                            framework_dict[path_components[5]] = os.path.normpath(framework_dir)
-                    # Loop over the framework directories belonging to the latest versions of the frameworks
-                    # and look for the include file in question:
-                    for framework_dir in framework_dict.values():
-                        cmd = 'find -L "' + framework_dir + '" -type f -maxdepth 4 -name "' + include + '" | tail -1'
-                        try:
-                            include_path = os.popen2(cmd)[1].read().strip()
-                        except OSError:
-                            include_path = ""
-                        if include_path:
-                            # Now use the existing function for getting build flags from a found include file
-                            new_flags = brew_include_path_to_cxxflags(include_path)
-                            if new_flags:
-                                if include in flag_dict:
-                                    flag_dict[include] += " " + new_flags
-                                else:
-                                    flag_dict[include] = new_flags
-            else:
-                new_flags = brew_include_path_to_cxxflags(include_path)
-                if new_flags:
-                    if include in flag_dict:
-                        flag_dict[include] += " " + new_flags
-                    else:
-                        flag_dict[include] = new_flags
+                    include_path = ""
+                if not include_path:
+                    # Could not find the include file in the system include dir, try searching /usr/local/Cellar for frameworks, and then headers
+                    # This is much faster than searching for the header file directly, and it makes
+                    # sense to look for the latest framework version before searching all of them.
+                    cmd = 'find /usr/local/Cellar/ -name Frameworks -type d -maxdepth 3 | sort -V'
+                    try:
+                        framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                    except OSError:
+                        framework_dirs = []
+                    # If directories named "Frameworks" were found, sort them by version number and then search
+                    # the directories of the ones with the highest version numbers for the include file
+                    if framework_dirs:
+                        # Collect the frameworks path in a dictionary, indexed by the part of the path with a framework name
+                        framework_dict = {}
+                        for framework_dir in framework_dirs:
+                            path_components = framework_dir.split(os.path.sep)
+                            if len(path_components) >= 5:
+                                framework_dict[path_components[5]] = os.path.normpath(framework_dir)
+                        # Loop over the framework directories belonging to the latest versions of the frameworks
+                        # and look for the include file in question:
+                        for framework_dir in framework_dict.values():
+                            cmd = 'find -L "' + framework_dir + '" -type f -maxdepth 4 -name "' + include + '" | tail -1'
+                            try:
+                                include_path = os.popen2(cmd)[1].read().strip()
+                            except OSError:
+                                include_path = ""
+                            if include_path:
+                                # Now use the existing function for getting build flags from a found include file
+                                new_flags = brew_include_path_to_cxxflags(include_path)
+                                if new_flags:
+                                    if include in flag_dict:
+                                        flag_dict[include] += " " + new_flags
+                                    else:
+                                        flag_dict[include] = new_flags
+                else:
+                    new_flags = brew_include_path_to_cxxflags(include_path)
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
 
     # Using the include_lines, try to guess the CFLAGS on a generic Linux distro
     if not has_package_manager:
         for include in includes:
             if include in flag_dict:
                 continue
-            include_path = os.path.join(system_include_dir, include)
-            new_flags = generic_include_path_to_cxxflags(include_path)
-            if new_flags:
-                if include in flag_dict:
-                    flag_dict[include] += " " + new_flags
-                else:
-                    flag_dict[include] = new_flags
+            for system_include_dir in system_include_dirs:
+                include_path = os.path.join(system_include_dir, include)
+                new_flags = generic_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
         # For NetBSD
         if os.path.exists("/usr/pkg/include"):
             for include in includes:
@@ -1146,20 +1159,21 @@ def get_buildflags(sourcefilename, system_include_dir, win64, compiler_includes,
                         flag_dict[include] = new_flags
 
         if include.startswith("Q"):
-            qt_include_dir = os.path.join(system_include_dir, "qt")
-            new_flags = ""
-            if not int(ARGUMENTS.get('strict', 0)):  # if not strict=1
-                # These warnings kick in for the Qt5 include files themselves
-                new_flags += "-Wno-class-memaccess -Wno-pedantic"
-            if os.path.exists(qt_include_dir):
-                if new_flags:
-                    new_flags += " "
-                new_flags += "-I" + qt_include_dir
-            if include in flag_dict:
-                if new_flags not in flag_dict[include]:
-                    flag_dict[include] += " " + new_flags
-            elif new_flags not in flag_dict.values():
-                flag_dict[include] = new_flags
+            for system_include_dir in system_include_dirs:
+                qt_include_dir = os.path.join(system_include_dir, "qt")
+                new_flags = ""
+                if not int(ARGUMENTS.get('strict', 0)):  # if not strict=1
+                    # These warnings kick in for the Qt5 include files themselves
+                    new_flags += "-Wno-class-memaccess -Wno-pedantic"
+                if os.path.exists(qt_include_dir):
+                    if new_flags:
+                        new_flags += " "
+                    new_flags += "-I" + qt_include_dir
+                if include in flag_dict:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
+                    flag_dict[include] = new_flags
 
         if include.startswith("glm/"):
             new_flags = ""
@@ -1273,10 +1287,10 @@ def strip_ext(filenames):
     return [os.path.splitext(fname)[0] for fname in filenames]
 
 
-def add_flags(env, src_file, system_include_dir, win64, compiler_includes):
+def add_flags(env, src_file, system_include_dirs, win64, compiler_includes):
     """Add build flags to the environment"""
     includes, defines, libs, libpaths, linkflags, other_cxxflags = get_buildflags(
-        src_file, system_include_dir, win64, compiler_includes, str(env["CXX"]))
+        src_file, system_include_dirs, win64, compiler_includes, str(env["CXX"]))
     if includes:
         if "CPPPATH" in env:
             newincs = [inc for inc in includes.split(" ") if inc.lower() not in str(env["CPPPATH"]).lower()]
@@ -1655,10 +1669,19 @@ def sakemake_main():
                     dir = os.path.normpath(os.path.join("..", dirname + "s")) + os.path.sep
                     env.Append(CPPDEFINES=[dirname.upper() + "DIR='\"" + dir + "\"'"])
 
-        system_include_dir = "/usr/include"
+        system_include_dirs = []
+        if os.path.exists("/usr/include"):
+            system_include_dirs.append("/usr/include")
+        if which(str(env["CXX"])):
+            machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
+            if os.path.exists("/usr/include/" + machine_name):
+                system_include_dirs.append("/usr/include/" + machine_name)
         # Set system_include_dir to the given value, or keep it as /usr/include
         if ARGUMENTS.get('system_include_dir', ''):
-            system_include_dir = ARGUMENTS['system_include_dir']
+            system_include_dirs = [ARGUMENTS['system_include_dir']]
+
+        if int(ARGUMENTS.get('debug', 0)):
+            print("SYSTEM_INCLUDE_DIRS", system_include_dirs)
 
         # debug is set?
         if int(ARGUMENTS.get('debug', 0)):
@@ -1831,7 +1854,7 @@ def sakemake_main():
     # Find extra CFLAGS for the sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in [main_source_file] + dep_src:
-            add_flags(env, src_file, system_include_dir, win64, compiler_includes)
+            add_flags(env, src_file, system_include_dirs, win64, compiler_includes)
 
     # If libraries are linked to, skip unused shared object dependencies.
     if "LIBS" in env and env["LIBS"]:
@@ -1862,7 +1885,7 @@ def sakemake_main():
     # Find extra CFLAGS for the test sources, if not cleaning
     if not env.GetOption('clean') and ('clean' not in COMMAND_LINE_TARGETS):
         for src_file in test_sources:
-            add_flags(env, src_file, system_include_dir, win64, compiler_includes)
+            add_flags(env, src_file, system_include_dirs, win64, compiler_includes)
 
     # Remove non-existing includes
     includes = [include for include in env['CPPPATH'] if os.path.exists(include)]
