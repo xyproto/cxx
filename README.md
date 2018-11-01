@@ -342,17 +342,11 @@ Rules for Configuration-free projects:
 * When running `sm test`, the `_test.*` files will be compiled and run.
 * `*_test.*` files must each contain a `main` function.
 
-#### CMake
+#### Ninja
 
-* Projects that uses CMake (and need no extra command line arguments when running `cmake`) are also Sakemake compatible and can be built with:
-
-    sm cmake
-
-* Or if using CMake + Ninja:
+* Projects that already uses CMake (and need no extra command line arguments when running `cmake`) are also Sakemake compatible and can be built with CMake + Ninja like this:
 
     sm ninja
-
-Only building projects with CMake is supported; not clearing, installing and packaging files.
 
 #### QtCreator
 
