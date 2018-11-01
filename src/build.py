@@ -1358,6 +1358,7 @@ def sakemake_main():
     # Prepare to check if the main source file lets GLFW include Vulkan
     glfw_vulkan = False
     boost = False
+    filesystem = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
@@ -1372,6 +1373,9 @@ def sakemake_main():
             # Check if boost is included
             if "#include <boost/" in line:
                 boost = True
+            # Check if filesystem is included
+            if "#include <filesystem>" in line:
+                filesystem = True
     except IOError:
         pass
 
@@ -1791,7 +1795,6 @@ def sakemake_main():
 
         # Boost thread related build flags
         if boost:
-            # TODO: Only append this if boost/thread.hpp is included?
             env.Append(LINKFLAGS=' -pthread -lpthread')
 
         # GLFW + Vulkan related build flags
@@ -1880,6 +1883,13 @@ def sakemake_main():
                 elif os.path.exists('/usr/lib/libboost_system.so'):
                     env["LIBS"].append("boost_system")
                     break
+
+    # Linking with libstdc++fs must come last!
+    if filesystem:
+        if "LIBS" in env:
+            env["LIBS"].append('stdc++fs')
+        else:
+            env["LIBS"] = ['stdc++fs']
 
     # Build main executable
     if main_source_file:
