@@ -42,6 +42,7 @@ examples/sfml_audio/sfml_audio
 examples/boost/boost
 examples/boost_thread/boost_thread
 examples/findfiles/findfiles
+examples/notify/notify
 
 # Generated files
 src/sakemake
