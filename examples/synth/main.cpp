@@ -12,7 +12,7 @@ int main()
 
     SDL_Event event;
 
-    std::cout << "Press some letters and see what happens." << std::endl;
+    std::cout << "Press some letters and see what happens. Press q to quit." << std::endl;
 
     while (true) {
 
