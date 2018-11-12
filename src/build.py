@@ -170,6 +170,11 @@ def generic_include_path_to_cxxflags(include_path):
         for possible_lib_name in ["lib" + package + ".so", "lib" + package.upper() + ".so"]:
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
                 if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, possible_lib_name)):
+                    # Check if the same library with a ++ suffix also exists
+                    if os.path.exists(os.path.join(libpath, possible_lib_name.replace(".so", "++.so"))):
+                        # Found two good candidates, the regular ".so" lib and the "++.so" lib
+                        # Example: -lfcgi -lfcgi++
+                        return "-l" + possible_lib_name[3:-3] + " -l" + possible_lib_name[3:-3] + "++"
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
                     return "-l" + possible_lib_name[3:-3]
     # Out of ideas
@@ -241,10 +246,15 @@ def arch_include_path_to_cxxflags(include_path):
         for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
             if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                 # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                retval = "-l" + possible_lib_name
                 if os.path.exists(os.path.dirname(include_path)):
                     # Also found an include directory
-                    return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
-                return "-l" + possible_lib_name
+                    retval += " -I" + os.path.dirname(include_path)
+                # TODO: Add the check for "++" libs to the other distros as well
+                if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + "++.so")):
+                    # Also found a ++.so file
+                    retval += " -l" + possible_lib_name + "++"
+                return retval
         # Did not find a suitable library file, nor .pc file
         if package != "boost":  # boost is "special"
             print("WARNING: No pkg-config files for: " + package)
