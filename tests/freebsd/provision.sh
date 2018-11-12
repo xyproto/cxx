@@ -10,10 +10,12 @@ pkg-static update -f
 pkg-static upgrade -y
 
 # Install basic packages for Linux-like development
-pkg install -y bash git gmake pkgconf python3
+pkg install -y bash git gmake pkgconf python3 scons
 
 # Install packages required for Sakemake and for building the examples
-pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig qt5 scons sdl2
+pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig sdl2
+
+#pkg install -y qt5
 
 # Setup mingw32-w64 (looks like it requires ports to be set up first)
 #git clone https://github.com/takumin/ports-mingw-w64.git
