@@ -8,7 +8,7 @@ using namespace std::string_literals;
 
 auto main() -> int
 {
-    // Backup the stdio streambufs
+    // Save the stdio streambufs
     auto cin_streambuf = std::cin.rdbuf();
     auto cout_streambuf = std::cout.rdbuf();
     auto cerr_streambuf = std::cerr.rdbuf();
@@ -27,22 +27,23 @@ auto main() -> int
         std::cout.rdbuf(&cout_fcgi_streambuf);
         std::cerr.rdbuf(&cerr_fcgi_streambuf);
 
-        std::cout << "Content-type: text/html;charset=utf-8\r\n"s
-            << "\r\n"s
-            << "<!doctype html>\n"s
-            << "<html>\n"s
-            << "  <head>\n"s
-            << "    <title>Norwegian Letters</title>\n"s
-            << "  </head>\n"s
-            << "  <body>\n"s
-            << "    <p>æøå ÆØÅ</p>\n"s
-            << "  </body>\n"s
-            << "</html>\n"s;
+        std::cout << "Content-type: text/html; charset=utf-8\r\n"s
+                  << "\r\n"s
+                  << "<!doctype html>\n"s
+                  << "<html>\n"s
+                  << "  <head>\n"s
+                  << "    <title>FastCGI</title>\n"s
+                  << "  </head>\n"s
+                  << "  <body>\n"s
+                  << "    <h1>FastCGI works</h1>\n"s
+                  << "    <p>Here are some UTF-8 characters: æøå ÆØÅ</p>\n"s
+                  << "  </body>\n"s
+                  << "</html>\n"s;
 
-        // The fcgi_streambuf destructor will auto flush
+        // The fcgi_streambuf destructor will flush automatically
     }
 
-    // Restore stdio streambufs
+    // Restore the stdio streambufs
     std::cin.rdbuf(cin_streambuf);
     std::cout.rdbuf(cout_streambuf);
     std::cerr.rdbuf(cerr_streambuf);
