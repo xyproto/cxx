@@ -12,9 +12,9 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_3"'/$repo/os/$arch' >>/etc/pacman.d/
 # Install required packages
 RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal pkgfile ppl python qt5 scons sdl2 sdl2_mixer sfml vulkan-devel
 
-# Install mingw-w64-gcc, using precompiled packages from Martchus. More likely to work than the AUR packages.
-#RUN echo -e '[ownstuff]\nSigLevel = Optional TrustAll\nServer = http://martchus.no-ip.biz/repo/arch/$repo/os/$arch' >>/etc/pacman.conf
-#RUN pacman -Syu mingw-w64-gcc --noconfirm --needed
+# Prepare to install mingw-w64-gcc, using precompiled packages from Martchus.
+# More likely to work than the AUR packages.
+RUN echo -e '[ownstuff]\nSigLevel = Optional TrustAll\nServer = http://martchus.no-ip.biz/repo/arch/$repo/os/$arch' >>/etc/pacman.conf
 
 # Install sakemake, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/sakemake && \
@@ -23,5 +23,5 @@ RUN git clone https://github.com/xyproto/sakemake && \
 # Build and run the hello_test in hello/common
 RUN sm -C examples/hello/common test
 
-# Clean and build all examples
-CMD tests/all.py
+# Install mingw-w64-gcc. If it works out, run all tests. If not, run all tests except win64crate
+CMD pacman -Syu mingw-w64-gcc --noconfirm --needed && test/all.py || tests/all.py win64crate
