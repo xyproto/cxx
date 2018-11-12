@@ -4,10 +4,10 @@
 #
 
 # Update package repo
-pkg update -f
+pkg-static update -f
 
 # Upgrade packages
-pkg upgrade -y
+pkg-static upgrade -y
 
 # Install basic packages for Linux-like development
 pkg install -y bash git gmake pkgconf python3
