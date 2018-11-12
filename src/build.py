@@ -426,10 +426,15 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
             for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/lib/" + machine_name]:
                 if os.path.exists(libpath) and os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
                     # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                    retval = "-l" + possible_lib_name
                     if os.path.exists(os.path.dirname(include_path)):
                         # Also found an include directory
-                        return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
-                    return "-l" + possible_lib_name
+                        retval += " -I" + os.path.dirname(include_path)
+                    # TODO: Add the check for "++" libs to the other distros as well
+                    if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + "++.so")):
+                        # Also found a ++.so file
+                        retval += " -l" + possible_lib_name + "++"
+                    return retval
         # Did not find a suitable library file, nor .pc file
         if package != "boost":  # boost is "special"
             print("WARNING: No pkg-config files for: " + package)

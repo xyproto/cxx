@@ -43,6 +43,7 @@ examples/boost/boost
 examples/boost_thread/boost_thread
 examples/findfiles/findfiles
 examples/notify/notify
+examples/fastcgi/fastcgi
 
 # Generated files
 src/sakemake
