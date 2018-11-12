@@ -27,20 +27,20 @@ auto main() -> int
         std::cout.rdbuf(&cout_fcgi_streambuf);
         std::cerr.rdbuf(&cerr_fcgi_streambuf);
 
-        std::cout << "Content-type: text/html; charset=utf-8\r\n"s
-                  << "\r\n"s
-                  << "<!doctype html>\n"s
-                  << "<html>\n"s
-                  << "  <head>\n"s
-                  << "    <title>FastCGI</title>\n"s
-                  << "  </head>\n"s
-                  << "  <body>\n"s
-                  << "    <h1>FastCGI works</h1>\n"s
-                  << "    <p>Here are some UTF-8 characters: æøå ÆØÅ</p>\n"s
-                  << "  </body>\n"s
-                  << "</html>\n"s;
-
         // The fcgi_streambuf destructor will flush automatically
+        std::cout << "Content-type: text/html; charset=utf-8\r\n\r"s
+                  << R"(
+<!doctype html>
+<html>
+  <head>
+    <title>FastCGI</title>
+  </head>
+  <body>
+    <h1>FastCGI works</h1>
+    <p>Here are some UTF-8 characters: æøå ÆØÅ</p>
+  </body>
+</html>
+)"s;
     }
 
     // Restore the stdio streambufs
