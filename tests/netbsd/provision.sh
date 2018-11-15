@@ -15,7 +15,7 @@ sudo pkgin update
 sudo pkgin -y install bash git gmake pkgconf python37
 
 # Install packages required for Sakemake and for building the examples
-sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut openal qt5 scons boost
+sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut openal qt5 scons boost fcgi
 # gtk3 libconfig sfml
 
 # Clone or pull sakemake
