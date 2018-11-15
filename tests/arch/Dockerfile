@@ -10,7 +10,7 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_2"'/$repo/os/$arch' >>/etc/pacman.d/
 RUN echo 'Server = http://'"$PACKAGE_SERVER_3"'/$repo/os/$arch' >>/etc/pacman.d/mirrorlist
 
 # Install required packages
-RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal pkgfile ppl python qt5 scons sdl2 sdl2_mixer sfml vulkan-devel
+RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal pkgfile ppl python qt5 scons sdl2 sdl2_mixer sfml vulkan-devel entityx
 
 # Prepare to install mingw-w64-gcc, using precompiled packages from Martchus.
 # More likely to work than the AUR packages.
@@ -24,4 +24,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
 RUN sm -C examples/hello/common test
 
 # Install mingw-w64-gcc. If it works out, run all tests. If not, run all tests except win64crate
-CMD pacman -Syu mingw-w64-gcc --noconfirm --needed && test/all.py || tests/all.py win64crate entityx
+CMD pacman -Syu mingw-w64-gcc --noconfirm --needed && test/all.py || tests/all.py win64crate
