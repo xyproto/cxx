@@ -1811,6 +1811,8 @@ def sakemake_main():
         # Boost thread related build flags
         if boost:
             env.Append(LINKFLAGS=' -pthread -lpthread')
+            # Needed on NetBSD when using boost_thread
+            env.Append(CXXFLAGS=' -Wno-unknown-pragmas')
 
         # GLFW + Vulkan related build flags
         if glfw_vulkan:
