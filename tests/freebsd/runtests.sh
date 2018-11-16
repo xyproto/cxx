@@ -1,2 +1,11 @@
 #!/bin/sh
-sakemake/tests/all.py fastclean:build config sfml vulkan vulkan_glfw win64crate fastcgi boost boost_thread mixer notify openal qt5 sfml_audio entityx
+# config : found no suitable package
+# fastcgi : found no suitable package
+# sfml : problems with sf::String::String
+# boost : compilation problems
+# win64crate : not available?
+# notify : compilation problems
+# entityx : not available?
+# qt5 : ?
+#
+sakemake/tests/all.py fastclean:build config fastcgi sfml sfml_audio boost boost_thread win64crate notify entityx qt5
