@@ -1511,6 +1511,8 @@ def sakemake_main():
             os.linesep) if not "up to date" in line]).strip()
         if output:
             print(output)
+            # Flush stdout
+            stdout.flush()
         # Get arguments passed with args="..." (the arguments after -- on the sm command line)
         given_args = []
         if 'args' in ARGUMENTS:
