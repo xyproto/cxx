@@ -1,4 +1,4 @@
-# [🐟](https://github.com/xyproto/sakemake) Sakemake [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-green.svg)](https://github.com/xyproto/sakemake) [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+# [🐟](https://github.com/xyproto/sakemake) Sakemake [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-green.svg)](https://github.com/xyproto/sakemake)
 
 Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
@@ -381,6 +381,13 @@ If you have a project written in C++17 that you think should build with `sakemak
 [🐟](https://github.com/xyproto/sakemake)
 
     [🐟](https://github.com/xyproto/sakemake)
+
+## Possible NeoVim / syntastic configuration
+
+    " C++17 by default
+    let g:syntastic_cpp_compiler = 'g++'
+    let g:syntastic_cpp_compiler_options = ' -std=c++17 -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
+    let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
 
 ## Other projects that builds with Sakemake
 
