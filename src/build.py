@@ -1650,7 +1650,7 @@ def sakemake_main():
                         try:
                             value_sub_3 = value[:-2] + str(int(value[-2:].replace('a', '0').replace('x', '0')) - 3)
                             print("WARNING: " + value + " is not supported by " +
-                                  str(env["CXX"]) + " on this system, using: " + value_sub_3)
+                                  str(env["CXX"]) + ", using: " + value_sub_3)
                             if supported(str(env["CXX"]), value_sub_3):
                                 if value in str(env["CXXFLAGS"]):
                                     new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
@@ -1658,9 +1658,9 @@ def sakemake_main():
                                 else:
                                     env.Append(CXXFLAGS=' -std=' + value_sub_3)
                             else:
-                                print("WARNING:", value_sub_3, "is not supported by", str(env["CXX"]), "on this system")
+                                print("WARNING:", value_sub_3, "is not supported by", str(env["CXX"]))
                         except ValueError:
-                            print("WARNING: " + value + " is not supported by " + str(env["CXX"]) + " on this system.")
+                            print("WARNING: " + value + " is not supported by " + str(env["CXX"]))
 
         # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
