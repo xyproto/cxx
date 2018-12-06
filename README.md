@@ -1,20 +1,18 @@
-# [🐟](https://github.com/xyproto/sakemake) SakeMake [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
+# SakeMake [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
 
-Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++2a and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
+Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
-Required libraries must still be installed manually.
+*SakeMake* also provides a way to structure your C++20 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-*Sakemake* also provides a way to structure your C++2a code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+For now, **SakeMake** uses `scons`, `make` and `pkg-config` under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
-It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go. *Sakemake* may be rewritten to not depend on these tools in the future.
+Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *SakeMake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
-Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *Sakemake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
-
-**No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *Sakemake*-compatible directory structure is recommended.
+**No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *SakeMake*-compatible directory structure is recommended.
 
 The latest versions of both GCC (g++) and Clang (clang++) are always supported, and the latest released C++ standard. Create an issue if there are problems.
 
-If you are developing a C++ **library**, *Sakemake* is not for you, yet. If you are looking for a configuration-free build system for **executables**, on Linux, macOS or FreeBSD, *Sakemake* might be for you. *(The only way to be sure is to give it a spin)*.
+If you are developing a C++ **library**, *SakeMake* is not for you, yet. If you are looking for a configuration-free build system for **executables**, on Linux, macOS or FreeBSD, *SakeMake* might be for you. *(The only way to be sure is to give it a spin)*.
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if the `x86_64-w64-mingw32-g++` executable is missing: `jhasse/mingw:2017-10-19`.
 
@@ -104,7 +102,7 @@ Build the executable and use the profiling data, if available:
 
 ## Features and limitations
 
-* **No configuration files are needed**, as long as the *Sakemake* directory structure is followed.
+* **No configuration files are needed**, as long as the *SakeMake* directory structure is followed.
 * **Auto-detection** of include, define and library flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache is needed.
@@ -114,12 +112,12 @@ Build the executable and use the profiling data, if available:
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * See the `hello` example in the `examples` directory for the suggested directory structure.
-* For now, *Sakemake* is only meant to be able to build executables, not libraries.
+* For now, *SakeMake* is only meant to be able to build executables, not libraries.
 * The dependency discovery is reasonably fast, the compilation itself still takes the longest. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
 
 ## Suggested directory structure
 
-For a "Hello, World!" program that places the text-generation in a `string hello()` function, this is one way to structure the files:
+For a "Hello, World!" program that places the text-generation in a `string hello()` function, this is one way to structure the files, for separating the code into easily testable source files:
 
 
 ```
@@ -305,19 +303,13 @@ Manual installation with `make` and `sudo`:
 
 On FreeBSD, use `gmake` instead of `make`.
 
-If possible, install *Sakemake* with the package manager that comes with your OS/distro instead.
+If possible, install *SakeMake* with the package manager that comes with your OS/distro.
 
 ## Uninstallation
 
 `sudo make uninstall`
 
-## Convention over configuration
-
-## The "Configuration-Free Manifesto"
-
-> Convention over configuration
-
-Rules for Configuration-free projects:
+## One way of structuring projects
 
 #### Filenames
 
@@ -345,7 +337,7 @@ Rules for Configuration-free projects:
 
 #### Ninja
 
-* Projects that already uses CMake (and need no extra command line arguments when running `cmake`) are also Sakemake compatible and can be built with CMake + Ninja like this:
+* Projects that already uses CMake (and need no extra command line arguments when running `cmake`) are also SakeMake compatible and can be built with CMake + Ninja like this:
 
     sm ninja
 
@@ -363,47 +355,26 @@ The dream is that every executable and project written in C++2a should be able t
 
 If you have a project written in C++2a that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
-## Shields and images
+## Shield
 
-### Shield
+[![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
 
-[![Buildsystem](https://img.shields.io/badge/sake-make-orange.svg)](https://github.com/xyproto/sakemake)
+    [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
 
-    [![Buildsystem](https://img.shields.io/badge/sake-make-orange.svg)](https://github.com/xyproto/sakemake)
+## Editor Configuration
 
-### Award-style image
+Syntastic settings for ViM:
 
-[![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake)
+    let g:syntastic_quiet_messages = {
+        \ "!level": "errors",
+        \ "regex":  [ 'RESOURCEDIR', 'DATADIR', 'IMGDIR', 'SHADERDIR', 'expected .*).* before string constant' ] }
 
-    [![configuration-free](https://raw.githubusercontent.com/xyproto/sakemake/master/img/configuration_free_72.png)](https://github.com/xyproto/sakemake)
-
-### Emoji
-
-[🐟](https://github.com/xyproto/sakemake)
-
-    [🐟](https://github.com/xyproto/sakemake)
-
-## Possible NeoVim / syntastic configuration
+Syntastic settings for NeoVim:
 
     " C++2a by default
     let g:syntastic_cpp_compiler = 'g++'
     let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
-
-## Other projects that builds with Sakemake
-
-* [glskeleton](https://github.com/xyproto/glskeleton), OpenGL shader example application, uses `glfw`, `glew` and `glm`.
-* [vulkan_minimal_compute](https://github.com/xyproto/vulkan_minimal_compute), uses Vulkan for computations on the GPU.
-
-## Editor configuration
-
-If using syntastic and ViM, it may complain about defines that are supplied at build-time. Here is one way to silence the errors.
-
-Adjust your ViM preferences:
-
-    let g:syntastic_quiet_messages = {
-        \ "!level": "errors",
-        \ "regex":  [ 'RESOURCEDIR', 'DATADIR', 'IMGDIR', 'SHADERDIR', 'expected .*).* before string constant' ] }
 
 ## General info
 
