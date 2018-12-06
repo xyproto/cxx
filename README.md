@@ -1,6 +1,6 @@
 # SakeMake [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
 
-Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
+Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
 *SakeMake* also provides a way to structure your C++20 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
@@ -12,7 +12,7 @@ Dependencies are discovered automatically, and the correct flags are given to th
 
 The latest versions of both GCC (g++) and Clang (clang++) are always supported, and the latest released C++ standard. Create an issue if there are problems.
 
-If you are developing a C++ **library**, *SakeMake* is not for you, yet. If you are looking for a configuration-free build system for **executables**, on Linux, macOS or FreeBSD, *SakeMake* might be for you. *(The only way to be sure is to give it a spin)*.
+If you are developing a C++ **library**, *SakeMake* is not for you, yet. If you are looking for a simple build system for **executables**, on Linux, macOS or FreeBSD, *SakeMake* might be for you. *(The only way to be sure is to give it a spin)*.
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if the `x86_64-w64-mingw32-g++` executable is missing: `jhasse/mingw:2017-10-19`.
 
