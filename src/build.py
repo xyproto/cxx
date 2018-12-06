@@ -1647,9 +1647,13 @@ def sakemake_main():
                         if "-std=" + value not in str(env["CXXFLAGS"]):
                             env.Append(CXXFLAGS=' -std=' + value)
                     else:
-                        value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
-                        print("WARNING: " + value + " is not supported by " +
-                              str(env["CXX"]) + " on this system, using: " + value_sub_3)
+                        try:
+                            value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
+                            print("WARNING: " + value + " is not supported by " +
+                                  str(env["CXX"]) + " on this system, using: " + value_sub_3)
+                        except ValueError:
+                            print("WARNING: " + value + " is not supported by " +
+                                  str(env["CXX"]) + " on this system.")
                         if supported(str(env["CXX"]), value_sub_3):
                             if value in str(env["CXXFLAGS"]):
                                 new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
