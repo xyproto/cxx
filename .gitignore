@@ -45,6 +45,8 @@ examples/findfiles/findfiles
 examples/notify/notify
 examples/fastcgi/fastcgi
 examples/entityx/entityx
+examples/designated/designated
+examples/lambda/lambda
 
 # Generated files
 src/sakemake
