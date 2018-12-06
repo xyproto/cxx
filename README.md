@@ -450,6 +450,6 @@ Syntastic settings for NeoVim:
 
 ## General info
 
-* Version: 3.0.1
+* Version: 3.0.2
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
