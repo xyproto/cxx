@@ -16,25 +16,95 @@ If you are developing a C++ **library**, *SakeMake* is not for you, yet. If you 
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if the `x86_64-w64-mingw32-g++` executable is missing: `jhasse/mingw:2017-10-19`.
 
-## Usage
+## Quick Start
 
-In a directory with C++2a source files ending with `.cpp`, and a `main.cpp` file, building is as simple as:
+Create a **main.cpp** file:
+
+```c++
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+#include <ostream>
+#include <string>
+
+using namespace std::string_literals;
+
+class Point {
+public:
+    double x;
+    double y;
+    double z;
+    std::string str();
+};
+
+std::ostream& operator<<(std::ostream& output, const Point& p)
+{
+    using std::setfill;
+    using std::setw;
+    output << "{ "s << setfill(' ') << setw(3) << p.x << ", "s << setfill(' ') << setw(3) << p.y
+           << ", "s << setfill(' ') << setw(3) << p.z << " }"s;
+    return output;
+}
+
+Point operator+(const Point& a, const Point& b)
+{
+    return Point { .x = a.x + b.x, .y = a.y + b.y, .z = a.z + b.z };
+}
+
+Point operator*(const Point& a, const Point& b)
+{
+    return Point { .x = a.x * b.x, .y = a.y * b.y, .z = a.z * b.z };
+}
+
+int main(int argc, char** argv)
+{
+    // designated initializers
+    Point p1 { .x = 1, .y = 2, .z = 3 };
+    Point p2 { .y = 42 };
+
+    using std::cout;
+    using std::endl;
+
+    cout << "     p1 = " << p1 << endl;
+    cout << "     p2 = " << p2 << endl;
+    cout << "p1 + p2 = " << p1 + p2 << endl;
+    cout << "p1 * p2 = " << p1 * p2 << endl;
+
+    return EXIT_SUCCESS;
+}
+```
+
+Then build, run and record profiling information with:
+
+    sm rec
+
+Then build again, to use the profiling information:
 
     sm
 
-#### Build and run:
+Rebuild with:
+
+    sm rebuild
+
+## Usage
+
+#### Building and running
 
     sm run
 
-#### Build and run tests in a directory with files ending with `_test.cpp`:
+#### Just building
+
+    sm
+
+#### Building files ending with `_test.cpp`, then running them
 
     sm test
 
-#### Clean:
+#### Cleaning
 
     sm clean
 
-#### Build with clang instead of gcc:
+#### Building with `clang++` instead of `g++`:
 
     sm clang
 
@@ -55,6 +125,8 @@ In a directory with C++2a source files ending with `.cpp`, and a `main.cpp` file
     sudo PREFIX=/usr sm install
 
 The name of the current directory will be used as the executable name.
+
+Either `main.cpp` or the C++ source files in the current directory will be used when building with `sm`.
 
 #### Packaging a project into $pkgdir (`pkg` by default):
 
