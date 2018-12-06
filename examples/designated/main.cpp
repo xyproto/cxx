@@ -11,7 +11,6 @@ public:
     double x;
     double y;
     double z;
-    std::string str();
 };
 
 std::ostream& operator<<(std::ostream& output, const Point& p)
