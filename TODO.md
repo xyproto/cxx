@@ -2,6 +2,7 @@
 
 ### Priority 1
 
+- [ ] Add `sm optrec` and `sm smallrec`, or find a better way.
 - [ ] Add a way to vendor a C++2a dependency via git from ie. GitHub.
 - [ ] Add a `sm code` for exporting a VS Code project file.
 - [ ] Add a simple way to write and provide man pages for projects.

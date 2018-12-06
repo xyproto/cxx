@@ -82,10 +82,6 @@ Then build again, using the recorded profiling information in the process:
 
     sm
 
-For turning on additional optimization flags, try:
-
-    sm opt
-
 ## Usage
 
 #### Building and running
@@ -141,6 +137,10 @@ The name of the current directory will be used as the executable name.
 #### Build a small executable:
 
     sm small
+
+#### Build an executable with optimization flags turned on:
+
+    sm opt
 
 #### Strict compilation flags (complains about all things):
 
