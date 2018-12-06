@@ -78,13 +78,13 @@ Then build, run and record profiling information with:
 
     sm rec
 
-Then build again, to use the profiling information:
+Then build again, using the recorded profiling information in the process:
 
     sm
 
-Rebuild with:
+For turning on additional optimization flags, try:
 
-    sm rebuild
+    sm opt
 
 ## Usage
 
@@ -95,6 +95,10 @@ Rebuild with:
 #### Just building
 
     sm
+
+#### Cleaning and building
+
+    sm rebuild
 
 #### Building files ending with `_test.cpp`, then running them
 
@@ -116,10 +120,6 @@ Rebuild with:
 
     sm -C examples/hello
 
-#### Cleaning and building:
-
-    sm rebuild
-
 #### Installing on the local system, using sudo:
 
     sudo PREFIX=/usr sm install
@@ -138,7 +138,7 @@ Either `main.cpp` or the C++ source files in the current directory will be used 
 
 The name of the current directory will be used as the executable name.
 
-#### Build a smaller executable:
+#### Build a small executable:
 
     sm small
 
