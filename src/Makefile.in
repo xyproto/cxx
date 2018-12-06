@@ -12,7 +12,7 @@ patch_paths ?= 0
 run ?= 0
 wayland ?= 0
 
-std ?= c++17
+std ?= c++2a
 MAKE ?= @@MAKE@@
 PREFIX ?= @@PREFIX@@
 system_include_dir ?= ${PREFIX}/include

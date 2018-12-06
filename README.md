@@ -4,7 +4,7 @@ Configuration-free build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w
 
 Required libraries must still be installed manually.
 
-*Sakemake* also provides a way to structure your C++17 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+*Sakemake* also provides a way to structure your C++2a code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 It uses scons, make and pkg-config under the hood, while providing a tool that aims to be as easy to use as `go build` for Go. *Sakemake* may be rewritten to not depend on these tools in the future.
 
@@ -20,7 +20,7 @@ If you are developing a C++ **library**, *Sakemake* is not for you, yet. If you 
 
 ## Usage
 
-In a directory with C++17 source files ending with `.cpp`, and a `main.cpp` file, building is as simple as:
+In a directory with C++2a source files ending with `.cpp`, and a `main.cpp` file, building is as simple as:
 
     sm
 
@@ -223,12 +223,12 @@ void equal(T a, T b)
 
 * `scons`
 * `make`
-* `g++` with support for C++17 (gcc version 7.2 or higher should work)
+* `g++` with support for C++2a (gcc version 8.2.1 or higher should work)
 * `pkg-config`, for systems where pkg-config is available
 
 #### Optional requirements
 
-* `clang++` with support for C++17 (build with `sm clang`).
+* `clang++` with support for C++2a (build with `sm clang`).
 * `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
@@ -262,35 +262,36 @@ See `examples/mixer` for an example that uses `RESOURCEDIR`.
 
 An alternative method to using defines (defined with `-D` when building) is to use something like `SDL_GetBasePath()`. Example: [res_path.h](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
 
-## C++17 on macOS
+## C++2a on macOS
 
-For installing a recent enough version of C++ on macOS, installing gcc 7 with `brew` is one possible approach:
+For installing a recent enough version of C++ on macOS, installing gcc 8 with `brew` is one possible approach:
 
-    brew install gcc@7
+    brew install gcc@8
 
 The other requirements can be installed with:
 
     brew install scons make pkg-config
 
-## C++17 on Arch Linux
+## C++2a on Arch Linux
 
-g++ with support for C++17 should already be installed.
+g++ with support for C++2a should already be installed.
 
 Install scons and base-devel, if needed:
 
     pacman -S scons base-devel --needed
 
-## C++17 on Debian or Ubuntu
+## C++2a on Debian or Ubuntu
 
 Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repository, or from a PPA.
+For C++2A, you might need a later version of GCC.
 
 Install build-essential, scons and pkg-config:
 
     apt install build-essential scons pkg-config
 
-## C++17 on FreeBSD
+## C++2a on FreeBSD
 
-FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc7 or later.
+FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc8 or later for C++2a support.
 
 Install pkg-conf, scons and gmake:
 
@@ -321,7 +322,7 @@ Rules for Configuration-free projects:
 #### Filenames
 
 * All include filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.h` or `.hpp`.
-* All C++17 source filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.cpp`, `.cc` or `.cxx`.
+* All C++2a source filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.cpp`, `.cc` or `.cxx`.
 * The main source file could be named `main.cpp` or `main.cc`, but it does not have to.
 * Files ending with `_test.*` are special, and will not be used when compiling the main executable(s).
 
@@ -354,13 +355,13 @@ The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Ar
 
 ## Source code formatting
 
-* `sm fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
+* `sm fmt` will format C++2a source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
 
 ## Feedback
 
-The dream is that every executable and project written in C++17 should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
+The dream is that every executable and project written in C++2a should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
-If you have a project written in C++17 that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
+If you have a project written in C++2a that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
 
 ## Shields and images
 
@@ -384,9 +385,9 @@ If you have a project written in C++17 that you think should build with `sakemak
 
 ## Possible NeoVim / syntastic configuration
 
-    " C++17 by default
+    " C++2a by default
     let g:syntastic_cpp_compiler = 'g++'
-    let g:syntastic_cpp_compiler_options = ' -std=c++17 -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
+    let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
 
 ## Other projects that builds with Sakemake

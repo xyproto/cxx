@@ -1341,7 +1341,7 @@ def add_flags(env, src_file, system_include_dirs, win64, compiler_includes):
 
 
 def supported(cxx, std):
-    """Check if the given compiler supports the given standard. Example: supported("g++", "c++17")"""
+    """Check if the given compiler supports the given standard. Example: supported("g++", "c++2a")"""
     # Tested with clang++ and g++-7
     cmd = "echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
     try:
@@ -1606,7 +1606,7 @@ def sakemake_main():
             found_cppstd = ""
 
             # Only check if the compiler supports the std if no "std=" is given
-            for std in "c++17", "c++14", "c++11":
+            for std in "c++2a", "c++17", "c++14", "c++11":
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
                         found_compiler = compiler
@@ -1635,9 +1635,9 @@ def sakemake_main():
 
     if not cleaning:
         if not bool(ARGUMENTS.get('std', '')):
-            # std is not set, use the latest C++ standard
+            # std is not set, use the latest possible C++ standard flag
             if "-std=" not in str(env["CXXFLAGS"]):
-                env.Append(CXXFLAGS=' -std=c++17')
+                env.Append(CXXFLAGS=' -std=c++2a')
         elif not int(ARGUMENTS.get('zap', 0)):
             # if std is something else, use that
             args = []
@@ -1751,7 +1751,7 @@ def sakemake_main():
 
         if main_source_file.endswith(".c"):
             env.Append(LINKFLAGS=' -lm')
-            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++17', '-std=c11').replace('-fno-rtti', '')
+            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c11').replace('-fno-rtti', '')
             env.Append(CFLAGS=cxxflags_to_cflags)
 
         # Linux related build flags, for C (not C++)
@@ -1954,7 +1954,7 @@ def sakemake_main():
             exit(1)
         project_file = open(name + ".pro", "w")
         project_file.write("TEMPLATE = app\n\n")
-        project_file.write("CONFIG += c++17\n")
+        project_file.write("CONFIG += c++2a\n")
         project_file.write("CONFIG -= console\n")
         project_file.write("CONFIG -= app_bundle\n")
         project_file.write("CONFIG -= qt\n\n")
