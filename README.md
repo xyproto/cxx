@@ -2,7 +2,7 @@
 
 Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
-*SakeMake* provides a way to structure your C++20 code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+*SakeMake* provides a way to structure your C++20 (`c++2a`) code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 For now, **SakeMake** uses `scons`, `make` and `pkg-config` under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
