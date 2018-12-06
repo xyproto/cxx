@@ -119,11 +119,9 @@ Then build again, using the recorded profiling information in the process:
 
     sudo PREFIX=/usr sm install
 
-The name of the current directory will be used as the executable name.
-
 Either `main.cpp` or the C++ source files in the current directory will be used when building with `sm`.
 
-#### Packaging a project into $pkgdir (`pkg` by default):
+#### Packaging a project into `$pkgdir`:
 
     DESTDIR="$pkgdir" PREFIX=/usr sm install
 
@@ -131,7 +129,7 @@ Either `main.cpp` or the C++ source files in the current directory will be used 
 
     sm pkg
 
-The name of the current directory will be used as the executable name.
+This uses `$pkgdir="pkg"` and the name of the current directory will be used as the executable name.
 
 #### Build a small executable:
 
@@ -351,8 +349,7 @@ Install scons and base-devel, if needed:
 
 ## C++2a on Debian or Ubuntu
 
-Ubuntu 17.10 has C++17 support by default. For older versions of Ubuntu or Debian, you might need to install GCC 7 from the testing repository, or from a PPA.
-For C++2A, you might need a later version of GCC.
+You might need to install GCC 8 from the testing repository, or from a PPA.
 
 Install build-essential, scons and pkg-config:
 
@@ -434,18 +431,17 @@ If you have a project written in C++2a that you think should build with `sakemak
 
 ## Editor Configuration
 
-Syntastic settings for ViM:
-
-    let g:syntastic_quiet_messages = {
-        \ "!level": "errors",
-        \ "regex":  [ 'RESOURCEDIR', 'DATADIR', 'IMGDIR', 'SHADERDIR', 'expected .*).* before string constant' ] }
-
-Syntastic settings for NeoVim:
+Syntastic settings for ViM and NeoVim:
 
     " C++2a by default
     let g:syntastic_cpp_compiler = 'g++'
     let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
+
+    " Ignore some defines and warnings
+    let g:syntastic_quiet_messages = {
+        \ "!level": "errors",
+        \ "regex":  [ 'RESOURCEDIR', 'RESDIR', 'DATADIR', 'IMGDIR', 'SHAREDIR', 'SHADERDIR', 'expected .*).* before string constant' ] }
 
 ## General info
 
