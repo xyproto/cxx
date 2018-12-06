@@ -1648,20 +1648,19 @@ def sakemake_main():
                             env.Append(CXXFLAGS=' -std=' + value)
                     else:
                         try:
-                            value_sub_3 = value[:-2] + str(int(value[-2:]) - 3)
+                            value_sub_3 = value[:-2] + str(int(value[-2:].replace('a', '0').replace('x', '0')) - 3)
                             print("WARNING: " + value + " is not supported by " +
                                   str(env["CXX"]) + " on this system, using: " + value_sub_3)
-                        except ValueError:
-                            print("WARNING: " + value + " is not supported by " +
-                                  str(env["CXX"]) + " on this system.")
-                        if supported(str(env["CXX"]), value_sub_3):
-                            if value in str(env["CXXFLAGS"]):
-                                new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
-                                env.Replace(CXXFLAGS=new_cxxflags)
+                            if supported(str(env["CXX"]), value_sub_3):
+                                if value in str(env["CXXFLAGS"]):
+                                    new_cxxflags = " " + str(env["CXXFLAGS"]).replace(value, value_sub_3) + " "
+                                    env.Replace(CXXFLAGS=new_cxxflags)
+                                else:
+                                    env.Append(CXXFLAGS=' -std=' + value_sub_3)
                             else:
-                                env.Append(CXXFLAGS=' -std=' + value_sub_3)
-                        else:
-                            print("WARNING:", value_sub_3, "is not supported by", str(env["CXX"]), "on this system")
+                                print("WARNING:", value_sub_3, "is not supported by", str(env["CXX"]), "on this system")
+                        except ValueError:
+                            print("WARNING: " + value + " is not supported by " + str(env["CXX"]) + " on this system.")
 
         # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
