@@ -378,6 +378,6 @@ Syntastic settings for NeoVim:
 
 ## General info
 
-* Version: 2.0.0
+* Version: 3.0.0
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
