@@ -7,5 +7,5 @@ Modify SakeMake to:
 
 Then remove the two symlinks here.
 
-Ideally python-pytorch on Arch Linux should also provide a pkg-config .pc file.
+Ideally python-pytorch on Arch Linux should provide a pkg-config .pc file.
 
