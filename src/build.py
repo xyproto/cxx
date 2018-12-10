@@ -1757,6 +1757,17 @@ def sakemake_main():
             cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c11').replace('-fno-rtti', '')
             env.Append(CFLAGS=cxxflags_to_cflags)
 
+        if os.path.exists("lib"):
+            env.Append(LINKFLAGS=' -Llib')
+            for f in list(iglob("lib/*.so")):
+                if f.startswith("lib/"):
+                    f = f[4:]
+                if f.startswith("lib"):
+                    f = f[3:]
+                if f.endswith(".so"):
+                    f = f[:-3]
+                env.Append(LINKFLAGS=' -l' + f)
+
         # Linux related build flags, for C (not C++)
         # if platform.system() == "Linux":
         #    #
