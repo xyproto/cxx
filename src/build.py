@@ -1758,7 +1758,7 @@ def sakemake_main():
             env.Append(CFLAGS=cxxflags_to_cflags)
 
         if os.path.exists("lib"):
-            env.Append(LINKFLAGS=' -Llib')
+            env.Append(LINKFLAGS=' -static -Llib')
             for f in list(iglob("lib/*.so")):
                 if f.startswith("lib/"):
                     f = f[4:]
