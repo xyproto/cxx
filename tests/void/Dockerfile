@@ -11,4 +11,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
     make install
 
 # Clean and build almost all of the examples
-CMD sakemake/tests/all.py fastclean:build config win64crate notify entityx
+CMD sakemake/tests/all.py fastclean:build config win64crate notify entityx pytorch

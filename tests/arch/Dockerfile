@@ -10,7 +10,7 @@ RUN echo 'Server = http://'"$PACKAGE_SERVER_2"'/$repo/os/$arch' >>/etc/pacman.d/
 RUN echo 'Server = http://'"$PACKAGE_SERVER_3"'/$repo/os/$arch' >>/etc/pacman.d/mirrorlist
 
 # Install required packages
-RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal pkgfile ppl python qt5 scons sdl2 sdl2_mixer sfml vulkan-devel entityx
+RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git glew glfw glm gnupg go gtk3 libconfig llvm openal pkgfile ppl python qt5 scons sdl2 sdl2_mixer sfml vulkan-devel entityx python-pytorch
 
 # Prepare to install mingw-w64-gcc, using precompiled packages from Martchus.
 # More likely to work than the AUR packages.

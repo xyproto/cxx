@@ -14,4 +14,4 @@ RUN git clone https://github.com/xyproto/sakemake && \
     make install
 
 # Clean and build most examples
-CMD sakemake/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx
+CMD sakemake/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx pytorch
