@@ -2,12 +2,12 @@
 
 #include <chrono>
 #include <csignal>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <thread>
 
 using namespace std::string_literals;
-using namespace X;
 
 volatile sig_atomic_t running = true;
 
@@ -23,7 +23,7 @@ auto main(int argc, char** argv) -> int
     try {
         win = std::make_unique<X::Window>(10, 10, 100, 100);
     } catch (const std::runtime_error& err) {
-        std::cerr << "ERROR: " << err.what() << std::endl;
+        std::cerr << "ERROR: "s << err.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -49,13 +49,13 @@ auto main(int argc, char** argv) -> int
             break;
         case KeyPress:
             // TODO: Check for either Esc or "q"
-            std::cout << "KEYPRESS" << std::endl;
+            std::cout << "KEYPRESS"s << std::endl;
             running = false;
             break;
         case ButtonPress:
             switch (e.xbutton.button) {
             case 1:
-                std::cout << "Left Click" << std::endl;
+                std::cout << "Left Click"s << std::endl;
                 auto x = e.xbutton.x;
                 auto y = e.xbutton.y;
                 win->FillRectangle(x, y, 20, 20);
@@ -63,13 +63,13 @@ auto main(int argc, char** argv) -> int
             }
             break;
         case ClientMessage:
-            std::cout << "CLIENT MESSAGES" << std::endl;
+            std::cout << "CLIENT MESSAGES"s << std::endl;
             for (const unsigned long& m : e.xclient.data.l) {
                 if (win->WindowCloseMessage(m)) {
                     running = false;
-                    std::cout << "STOP" << std::endl;
+                    std::cout << "STOP"s << std::endl;
                 } else {
-                    std::cout << "MESSAGE " << m << std::endl;
+                    std::cout << "MESSAGE "s << m << std::endl;
                 }
             }
             break;
