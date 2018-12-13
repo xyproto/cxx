@@ -14,6 +14,7 @@ volatile sig_atomic_t running = true;
 void stop(int x)
 {
     running = false;
+    // Output a newline after the "^C" output
     std::cout << std::endl;
 }
 
