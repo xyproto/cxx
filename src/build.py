@@ -1709,7 +1709,12 @@ def sakemake_main():
         if int(ARGUMENTS.get('debug', 0)):
             env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
             if platform.system() != "Darwin":
-                env.Append(CXXFLAGS=' -static-libasan')
+                if env['CXX'] in ('clang++', 'zapcc++'):
+                    # ie. Linux, clang, debug mode
+                    env.Append(CXXFLAGS=' -static-libsan')
+                else:
+                    # ie. Linux, gcc, debug mode
+                    env.Append(CXXFLAGS=' -static-libasan')
             env.Append(LINKFLAGS=' -fsanitize=address')
         # small is set?
         elif int(ARGUMENTS.get('small', 0)):

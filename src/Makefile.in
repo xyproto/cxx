@@ -129,6 +129,8 @@ clangsloppy:
 
 clangdebug:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 debug=1 std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
+	ASAN_OPTIONS=detect_leaks=0 lldb "${NAME}"
+	#ASAN_OPTIONS=detect_leaks=0 lldb -o run "${NAME}"
 
 clangtest:
 	@scons ${SCONSFILEARG} -Q test clang=1 win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX=clang++ CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
@@ -140,7 +142,8 @@ debugbuild:
 
 debug:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir}
-	@-lldb -o run "${NAME}" || gdb "${NAME}"
+	ASAN_OPTIONS=detect_leaks=0 cgdb "${NAME}" || ASAN_OPTIONS=detect_leaks=0 gdb "${NAME}"
+	#ASAN_OPTIONS=detect_leaks=0 cgdb -ex run "${NAME}" || ASAN_OPTIONS=detect_leaks=0 gdb -ex run "${NAME}"
 
 run:
 	@scons ${SCONSFILEARG} -Q run clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX=${CXX} CXXFLAGS=${CXXFLAGS} system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))"
