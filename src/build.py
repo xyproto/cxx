@@ -1201,9 +1201,9 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             elif new_flags not in flag_dict.values():
                 flag_dict[include] = new_flags
 
-    # List includes that were not found
+    # List includes that were not found. "linux" is sometimes replaced with "1", which may cause issues.
     missing_includes = [
-        include for include in includes if include not in flag_dict and include not in global_flag_dict]
+        include for include in includes if include not in flag_dict and include not in global_flag_dict and not include.startswith("1/")]
 
     if missing_includes:
         hints(missing_includes)
