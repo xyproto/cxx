@@ -63,11 +63,13 @@ void Window::MapWindow() { XMapWindow(_d, _window); }
 
 void Window::FillRectangle(int x, int y, unsigned int w, unsigned int h)
 {
+    // TODO: save the gc in an object variable
     XFillRectangle(_d, _window, this->GC(), x, y, w, h);
 }
 
 void Window::DrawString(int x, int y, std::string msg)
 {
+    // TODO: save the gc in an object variable
     XDrawString(_d, _window, this->GC(), x, y, msg.c_str(), msg.length());
 }
 
