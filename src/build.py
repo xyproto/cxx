@@ -1757,10 +1757,21 @@ def sakemake_main():
         if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)) and not int(ARGUMENTS.get('small', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
 
+        # There is only basic support for C
         if main_source_file.endswith(".c"):
             env.Append(LINKFLAGS=' -lm')
             cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c11').replace('-fno-rtti', '')
             env.Append(CFLAGS=cxxflags_to_cflags)
+            # Enable some macros
+            if platform.system() == "Linux":
+                #env.Append(CFLAGS=' -D_GNU_SOURCE')
+                env.Append(CPPDEFINES=["_GNU_SOURCE"])
+            elif 'bsd' in platform.system().lower():
+                #env.Append(CFLAGS=' -D_BSD_SOURCE')
+                env.Append(CPPDEFINES=["_BSD_SOURCE"])
+            else:
+                #env.Append(CFLAGS=' -D_XOPEN_SOURCE=700')
+                env.Append(CPPDEFINES=["_XOPEN_SOURCE=700"])
 
         if os.path.exists("lib"):
             env.Append(LINKFLAGS=' -Llib -Wl,-rpath ./lib')
