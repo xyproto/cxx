@@ -1,6 +1,6 @@
-.PHONY: clean generate uninstall src/Makefile src/sakemake
+.PHONY: clean generate uninstall src/Makefile src/cxx
 
-NAME := sakemake
+NAME := cxx
 ALIAS := sm
 
 # the directory of this Makefile
@@ -30,12 +30,12 @@ else
   pkgdir ?= ${PWD}/pkg
 endif
 
-generate: src/Makefile src/sakemake
+generate: src/Makefile src/cxx
 
 src/Makefile: src/Makefile.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
-src/sakemake: src/sakemake.in
+src/cxx: src/cxx.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
 
 install: generate
@@ -59,7 +59,7 @@ uninstall:
 	@-rmdir "${DESTDIR}${PREFIX}/share/licenses/${NAME}" 2>/dev/null || true
 
 clean:
-	@-rm -f src/Makefile src/sakemake
+	@-rm -f src/Makefile src/cxx
 
 # like install, but override DESTDIR in order to place everything in "${pkgdir}"
 pkg: DESTDIR ?= ${pkgdir}

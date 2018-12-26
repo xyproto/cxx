@@ -1352,10 +1352,10 @@ def supported(cxx, std):
         return True
 
 
-def sakemake_main():
+def cxx_main():
     """The main function"""
 
-    SConsignFile("/tmp/sakemake")  # will be stored as /tmp/sakemake.dblite
+    SConsignFile("/tmp/cxx")  # will be stored as /tmp/cxx.dblite
 
     # Include paths on the system, as reported by the compiler
     compiler_includes = []
@@ -2030,6 +2030,6 @@ def sakemake_main():
             pass
 
 
-sakemake_main()
+cxx_main()
 
 # vim: ts=4 sw=4 et:

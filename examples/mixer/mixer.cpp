@@ -8,7 +8,7 @@
 #include <iostream>
 #include <unistd.h>
 
-// RESOURCEDIR is defined by sakemake, so that the path will be correct both at development-time
+// RESOURCEDIR is defined by cxx, so that the path will be correct both at development-time
 // and at installation-time
 
 #define WAV_PATH RESOURCEDIR "Roland-GR-1-Trumpet-C5.wav"

@@ -70,7 +70,7 @@ endif
 all: build
 
 version:
-	@echo sakemake @@VERSION@@
+	@echo cxx @@VERSION@@
 	@${MAKE} --version | head -1
 	@echo '   SCons '$$(scons --version | grep ": v" | head -1 | cut -d: -f2 | cut -dv -f2 | cut -b-5)
 

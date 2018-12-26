@@ -1,6 +1,6 @@
 # TODO
 
-Modify SakeMake to:
+Modify CXX to:
 
 * Search `/usr/lib/python*/site-packages/*include*` for .h and .hpp files
 * Search `/usr/lib/python*/site-packages/*lib*` for `lib*.so` files

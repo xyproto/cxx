@@ -16,9 +16,9 @@ RUN pacman -Syu --noconfirm --needed base-devel boost expac figlet freeglut git 
 # More likely to work than the AUR packages.
 RUN echo -e '[ownstuff]\nSigLevel = Optional TrustAll\nServer = http://martchus.no-ip.biz/repo/arch/$repo/os/$arch' >>/etc/pacman.conf
 
-# Install sakemake, but don't keep the git checkout in the docker image
-RUN git clone https://github.com/xyproto/sakemake && \
-    make -C sakemake install && cp -r sakemake/{tests,examples} . && rm -rf sakemake
+# Install cxx, but don't keep the git checkout in the docker image
+RUN git clone https://github.com/xyproto/cxx && \
+    make -C cxx install && cp -r cxx/{tests,examples} . && rm -rf cxx
 
 # Build and run the hello_test in hello/common
 RUN sm -C examples/hello/common test

@@ -1,12 +1,12 @@
-class Sakemake < Formula
+class CXX < Formula
   desc "Configuration-free build system for C++17 executables"
-  homepage "https://github.com/xyproto/sakemake"
-  url "https://github.com/xyproto/sakemake.git",
+  homepage "https://github.com/xyproto/cxx"
+  url "https://github.com/xyproto/cxx.git",
       :tag => "1.45",
       :revision => "e80f42483faa0997460e0ee6192963d707e3244b"
   sha256 "f1627ed11e84890befbf244828aff7a56a17157f721b445804e18b5461e3b8f3"
   version_scheme 1
-  head "https://github.com/xyproto/sakemake.git"
+  head "https://github.com/xyproto/cxx.git"
 
   bottle do
     cellar :any_skip_relocation
@@ -34,8 +34,8 @@ class Sakemake < Formula
 
   test do
     begin
-      version = shell_output("#{bin}/sakemake version")
-      assert_match /Sakemake:/m, version
+      version = shell_output("#{bin}/cxx version")
+      assert_match /CXX:/m, version
     end
   end
 end

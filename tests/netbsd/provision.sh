@@ -14,15 +14,15 @@ sudo pkgin update
 # install basic tools
 sudo pkgin -y install bash git gmake pkgconf python37
 
-# Install packages required for Sakemake and for building the examples
+# Install packages required for CXX and for building the examples
 sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut openal qt5 scons boost fcgi
 # gtk3 libconfig sfml
 
-# Clone or pull sakemake
-test -d sakemake && (cd sakemake; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/sakemake'
+# Clone or pull cxx
+test -d cxx && (cd cxx; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/cxx'
 
 # Fix permissions
 chown -R vagrant:users .
 
-# Install Sakemake
-gmake -C sakemake install
+# Install CXX
+gmake -C cxx install

@@ -11,12 +11,12 @@ import shutil
 import sys
 
 
-class SakeMake:
+class CXX:
 
     def __init__(self):
-        self.command = shutil.which("sakemake")
+        self.command = shutil.which("cxx")
         if not self.command:
-            print("error: sakemake must exist in PATH")
+            print("error: cxx must exist in PATH")
             sys.exit(1)
         self.directory = None
 
@@ -117,7 +117,7 @@ def main():
     # ../examples
     exampledir = Path(thisdir.parent.joinpath('examples'))
 
-    sm = SakeMake()
+    sm = CXX()
     sm.version()
 
     f = Figlet()

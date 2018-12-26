@@ -1,13 +1,13 @@
 #!/bin/sh
 ver="$(grep -F '* Version: ' README.md | cut -d' ' -f3)"
-rm -rf sakemake-$ver
-mkdir -p sakemake-$ver
-cp -r Makefile LICENSE README.md examples src sakemake-$ver/
-find sakemake-$ver -type f -name "*.dblite" -delete
-find sakemake-$ver -type f -name "*.o" -delete
-find sakemake-$ver -type f -name "*.exe" -delete
-find sakemake-$ver -type f -name main -delete
-make -C sakemake-$ver clean
-find sakemake-$ver
-tar zcf sakemake-$ver.tar.gz sakemake-$ver
-rm -rf sakemake-$ver
+rm -rf cxx-$ver
+mkdir -p cxx-$ver
+cp -r Makefile LICENSE README.md examples src cxx-$ver/
+find cxx-$ver -type f -name "*.dblite" -delete
+find cxx-$ver -type f -name "*.o" -delete
+find cxx-$ver -type f -name "*.exe" -delete
+find cxx-$ver -type f -name main -delete
+make -C cxx-$ver clean
+find cxx-$ver
+tar zcf cxx-$ver.tar.gz cxx-$ver
+rm -rf cxx-$ver

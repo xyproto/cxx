@@ -12,7 +12,7 @@ pkg-static upgrade -y
 # Install basic packages for Linux-like development
 pkg install -y bash git gmake pkgconf python3 scons
 
-# Install packages required for Sakemake and for building the examples
+# Install packages required for CXX and for building the examples
 pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig sdl2 sdl2_mixer vulkan-headers vulkan-tools
 
 #pkg install -y qt5
@@ -30,7 +30,7 @@ pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig sdl2 sdl2_mixer
 #sysrc -f /etc/rc.conf docker_enable="YES"
 #service docker start
 
-# Clone and install Sakemake
-rm -rf sakemake || true
-git clone https://github.com/xyproto/sakemake
-gmake -C sakemake install
+# Clone and install CXX
+rm -rf cxx || true
+git clone https://github.com/xyproto/cxx
+gmake -C cxx install

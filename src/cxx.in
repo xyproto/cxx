@@ -1,0 +1,28 @@
+#!/bin/sh
+CXX_DIR="@@PREFIX@@/share/cxx"
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+  cat << dog
+cxx @@VERSION@@
+
+cxx test         - build and run tests
+cxx run          - build and run
+cxx debug        - debug build
+cxx strict       - build with strict build flags
+cxx sloppy       - build with sloppy build flags
+cxx opt          - optimized build
+cxx testbuild    - build tests
+cxx clang        - build using clang
+cxx clangstrict  - use clang and strict build flags
+cxx clangdebug   - debug build using clang
+cxx clean        - remove built files
+cxx install      - install the project on the system
+cxx pkg          - package the project
+cxx rebuild      - clean and build
+cxx export       - export build files for users without cxx
+cxx small        - build a smaller executable
+
+--- make flags are also supported ---
+
+dog
+fi
+@@MAKE@@ --no-print-directory -f "$CXX_DIR/Makefile" "$@"

@@ -8,10 +8,10 @@ RUN apt-get update && \
     apt-get update && \
     apt-get clean
 
-# Install sakemake, but don't keep the git checkout in the docker image
-RUN git clone https://github.com/xyproto/sakemake && \
-    cd sakemake && \
+# Install cxx, but don't keep the git checkout in the docker image
+RUN git clone https://github.com/xyproto/cxx && \
+    cd cxx && \
     make install
 
 # Clean and build most examples
-CMD sakemake/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx pytorch
+CMD cxx/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx pytorch

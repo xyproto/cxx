@@ -32,7 +32,7 @@ build/
 *.exe
 
 # Generated files
-src/sakemake
+src/cxx
 src/Makefile
 examples/smallpt/*.png
 

@@ -9,4 +9,4 @@
 # qt5 : ?
 # pytorch : not available?
 #
-sakemake/tests/all.py fastclean:build config fastcgi sfml sfml_audio boost boost_thread win64crate notify entityx qt5 pytorch
+cxx/tests/all.py fastclean:build config fastcgi sfml sfml_audio boost boost_thread win64crate notify entityx qt5 pytorch

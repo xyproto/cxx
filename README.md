@@ -1,18 +1,18 @@
-# SakeMake [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/sakemake.svg?branch=master)](https://travis-ci.org/xyproto/sakemake) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
+# CXX [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/cxx)
 
 Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
-*SakeMake* provides a way to structure your C++20 (`c++2a`) code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+*CXX* provides a way to structure your C++20 (`c++2a`) code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-For now, **SakeMake** uses `scons`, `make` and `pkg-config` under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
+For now, **CXX** uses `scons`, `make` and `pkg-config` under the hood, while providing a tool that aims to be as easy to use as `go build` for Go.
 
-Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *SakeMake*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
+Dependencies are discovered automatically, and the correct flags are given to the C++ compiler. If the dependencies are discovered correctly, the project is *CXX*-compliant and may display the badge below as a guarantee for users that the project will be easy to deal with.
 
-**No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *SakeMake*-compatible directory structure is recommended.
+**No build-configuration files are needed!** No `CMakeLists.txt`, `Makefile`, `SConstruct`, `configure`, `automake` or `Makefile.in`. Only a `make.cpp` file will work, but a *CXX*-compatible directory structure is recommended.
 
 The latest versions of both GCC (g++) and Clang (clang++) are always supported, and the latest released C++ standard. Create an issue if there are problems.
 
-If you are developing a C++ **library**, *SakeMake* is not for you, yet. If you are looking for a simple build system for **executables**, on Linux, macOS or FreeBSD, *SakeMake* might be for you. *(The only way to be sure is to give it a spin)*.
+If you are developing a C++ **library**, *CXX* is not for you, yet. If you are looking for a simple build system for **executables**, on Linux, macOS or FreeBSD, *CXX* might be for you. *(The only way to be sure is to give it a spin)*.
 
 `x86_64-w64-mingw32-g++` or a working installation of `docker` is required for compiling executables for 64-bit Windows. This docker image is used if the `x86_64-w64-mingw32-g++` executable is missing: `jhasse/mingw:2017-10-19`.
 
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
 Then build, run and record profiling information with:
 
-    sm rec
+    cxx rec
 
 Then build again, using the recorded profiling information in the process:
 
@@ -85,7 +85,7 @@ Then build again, using the recorded profiling information in the process:
 
 #### Building and running
 
-    sm run
+    cxx run
 
 #### Just building
 
@@ -93,27 +93,27 @@ Then build again, using the recorded profiling information in the process:
 
 #### Cleaning and building
 
-    sm rebuild
+    cxx rebuild
 
 #### Building files ending with `_test.cpp`, then running them
 
-    sm test
+    cxx test
 
 #### Cleaning
 
-    sm clean
+    cxx clean
 
 #### Building with `clang++` instead of `g++`:
 
-    sm clang
+    cxx clang
 
 #### Debug build:
 
-    sm debug
+    cxx debug
 
 #### Building a specific directory (`sm` can take the same flags as `make`):
 
-    sm -C examples/hello
+    cxx -C examples/hello
 
 #### Installing on the local system, using sudo:
 
@@ -127,43 +127,43 @@ Either `main.cpp` or the C++ source files in the current directory will be used 
 
 --- or just ---
 
-    sm pkg
+    cxx pkg
 
 This uses `$pkgdir="pkg"` and the name of the current directory will be used as the executable name.
 
 #### Build a small executable:
 
-    sm small
+    cxx small
 
 #### Build an executable with optimization flags turned on:
 
-    sm opt
+    cxx opt
 
 #### Strict compilation flags (complains about all things):
 
-    sm strict
+    cxx strict
 
 #### Sloppy compilation flags (will ignore all warnings):
 
-    sm sloppy
+    cxx sloppy
 
 #### Get the current version:
 
-    sm version
+    cxx version
 
 #### Format the source code:
 
-    sm fmt
+    cxx fmt
 
 #### Generate a qmake / QtCreator project file:
 
-    sm pro
+    cxx pro
 
 #### Guided optimization
 
 Build the executable with profiling enabled then run it and record the profiling data:
 
-    sm rec
+    cxx rec
 
 Build the executable and use the profiling data, if available:
 
@@ -171,7 +171,7 @@ Build the executable and use the profiling data, if available:
 
 ## Features and limitations
 
-* **No configuration files are needed**, as long as the *SakeMake* directory structure is followed.
+* **No configuration files are needed**, as long as the *CXX* directory structure is followed.
 * **Auto-detection** of include, define and library flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
 * Uses the caching that is supplied by SCons, no ccache is needed.
@@ -181,7 +181,7 @@ Build the executable and use the profiling data, if available:
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * See the `hello` example in the `examples` directory for the suggested directory structure.
-* For now, *SakeMake* is only meant to be able to build executables, not libraries.
+* For now, *CXX* is only meant to be able to build executables, not libraries.
 * The dependency discovery is reasonably fast, the compilation itself still takes the longest. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
 
 ## Suggested directory structure
@@ -304,7 +304,7 @@ void equal(T a, T b)
 * `valgrind`, for profiling (`sm valgrind`).
 * `kcachegrind`, for viewing the information produced by *valgrind*.
 * `gprof2dot` and `dot`, for producing a graph from the information produced by valgrind.
-* `vagrant`, for testing *sakemake* on other operating systems.
+* `vagrant`, for testing *cxx* on other operating systems.
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
 * Development packages for `SDL2`, `OpenGL`, `glut`, `glfw`, `sfml`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
@@ -371,7 +371,7 @@ Manual installation with `make` and `sudo`:
 
 On FreeBSD, use `gmake` instead of `make`.
 
-If possible, install *SakeMake* with the package manager that comes with your OS/distro.
+If possible, install *CXX* with the package manager that comes with your OS/distro.
 
 ## Uninstallation
 
@@ -405,9 +405,9 @@ If possible, install *SakeMake* with the package manager that comes with your OS
 
 #### Ninja
 
-* Projects that already uses CMake (and need no extra command line arguments when running `cmake`) are also SakeMake compatible and can be built with CMake + Ninja like this:
+* Projects that already uses CMake (and need no extra command line arguments when running `cmake`) are also CXX compatible and can be built with CMake + Ninja like this:
 
-    sm ninja
+    cxx ninja
 
 #### QtCreator
 
@@ -419,15 +419,15 @@ The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Ar
 
 ## Feedback
 
-The dream is that every executable and project written in C++2a should be able to build with `sakemake` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
+The dream is that every executable and project written in C++2a should be able to build with `cxx` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
-If you have a project written in C++2a that you think should build with `sakemake`, but doesn't, please create an issue and include a link to your repository.
+If you have a project written in C++2a that you think should build with `cxx`, but doesn't, please create an issue and include a link to your repository.
 
 ## Shield
 
-[![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
+[![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/cxx)
 
-    [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/sakemake)
+    [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/cxx)
 
 ## Editor Configuration
 
