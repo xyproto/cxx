@@ -1,4 +1,4 @@
-# CXX [![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx)
+# CXX [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-2a-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://opensource.org/licenses/MIT)
 
 Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 or C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
@@ -290,12 +290,12 @@ void equal(T a, T b)
 
 * `scons`
 * `make`
-* `g++` with support for C++17 (gcc version 8.2.1 or higher should work)
+* `g++` with support for C++2a (gcc version 8.2.1 or higher should work)
 * `pkg-config`, for systems where pkg-config is available
 
 #### Optional requirements
 
-* `clang++` with support for C++17 (build with `cxx clang`).
+* `clang++` with support for C++2a (build with `cxx clang`).
 * `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
@@ -329,7 +329,7 @@ See `examples/mixer` for an example that uses `RESOURCEDIR`.
 
 An alternative method to using defines (defined with `-D` when building) is to use something like `SDL_GetBasePath()`. Example: [res_path.h](https://github.com/libSDL2pp/TwinklebearDev-Lessons-libSDL2pp/blob/sdl2pp/include/res_path.h).
 
-## C++17 on macOS
+## C++2a on macOS
 
 For installing a recent enough version of C++ on macOS, installing gcc 8 with `brew` is one possible approach:
 
@@ -339,15 +339,15 @@ The other requirements can be installed with:
 
     brew install scons make pkg-config
 
-## C++17 on Arch Linux
+## C++2a on Arch Linux
 
-g++ with support for C++17 should already be installed.
+g++ with support for C++2a should already be installed.
 
 Install scons and base-devel, if needed:
 
     pacman -S scons base-devel --needed
 
-## C++17 on Debian or Ubuntu
+## C++2a on Debian or Ubuntu
 
 You might need to install GCC 8 from the testing repository, or from a PPA.
 
