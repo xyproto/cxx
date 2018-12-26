@@ -1,4 +1,6 @@
-# CXX [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-2a-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://opensource.org/licenses/MIT)
+# CXX
+
+[![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-2a-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++17 or C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
@@ -79,7 +81,7 @@ Then build, run and record profiling information with:
 
 Then build again, using the recorded profiling information in the process:
 
-    sm
+    cxx
 
 ## Usage
 
@@ -89,7 +91,7 @@ Then build again, using the recorded profiling information in the process:
 
 #### Just building
 
-    sm
+    cxx
 
 #### Cleaning and building
 
@@ -111,7 +113,7 @@ Then build again, using the recorded profiling information in the process:
 
     cxx debug
 
-#### Building a specific directory (`sm` can take the same flags as `make`):
+#### Building a specific directory (`cxx` can take the same flags as `make`):
 
     cxx -C examples/hello
 
@@ -119,7 +121,7 @@ Then build again, using the recorded profiling information in the process:
 
     sudo PREFIX=/usr cxx install
 
-Either `main.cpp` or the C++ source files in the current directory will be used when building with `sm`.
+Either `main.cpp` or the C++ source files in the current directory will be used when building with `cxx`.
 
 #### Packaging a project into `$pkgdir`:
 
@@ -167,7 +169,7 @@ Build the executable with profiling enabled then run it and record the profiling
 
 Build the executable and use the profiling data, if available:
 
-    sm
+    cxx
 
 ## Features and limitations
 
