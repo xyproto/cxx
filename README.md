@@ -1,4 +1,4 @@
-# CXX [![Language](https://img.shields.io/badge/language-C++-red.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-20-orange.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![Buildsystem](https://img.shields.io/badge/sake-make-blue.svg)](https://github.com/xyproto/cxx)
+# CXX [![Language](https://img.shields.io/badge/language-C++-green.svg)](https://isocpp.org/) [![Standard](https://img.shields.io/badge/C%2B%2B-17-green.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-20-green.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![Buildsystem](https://img.shields.io/badge/cxx-green.svg)](https://github.com/xyproto/cxx)
 
 Simple build system for Arch Linux, FreeBSD, Ubuntu 17.10 or macOS w/Homebrew, **for developers that just want to program in C++20 and build one or more executables** and not have to deal with build configuration and compilation flags. Defines for directories like `img` and `data` are provided. A simple way to test and package code is also provided.
 
@@ -117,13 +117,13 @@ Then build again, using the recorded profiling information in the process:
 
 #### Installing on the local system, using sudo:
 
-    sudo PREFIX=/usr sm install
+    sudo PREFIX=/usr cxx install
 
 Either `main.cpp` or the C++ source files in the current directory will be used when building with `sm`.
 
 #### Packaging a project into `$pkgdir`:
 
-    DESTDIR="$pkgdir" PREFIX=/usr sm install
+    DESTDIR="$pkgdir" PREFIX=/usr cxx install
 
 --- or just ---
 
@@ -295,20 +295,20 @@ void equal(T a, T b)
 
 #### Optional requirements
 
-* `clang++` with support for C++2a (build with `sm clang`).
+* `clang++` with support for C++2a (build with `cxx clang`).
 * `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
 * `x86_64-w64-mingw32-g++` or `docker`, for cross-compiling executables for 64-bit Windows. The docker service must be up and running for this to work.
-* `wine`, for testing executables compiled for 64-bit Windows (`sm run`).
-* `valgrind`, for profiling (`sm valgrind`).
+* `wine`, for testing executables compiled for 64-bit Windows (`cxx run`).
+* `valgrind`, for profiling (`cxx valgrind`).
 * `kcachegrind`, for viewing the information produced by *valgrind*.
 * `gprof2dot` and `dot`, for producing a graph from the information produced by valgrind.
 * `vagrant`, for testing *cxx* on other operating systems.
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
 * Development packages for `SDL2`, `OpenGL`, `glut`, `glfw`, `sfml`, `GTK+3` and `Qt5`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
-* `clang-format` for `sm fmt`.
+* `clang-format` for `cxx fmt`.
 
 ## Defines
 
@@ -400,7 +400,7 @@ If possible, install *CXX* with the package manager that comes with your OS/dist
 #### Testing
 
 * All source files, except the one containing the `main` function, should have a corresponding `_test` file. For instance: `quaternions.cc` and `quaternions_test.cc`.
-* When running `sm test`, the `_test.*` files will be compiled and run.
+* When running `cxx test`, the `_test.*` files will be compiled and run.
 * `*_test.*` files must each contain a `main` function.
 
 #### Ninja
@@ -415,7 +415,7 @@ The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Ar
 
 ## Source code formatting
 
-* `sm fmt` will format C++2a source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `sm fmt` is optional.
+* `cxx fmt` will format C++2a source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `cxx fmt` is optional.
 
 ## Feedback
 

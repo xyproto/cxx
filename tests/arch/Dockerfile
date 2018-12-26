@@ -21,7 +21,7 @@ RUN git clone https://github.com/xyproto/cxx && \
     make -C cxx install && cp -r cxx/{tests,examples} . && rm -rf cxx
 
 # Build and run the hello_test in hello/common
-RUN sm -C examples/hello/common test
+RUN cxx -C examples/hello/common test
 
 # Install mingw-w64-gcc. If it works out, run all tests. If not, run all tests except win64crate
 CMD pacman -Syu mingw-w64-gcc --noconfirm --needed && test/all.py || tests/all.py win64crate

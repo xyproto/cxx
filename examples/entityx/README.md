@@ -4,8 +4,8 @@ This is the unmodified EntityX example from the [entityx project](https://github
 
 # Building
 
-    sm
+    cxx
 
 # Building without warnings
 
-    sm sloppy
+    cxx sloppy

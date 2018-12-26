@@ -915,7 +915,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                     # SFML is likely to fail with g++ on macOS, unfortunately
                     # If clang has not been specified, check CXX and give a warning
                     if cxx and cxx.startswith("g"):
-                        print("WARNING: Compiling an application that uses SFML may require clang. Try: sm rebuild clang=1")
+                        print("WARNING: Compiling an application that uses SFML may require clang. Try: cxx rebuild clang=1")
             elif win64:
                 new_flags = "-lopengl32"
                 if include in flag_dict:
@@ -1513,7 +1513,7 @@ def cxx_main():
             print(output)
             # Flush stdout
             stdout.flush()
-        # Get arguments passed with args="..." (the arguments after -- on the sm command line)
+        # Get arguments passed with args="..." (the arguments after -- on the cxx command line)
         given_args = []
         if 'args' in ARGUMENTS:
             given_args = ARGUMENTS['args']

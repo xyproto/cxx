@@ -24,9 +24,9 @@ class CXX:
         self.directory = str(directory)
 
     def run(self, args, dummy=False, verbose=True):
-        """The first argument is the command given to sm. If the first argument contains a ':'
-        it is interpreted as being a list of commands to run sm with. For example "fastclean:build"
-        will first run "sm fastclean" and then "sm build"."""
+        """The first argument is the command given to cxx. If the first argument contains a ':'
+        it is interpreted as being a list of commands to run cxx with. For example "fastclean:build"
+        will first run "cxx fastclean" and then "cxx build"."""
         # Trim all arguments, and remove the empty ones
         args = [arg.strip() for arg in args if arg.strip()]
         if self.directory:
@@ -59,7 +59,7 @@ class Figlet:
             print('|\n|\n|  ' + message + '...\n|\n|')
 
 
-def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
+def run_all(f, cxx, command, exampledir, skiplist, dummyrun=False):
     if command == "build":
         f.msg("Building all examples")
     elif command in ["clean", "fastclean"]:
@@ -89,16 +89,16 @@ def run_all(f, sm, command, exampledir, skiplist, dummyrun=False):
 
             # set the directory
             reldir = os.path.relpath(projectdir, Path.cwd())
-            sm.set_directory(reldir)
+            cxx.set_directory(reldir)
 
             # run the command. Empty arguments are ignored
-            sm.run([command, extraflag], dummy=dummyrun, verbose=True)
+            cxx.run([command, extraflag], dummy=dummyrun, verbose=True)
             sys.stdout.flush()
 
 
 def main():
     # the first argument is a command, the rest are projects names to be skipped
-    # possible commands: clean fastclean build run rebuild. All commands supported by sm is ok.
+    # possible commands: clean fastclean build run rebuild. All commands supported by cxx is ok.
 
     default_commands = ["fastclean", "build"]
     default_skiplist = ["boson"]
@@ -117,16 +117,16 @@ def main():
     # ../examples
     exampledir = Path(thisdir.parent.joinpath('examples'))
 
-    sm = CXX()
-    sm.version()
+    cxx = CXX()
+    cxx.version()
 
     f = Figlet()
 
     if ":" in command:
         for cmd in command.split(":"):
-            run_all(f, sm, cmd, exampledir, skiplist, dummyrun=False)
+            run_all(f, cxx, cmd, exampledir, skiplist, dummyrun=False)
     else:
-        run_all(f, sm, command, exampledir, skiplist, dummyrun=False)
+        run_all(f, cxx, command, exampledir, skiplist, dummyrun=False)
 
     print("Done.", flush=True)
 

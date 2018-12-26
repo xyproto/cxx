@@ -4,10 +4,10 @@ Tested with Qt5, but may also work with other versions of Qt.
 
 Build with:
 
-    sm
+    cxx
 
 Alternatively, generate a .pro file and then build with qmake + make:
 
-    sm pro
+    cxx pro
     qmake
     make
