@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-2a-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Makes modern C++ easier to deal with.
 
@@ -9,7 +9,7 @@ Makes modern C++ easier to deal with.
 * `cxx debug` creates a debug build
 * `cxx pro` creates a project file that is compatible with QtCreator.
 
-No configuration files are needed, but the projects needs to either be very simple (a `main.cpp`) or target CXX with a CXX-friendly directory structure.
+No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or target CXX with a CXX-friendly directory structure.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
@@ -360,12 +360,12 @@ void equal(T a, T b)
 
 * `scons`
 * `make`
-* `g++` with support for C++2a (gcc version 8.2.1 or higher can work)
+* `g++` with support for `-std=c++2a`.
 * `pkg-config`, for systems where pkg-config is available
 
 #### Optional requirements
 
-* `clang++` with support for C++2a (build with `cxx clang`).
+* `clang++` with support for `-std=c++2a` (build with `cxx clang`).
 * `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
@@ -380,7 +380,7 @@ void equal(T a, T b)
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
 * `clang-format` for `cxx fmt`.
 
-## C++2a on macOS
+## C++20 on macOS
 
 For installing a recent enough version of C++ on macOS, installing gcc 8 with `brew` is one possible approach:
 
@@ -390,15 +390,15 @@ The other requirements can be installed with:
 
     brew install scons make pkg-config
 
-## C++2a on Arch Linux
+## C++20 on Arch Linux
 
-g++ with support for C++2a should already be installed.
+g++ with support for `-std=c++2a` should already be installed.
 
 Install scons and base-devel, if needed:
 
     pacman -S scons base-devel --needed
 
-## C++2a on Debian or Ubuntu
+## C++20 on Debian or Ubuntu
 
 You might need to install GCC 8 from the testing repository, or from a PPA.
 
