@@ -15,17 +15,17 @@ Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. 
 
 Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++17 or C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
 
-The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++17 or C++20, learn C++17 or C++20 or create a demoscene demo or a game.
+The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++17 or C++20, learn modern C++ or create a demoscene demo or a game.
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are placed in the main source file, all dependencies, libraries and build flags should be handled automatically. If not, please file an issue.
 
 *CXX* provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-If you're a long time C or C++ user and wish to write an distribute a C++ library, CMake might be a better fit.
+If you're a long time C or C++ user and wish to write and distribute a C++ library, CMake might be a better fit.
 
 ## Installation
 
-Using a package that comes with your distro is usually the best way, if available.
+Using a package that comes with your distro is usually the best way, if possible.
 
 ### Manual installation
 
@@ -406,9 +406,9 @@ Install build-essential, scons and pkg-config:
 
     apt install build-essential scons pkg-config
 
-## C++17 on FreeBSD
+## C++20 on FreeBSD
 
-FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc8 or later for C++17 support.
+FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc8 or later.
 
 Install pkg-conf, scons and gmake:
 
