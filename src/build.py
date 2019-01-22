@@ -1374,6 +1374,7 @@ def cxx_main():
     glfw_vulkan = False
     boost = False
     filesystem = False
+    mathlib = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
@@ -1391,6 +1392,9 @@ def cxx_main():
             # Check if filesystem is included
             if "#include <filesystem>" in line:
                 filesystem = True
+            # Check if cmath or math.h is included
+            if line.strip() in ('#include <cmath>', '#include "math.h"'):
+                mathlib = True
     except IOError:
         pass
 
@@ -1932,6 +1936,13 @@ def cxx_main():
                 elif os.path.exists('/usr/lib/libboost_system.so'):
                     env["LIBS"].append("boost_system")
                     break
+
+    # Link with '-lm', if needed
+    if mathlib:
+        if "LIBS" in env:
+            env["LIBS"].append('m')
+        else:
+            env["LIBS"] = ['m']
 
     # Linking with libstdc++fs must come last!
     if filesystem:
