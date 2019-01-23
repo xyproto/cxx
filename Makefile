@@ -33,10 +33,10 @@ endif
 generate: src/Makefile src/cxx
 
 src/Makefile: src/Makefile.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" "${ROOTDIR}/$<" > "${ROOTDIR}/$@"
 
 src/cxx: src/cxx.in
-	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" $< > $@
+	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" "${ROOTDIR}/$<" > "${ROOTDIR}/$@"
 
 install: generate
 	@install -d "${DESTDIR}${PREFIX}/bin"
