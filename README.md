@@ -473,6 +473,6 @@ Syntastic settings for ViM and NeoVim:
 
 ## General info
 
-* Version: 3.0.4
+* Version: 3.0.5
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
