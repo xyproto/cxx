@@ -292,7 +292,7 @@ fmt:
 	done || true
 
 make:
-	@test -f Makefile && echo 'ERROR: Makefile already exists, will not overwrite' && exit 1 || true
+	@test -f Makefile && echo 'error: Makefile already exists, will not overwrite' && exit 1 || true
 	@printf ".PHONY: clean\n\n" > Makefile
 	@echo "${NAME}:" >> Makefile
 	@printf 'Generating Makefile... '
@@ -303,8 +303,8 @@ make:
 	@echo 'OK'
 
 script:
-	@test -f build.sh && echo 'ERROR: build.sh already exists, will not overwrite' && exit 1 || true
-	@test -f clean.sh && echo 'ERROR: clean.sh already exists, will not overwrite' && exit 1 || true
+	@test -f build.sh && echo 'error: build.sh already exists, will not overwrite' && exit 1 || true
+	@test -f clean.sh && echo 'error: clean.sh already exists, will not overwrite' && exit 1 || true
 	@printf 'Generating build.sh... '
 	@printf '#!/bin/sh\nprintf "Building... "\n' > build.sh
 	@cxx rebuild | grep -v "Discovering" | grep -v "Removed" | \
@@ -319,7 +319,7 @@ script:
 	@echo OK
 
 ninja:
-	@test -f CMakeLists.txt || (echo 'ERROR: Could not find CmakeLists.txt' && exit 1)
+	@test -f CMakeLists.txt || (echo 'error: Could not find CmakeLists.txt' && exit 1)
 	@-rm -rf build/
 	@mkdir -p build && cd build && cmake .. -GNinja
 	@ninja -C build

@@ -200,11 +200,11 @@ def arch_recommend_package(missing_include):
                         package = package.split("/")[1]
                     if package in SKIP_PACKAGES:
                         return
-                    print("\nERROR: Could not find \"" + missing_include +
+                    print("\nerror: Could not find \"" + missing_include +
                           "\", install with: pacman -S " + package + "\n")
                     exit(1)
         else:
-            print("\nERROR: Could not find \"" + missing_include +
+            print("\nerror: Could not find \"" + missing_include +
                   "\". Having pkgfile would help, try: pacman -S pkgfile\n")
             exit(1)
         return
@@ -225,7 +225,7 @@ def arch_include_path_to_cxxflags(include_path):
     except OSError:
         package = ""
     if not package:
-        print("ERROR: No package owns: " + include_path)
+        print("error: No package owns: " + include_path)
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
@@ -294,7 +294,7 @@ def freebsd_recommend_package(missing_include):
             except OSError:
                 packages = []
             if packages:
-                print("\nERROR: Could not find package for missing include \"" +
+                print("\nerror: Could not find package for missing include \"" +
                       missing_include + "\".\n       It could belong to one of these:")
                 for package in packages:
                     print(" " * 11 + package)
@@ -317,7 +317,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     except OSError:
         package = ""
     if not package:
-        print("ERROR: No package owns: " + include_path)
+        print("error: No package owns: " + include_path)
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
@@ -380,11 +380,11 @@ def deb_recommend_package(missing_include):
             if package in SKIP_PACKAGES:
                 return
             if package:
-                print("\nERROR: Could not find \"" + missing_include +
+                print("\nerror: Could not find \"" + missing_include +
                       "\", install with: apt install " + package + "\n")
                 exit(1)
         else:
-            print("\nERROR: Could not find \"" + missing_include +
+            print("\nerror: Could not find \"" + missing_include +
                   "\". Having apt-file would help, try: apt install apt-file\n")
             exit(1)
         return
@@ -404,7 +404,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
     except OSError:
         package = ""
     if not package:
-        print("ERROR: No package owns: " + include_path)
+        print("error: No package owns: " + include_path)
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
@@ -538,7 +538,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     Returns includes, defines, libs, lib paths, linkflags and other cxx flags"""
 
     if type(system_include_dirs) == type(""):
-        print("ERROR: system_include_dirs is supposed to be a list")
+        print("error: system_include_dirs is supposed to be a list")
         sys.exit(1)
 
     if sourcefilename == "":
@@ -684,7 +684,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     missing_includes = [
         include for include in includes if include not in flag_dict and include not in global_flag_dict]
     if missing_includes and not has_pkg_config:
-        print("\nERROR: missing in PATH: pkg-config")
+        print("\nerror: missing in PATH: pkg-config")
         exit(1)
 
     # Guess g++ or gcc, only for running -dumpmachine for machine identification
@@ -1221,7 +1221,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             elif which("pacman"):  # Arch
                 for missing_include in missing_includes:
                     arch_recommend_package(missing_include)
-            print("ERROR: missing include: {}".format(missing_includes[0]))
+            print("error: missing include: {}".format(missing_includes[0]))
             exit(1)
     else:
         if 'run' not in ARGUMENTS:
@@ -1579,8 +1579,7 @@ def cxx_main():
                         ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
                 env.Replace(CXX=docker_cxx)
             else:
-                print("ERROR: Could not find a compiler for producing 64-bit Windows executables.")
-                print("Neither x86_64-w64-mingw32-g++ nor docker were found.")
+                print("error: Could not find a compiler for producing 64-bit Windows executables. Neither x86_64-w64-mingw32-g++ nor docker were found.")
                 exit(1)
     elif int(ARGUMENTS.get('zap', 0)):
         # zapc++ looks for include files in the wrong place unless --gcc-toolchain=/usr is given
