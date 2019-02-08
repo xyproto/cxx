@@ -457,6 +457,17 @@ The goal is that every executable and project written in C++17 should be able to
 
 If you have a project written in C++17 that you think should build with `cxx`, but doesn't, please create an issue and include a link to your repository.
 
+## GNU Parallel
+
+If running CXX with `parallel`, make sure to use the `--compress` or `--tmpdir` flag to change the location of the temporary SQLite database.
+
+Example build target in a Makefile, for using `parallel` and `cxx`, while disabling warnings:
+
+    build:
+        +CXXFLAGS='$(CXXFLAGS) -w' parallel --compress cxx opt -C ::: subdir1 subdir2 subdir3
+
+`subdir1`, `subdir2` and `subdir3` are just examples of directory names.
+
 ## Editor Configuration
 
 Syntastic settings for ViM and NeoVim:

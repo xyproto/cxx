@@ -548,9 +548,9 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     has_pkg_config = bool(which("pkg-config"))
     has_package_manager = False
 
-    if 'run' not in ARGUMENTS:
-        print("Discovering build flags for {}... ".format(sourcefilename), end="")
-        stdout.flush()
+    # if 'run' not in ARGUMENTS:
+    #    print("Discovering build flags for {}... ".format(sourcefilename), end="")
+    #    stdout.flush()
 
     # Filter out include lines, then run cpp
     cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + \
@@ -748,6 +748,8 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 continue
             for system_include_dir in system_include_dirs:
                 include_path = os.path.join(system_include_dir, include)
+                #if ("/wine/" in include_path) and not win64:
+                #    continue
                 new_flags = arch_include_path_to_cxxflags(include_path)
                 if new_flags:
                     if include in flag_dict:
@@ -1225,7 +1227,9 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             exit(1)
     else:
         if 'run' not in ARGUMENTS:
-            print("OK")
+            dirname = os.path.basename(os.getcwd())
+            print("[{}] ".format(dirname), end='\n')
+            # print("OK")
 
     # Collect and return all the flags in flag_dict
     all_cxxflags = (" ".join(flag_dict.values()) + " " +
@@ -1355,6 +1359,7 @@ def supported(cxx, std):
 def cxx_main():
     """The main function"""
 
+    # Make sure to use the --compress or --tmpdir flag when using GNU parallel
     SConsignFile("/tmp/cxx")  # will be stored as /tmp/cxx.dblite
 
     # Include paths on the system, as reported by the compiler
