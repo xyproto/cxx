@@ -10,7 +10,10 @@
 #include <iostream>
 #include <set>
 #include <stdexcept>
+#include <string>
 #include <vector>
+
+using namespace std::string_literals;
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
@@ -950,6 +953,8 @@ private:
 
 int main()
 {
+    std::cout << "Please make sure Vulkan is supported on your system before running."s
+              << std::endl;
     HelloTriangleApplication app;
 
     try {
