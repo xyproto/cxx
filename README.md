@@ -2,14 +2,14 @@
 
 [![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Makes modern C++ easier to deal with.
+Make modern C++ easier to deal with.
 
 * `cxx` builds a project
 * `cxx fmt` formats the source code
 * `cxx debug` creates a debug build
 * `cxx pro` creates a project file that is compatible with QtCreator.
 
-No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or use a CXX-friendly directory structure.
+No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
