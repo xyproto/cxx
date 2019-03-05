@@ -9,7 +9,7 @@ Makes modern C++ easier to deal with.
 * `cxx debug` creates a debug build
 * `cxx pro` creates a project file that is compatible with QtCreator.
 
-No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or target CXX with a CXX-friendly directory structure.
+No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or use a CXX-friendly directory structure.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
