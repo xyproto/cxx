@@ -321,7 +321,7 @@ script:
 	@echo OK
 
 ninja:
-	@test -f CMakeLists.txt || (echo 'error: Could not find CmakeLists.txt' && exit 1)
+	@test -f CMakeLists.txt || (echo 'error: Could not find CMakeLists.txt' && exit 1)
 	@-rm -rf build/
 	@mkdir -p build && cd build && cmake .. -GNinja
 	@ninja -C build
