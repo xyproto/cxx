@@ -60,3 +60,5 @@ examples/build-*-Debug/
 *.gcno
 *.profraw
 *.profdata
+
+examples/*/build.py
