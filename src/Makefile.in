@@ -257,9 +257,9 @@ install: patch main unpatch
 	  find "${DESTDIR}${PREFIX}/share/${NAME}" -type f -exec chmod 644 {} \;) || \
 	  true
 
-#export:
-#	@cp -i -v "${ROOTDIR}/Makefile" .
-#	@cp -i -v "${ROOTDIR}/build.py" SConstruct
+export:
+	@cp -i -v "${ROOTDIR}/Makefile" .
+	@cp -i -v "${ROOTDIR}/build.py" build.py
 
 clean:
 	@scons ${SCONSFILEARG} -Q clean win64=${win64} | sed 's/^scons: //g' | uniq
