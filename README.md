@@ -11,6 +11,8 @@ Make modern C++ easier to deal with.
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
 
+Ever had a single `main.cpp` file and just wanting to compile it, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
+
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
 Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++17 or C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
