@@ -1383,8 +1383,10 @@ def cxx_main():
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
-            if line.strip() in ('#include <windows.h>', '#include "windows.h"'):
-                win64 = True
+            for win_include in ('#include <windows.h>', '#include "windows.h"', '#include<windows.h>'):
+                if win_include in line:
+                    win64 = True
+                    break
             # Check if OpenMP is used in the main source file
             if "#pragma omp" in line:
                 openmp = True
@@ -1632,7 +1634,7 @@ def cxx_main():
                 # Use the compiler if it exists in path and supports the standard
                 env.Replace(CXX=compiler)
             if found_cppstd and not ARGUMENTS.get('std', ''):
-                if "-std=" not in str(env["CXXFLAGS"]):
+                if not main_source_file.endswith(".c") and ("-std=" not in str(env["CXXFLAGS"])):
                     env.Append(CXXFLAGS=' -std=' + found_cppstd)
 
             # clang is set?
@@ -1641,7 +1643,7 @@ def cxx_main():
             elif int(ARGUMENTS.get('zap', 0)):
                 env.Replace(CXX='zapcc++')
 
-    if not cleaning:
+    if not cleaning: #) and (not main_source_file.endswith(".c")):
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest possible C++ standard flag
             if "-std=" not in str(env["CXXFLAGS"]):
@@ -1833,8 +1835,11 @@ def cxx_main():
         # Windows related build flags
         if win64:
             env.Append(CXXFLAGS=' -Wno-unused-variable')
-            env.Append(CPPFLAGS=' -mwindows -lm')
-            env.Append(LINKFLAGS=' -mwindows -lm')
+            if not main_source_file.endswith(".c"):
+                env.Append(CPPFLAGS=' -mwindows')
+                env.Append(LINKFLAGS=' -mwindows')
+            env.Append(CPPFLAGS=' -lm')
+            env.Append(LINKFLAGS=' -lm')
             # This could also work, for automatically adding ".exe":
             # env.Append(LINKFLAGS=' -Wl,--force-exe-suffix')
 
