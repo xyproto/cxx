@@ -270,6 +270,14 @@ def arch_include_path_to_cxxflags(include_path):
             cxxflags = os.popen2(cmd)[1].read().strip()
         except OSError:
             pass
+        if not cxxflags:
+            # pkg-config did not work! Print a warning and just guess the flag.
+            if cmd.endswith("2>/dev/null"):
+                cmd = cmd[:-11]
+            # Output the pkg-config command
+            print("warning: this command failed to run:\n" + cmd)
+            # Just guess the library flag
+            cxxflags = "-l" + pc_name
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -358,6 +366,14 @@ def freebsd_include_path_to_cxxflags(include_path):
         except OSError:
             # Let cxxflags remain empty
             pass
+        if not cxxflags:
+            # pkg-config did not work! Print a warning and just guess the flag.
+            if cmd.endswith("2>/dev/null"):
+                cmd = cmd[:-11]
+            # Output the pkg-config command
+            print("warning: this command failed to run:\n" + cmd)
+            # Just guess the library flag
+            cxxflags = "-l" + pc_name
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -450,6 +466,14 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
             cxxflags = os.popen2(cmd)[1].read().strip()
         except OSError:
             pass
+        if not cxxflags:
+            # pkg-config did not work! Print a warning and just guess the flag.
+            if cmd.endswith("2>/dev/null"):
+                cmd = cmd[:-11]
+            # Output the pkg-config command
+            print("warning: this command failed to run:\n" + cmd)
+            # Just guess the library flag
+            cxxflags = "-l" + pc_name
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
@@ -526,6 +550,14 @@ def brew_include_path_to_cxxflags(include_path):
             cxxflags = os.popen2(cmd)[1].read().strip()
         except OSError:
             pass
+        if not cxxflags:
+            # pkg-config did not work! Print a warning and just guess the flag.
+            if cmd.endswith("2>/dev/null"):
+                cmd = cmd[:-11]
+            # Output the pkg-config command
+            print("warning: this command failed to run:\n" + cmd)
+            # Just guess the library flag
+            cxxflags = "-l" + pc_name
         if cxxflags:
             for cxxflag in cxxflags.split(" "):
                 if cxxflag not in all_cxxflags.split(" "):
