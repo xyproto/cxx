@@ -486,6 +486,6 @@ Syntastic settings for ViM and NeoVim:
 
 ## General info
 
-* Version: 3.0.6
+* Version: 3.0.7
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
