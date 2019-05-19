@@ -1731,13 +1731,13 @@ def cxx_main():
         env.Append(CXXFLAGS=' --gcc-toolchain=/usr -std=c++14')
     else:
         # Check if a particular C++ compiler is given, or not
-        if str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
+        if str(env["CXX"]) == "" and platform.system() == "OpenBSD":
+            compiler_binaries = ["/usr/local/bin/eg++"]
+        elif str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
             compiler_binaries = ["g++-9", "g++9", "g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "eg++", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
-            elif platform.system() == "OpenBSD":
-                compiler_binaries = ["/usr/local/bin/eg++"] + compiler_binaries
             elif platform.system() == "NetBSD":
                 if exe("/usr/pkg/gcc9/bin/g++"):
                     # if on NetBSD, try /usr/bin/pkg/gcc9 first
