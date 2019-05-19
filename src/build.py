@@ -783,6 +783,19 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 else:
                     global_flag_dict[include] = "-I" + netbsd_include_dir
 
+    # OpenBSD include path (and maybe other systems too)
+    if os.path.exists("/usr/local/include"):
+        openbsd_include_dir = "/usr/local/include"
+        for include in includes:
+            if include in flag_dict:
+                continue
+            if os.path.exists(os.path.join(openbsd_include_dir, include)):
+                # Add the include directory as an -I flag if the include file was found
+                if include in global_flag_dict:
+                    global_flag_dict[include] += " -I" + openbsd_include_dir
+                else:
+                    global_flag_dict[include] = "-I" + openbsd_include_dir
+
     # If there are now missing build flags, and pkg-config is not in the path, it's a problem
     missing_includes = [
         include for include in includes if include not in flag_dict and include not in global_flag_dict]
