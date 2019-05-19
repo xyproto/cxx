@@ -384,7 +384,6 @@ def freebsd_include_path_to_cxxflags(include_path):
 def openbsd_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For OpenBSD."""
-    print("openbsd_include_path_to_cxxflags", include_path)
     if include_path == "":
         return ""
     # Check if the given include file is missing from the system
