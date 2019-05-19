@@ -950,10 +950,12 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             for system_include_dir in system_include_dirs:
                 cmd = '/usr/bin/dirname $(/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1)'
+                print(cmd)
                 try:
                     include_path = os.popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
+                print("GOT", include_path)
                 if include_path:
                     new_flags = openbsd_include_path_to_cxxflags(include_path)
                     if new_flags:
