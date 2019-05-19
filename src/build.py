@@ -1729,11 +1729,12 @@ def cxx_main():
     elif int(ARGUMENTS.get('zap', 0)):
         # zapc++ looks for include files in the wrong place unless --gcc-toolchain=/usr is given
         env.Append(CXXFLAGS=' --gcc-toolchain=/usr -std=c++14')
+    elif platform.system() == "OpenBSD":
+        if exe("/usr/local/bin/eg++"):
+            compiler_binaries = ["/usr/local/bin/eg++"] + compiler_binaries
     else:
         # Check if a particular C++ compiler is given, or not
-        if str(env["CXX"]) == "" and platform.system() == "OpenBSD":
-            compiler_binaries = ["/usr/local/bin/eg++"]
-        elif str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
+        if str(env["CXX"]) == "c++" or (str(env["CXX"]) == "g++" and platform.system() == "NetBSD"):
             compiler_binaries = ["g++-9", "g++9", "g++-8", "g++8", "g++-7", "g++7", "g++-HEAD", "eg++", "g++"]
             if platform.system() == "Darwin":
                 # if on macOS, try clang++ first
