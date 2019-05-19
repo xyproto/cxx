@@ -946,13 +946,14 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 continue
             # Search system_include_dir
             for system_include_dir in system_include_dirs:
-                cmd = '/usr/bin/dirname $(/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
-                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1)'
+                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
                 try:
                     include_path = os.popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
-                if include_path:
+                include_path = os.path.dirname(include_path)
+                if include_path and os.path.exists(include_path):
                     new_flags = openbsd_include_path_to_cxxflags(include_path)
                     if new_flags:
                         if include in flag_dict:
