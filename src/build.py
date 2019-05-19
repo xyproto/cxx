@@ -1781,11 +1781,8 @@ def cxx_main():
             elif int(ARGUMENTS.get('zap', 0)):
                 env.Replace(CXX='zapcc++')
 
-    if platform.system() == "OpenBSD":
-        if str(env["CXX"]) == "":
-            env.Replace(CXX="/usr/local/bin/eg++")
-        else:
-            print("CXX", str(env["CXX"]))
+    if platform.system() == "OpenBSD" and  str(env["CXX"]) == "g++":
+        env.Replace(CXX="/usr/local/bin/eg++")
 
     if not cleaning:  # ) and (not main_source_file.endswith(".c")):
         if not bool(ARGUMENTS.get('std', '')):
