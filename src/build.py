@@ -381,6 +381,77 @@ def freebsd_include_path_to_cxxflags(include_path):
     return all_cxxflags.strip()
 
 
+def openbsd_include_path_to_cxxflags(include_path):
+    """Takes a path to a header file and returns cxxflags, or an empty string.
+    For OpenBSD."""
+    if include_path == "":
+        return ""
+    # Check if the given include file is missing from the system
+    if not os.path.exists(include_path):
+        return ""
+    # Find the package that owns the include directory in question
+    cmd = '/usr/sbin/pkg_info -E ' + include_path + ' | head -1 | cut -d" " -f2 | cut -d- -f1'
+    try:
+        package = os.popen2(cmd)[1].read().strip()
+    except OSError:
+        package = ""
+    if not package:
+        print("error: No package owns: " + include_path)
+        exit(1)
+    if package in SKIP_PACKAGES:
+        return ""
+    if package in cached_pc_files:
+        pc_files = cached_pc_files[package]
+    else:
+        cmd = "/usr/sbin/pkg_info -L " + package + " | grep '\.pc$'"
+        try:
+            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            cached_pc_files[package] = pc_files
+        except OSError:
+            pc_files = []
+    if not pc_files:
+        # If a library in /usr/local/lib matches the name of the package without .pc files, link with that
+        libpath = "/usr/local/lib"
+        # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
+        booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
+        for possible_lib_name in [package, booststyle, package.upper(), os.path.splitext(os.path.basename(include_path))[0]]:
+            if os.path.exists(os.path.join(libpath, "lib" + possible_lib_name + ".so")):
+                # Found a good candidate, matching the name of the package that owns the include file. Try that.
+                if os.path.exists(os.path.dirname(include_path)):
+                    # Also found an include directory
+                    return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
+                return "-l" + possible_lib_name
+        # Did not find a suitable library file, nor .pc file
+        if package != "boost":  # boost is "special"
+            print("WARNING: No pkg-config files for: " + package)
+        return ""
+    # TODO: Consider interpreting the .pc files directly, for speed
+    all_cxxflags = ""
+    for pc_file in pc_files:
+        pc_name = os.path.splitext(os.path.basename(pc_file))[0]
+        cmd = '/usr/bin/pkg-config --cflags --libs ' + pc_name + ' 2>/dev/null'
+        # Get the cxxflags as defined by pkg-config
+        cxxflags = ""
+        try:
+            cxxflags = os.popen2(cmd)[1].read().strip()
+        except OSError:
+            # Let cxxflags remain empty
+            pass
+        if not cxxflags:
+            # pkg-config did not work! Print a warning and just guess the flag.
+            if cmd.endswith("2>/dev/null"):
+                cmd = cmd[:-11]
+            # Output the pkg-config command
+            print("warning: this command failed to run:\n" + cmd)
+            # Just guess the library flag
+            cxxflags = "-l" + pc_name
+        if cxxflags:
+            for cxxflag in cxxflags.split(" "):
+                if cxxflag not in all_cxxflags.split(" "):
+                    all_cxxflags += " " + cxxflag
+    return all_cxxflags.strip()
+
+
 def deb_recommend_package(missing_include):
     """Given a missing include file, print out a message for a package that could be installed and exit with error code 1, or else just return."""
     if missing_include == "":
@@ -782,7 +853,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 continue
             for system_include_dir in system_include_dirs:
                 include_path = os.path.join(system_include_dir, include)
-                #if ("/wine/" in include_path) and not win64:
+                # if ("/wine/" in include_path) and not win64:
                 #    continue
                 new_flags = arch_include_path_to_cxxflags(include_path)
                 if new_flags:
@@ -836,6 +907,39 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                     include_path = ""
                 if include_path:
                     new_flags = freebsd_include_path_to_cxxflags(include_path)
+                    if new_flags:
+                        if include in flag_dict:
+                            flag_dict[include] += " " + new_flags
+                        else:
+                            flag_dict[include] = new_flags
+
+    # Using the include_lines, find the correct CFLAGS on OpenBSD
+    if has_pkg_config and exe("/usr/sbin/pkg_info"):
+        has_package_manager = True
+        for include in includes:
+            if include in flag_dict:
+                continue
+            for system_include_dir in system_include_dirs:
+                include_path = os.path.join(system_include_dir, include)
+                new_flags = openbsd_include_path_to_cxxflags(include_path)
+                if new_flags:
+                    if include in flag_dict:
+                        flag_dict[include] += " " + new_flags
+                    else:
+                        flag_dict[include] = new_flags
+            # Try the same, but now using find to search deeper in system_include_dir
+            if include in flag_dict:
+                continue
+            # Search system_include_dir
+            for system_include_dir in system_include_dirs:
+                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
+                try:
+                    include_path = os.popen2(cmd)[1].read().strip()
+                except OSError:
+                    include_path = ""
+                if include_path:
+                    new_flags = openbsd_include_path_to_cxxflags(include_path)
                     if new_flags:
                         if include in flag_dict:
                             flag_dict[include] += " " + new_flags
@@ -1633,7 +1737,7 @@ def cxx_main():
                 # if on macOS, try clang++ first
                 compiler_binaries = ["clang++"] + compiler_binaries
             elif platform.system() == "OpenBSD":
-                compiler_binaries = ["eg++"] + compiler_binaries
+                compiler_binaries = ["/usr/local/bin/eg++"] + compiler_binaries
             elif platform.system() == "NetBSD":
                 if exe("/usr/pkg/gcc9/bin/g++"):
                     # if on NetBSD, try /usr/bin/pkg/gcc9 first
@@ -1679,7 +1783,7 @@ def cxx_main():
             elif int(ARGUMENTS.get('zap', 0)):
                 env.Replace(CXX='zapcc++')
 
-    if not cleaning: #) and (not main_source_file.endswith(".c")):
+    if not cleaning:  # ) and (not main_source_file.endswith(".c")):
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest possible C++ standard flag
             if "-std=" not in str(env["CXXFLAGS"]):
