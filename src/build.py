@@ -2002,6 +2002,11 @@ def cxx_main():
             env.Append(CPPFLAGS=' -L/usr/pkg/lib')
             env.Append(LINKFLAGS=' -L/usr/pkg/lib')
 
+        # OpenBSD related build flags
+        if platform.system() == "OpenBSD":
+            env.Append(CPPFLAGS=' -L/usr/local/lib')
+            env.Append(LINKFLAGS=' -L/usr/local/lib')
+
         # OpenMP related build flags
         if openmp:
             env.Append(CXXFLAGS=' -fopenmp')
