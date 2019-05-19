@@ -948,8 +948,8 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 continue
             # Search system_include_dir
             for system_include_dir in system_include_dirs:
-                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
-                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
+                cmd = '/usr/bin/dirname $(/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
+                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1)'
                 try:
                     include_path = os.popen2(cmd)[1].read().strip()
                 except OSError:
