@@ -384,6 +384,7 @@ def freebsd_include_path_to_cxxflags(include_path):
 def openbsd_include_path_to_cxxflags(include_path):
     """Takes a path to a header file and returns cxxflags, or an empty string.
     For OpenBSD."""
+    print("openbsd_include_path_to_cxxflags", include_path)
     if include_path == "":
         return ""
     # Check if the given include file is missing from the system
@@ -391,6 +392,7 @@ def openbsd_include_path_to_cxxflags(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg_info -E ' + include_path + ' | head -1 | cut -d" " -f2 | cut -d- -f1'
+    print(cmd)
     try:
         package = os.popen2(cmd)[1].read().strip()
     except OSError:
