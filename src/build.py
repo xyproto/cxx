@@ -403,7 +403,8 @@ def openbsd_include_path_to_cxxflags(include_path):
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        cmd = "/usr/sbin/pkg_info -L " + package + " | grep '\.pc$'"
+        cmd = "/usr/sbin/pkg_info -L " + package + " | grep \"\\.pc\""
+        print(cmd)
         try:
             pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
