@@ -470,6 +470,10 @@ Example build target in a Makefile, for using `parallel` and `cxx`, while disabl
 
 `subdir1`, `subdir2` and `subdir3` are just examples of directory names.
 
+## OpenBSD
+
+For OpenBSD, install g++ 8.3.0 and build with `cxx CXX=eg++`.
+
 ## Editor Configuration
 
 Syntastic settings for ViM and NeoVim:
