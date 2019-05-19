@@ -392,7 +392,6 @@ def openbsd_include_path_to_cxxflags(include_path):
         return ""
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg_info -E ' + include_path + ' | head -1 | cut -d" " -f2 | cut -d- -f1'
-    print(cmd)
     try:
         package = os.popen2(cmd)[1].read().strip()
     except OSError:
@@ -406,7 +405,6 @@ def openbsd_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         cmd = "/usr/sbin/pkg_info -L " + package + " | grep \"\\.pc\""
-        print(cmd)
         try:
             pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
@@ -950,12 +948,10 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             for system_include_dir in system_include_dirs:
                 cmd = '/usr/bin/dirname $(/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1)'
-                print(cmd)
                 try:
                     include_path = os.popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
-                print("GOT", include_path)
                 if include_path:
                     new_flags = openbsd_include_path_to_cxxflags(include_path)
                     if new_flags:
@@ -1799,7 +1795,7 @@ def cxx_main():
             elif int(ARGUMENTS.get('zap', 0)):
                 env.Replace(CXX='zapcc++')
 
-    if platform.system() == "OpenBSD" and  str(env["CXX"]) == "g++":
+    if platform.system() == "OpenBSD" and str(env["CXX"]) == "g++":
         env.Replace(CXX="/usr/local/bin/eg++")
 
     if not cleaning:  # ) and (not main_source_file.endswith(".c")):
