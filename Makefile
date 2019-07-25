@@ -1,4 +1,4 @@
-.PHONY: clean generate uninstall src/Makefile src/cxx
+.PHONY: clean generate uninstall scons src/Makefile src/cxx
 
 NAME := cxx
 ALIAS := sm
@@ -38,7 +38,7 @@ src/Makefile: src/Makefile.in
 src/cxx: src/cxx.in
 	@sed "s,@@PREFIX@@,${PREFIX},g;s,@@MAKE@@,${MAKE},g;s,@@VERSION@@,${VERSION},g" "${ROOTDIR}/$<" > "${ROOTDIR}/$@"
 
-install: generate
+install: scons generate
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@install -m755 "${SRCDIR}/${NAME}" "${DESTDIR}${PREFIX}/bin/${NAME}"
 	@ln -sf "${PREFIX}/bin/${NAME}" "${DESTDIR}${PREFIX}/bin/${ALIAS}"
@@ -47,6 +47,9 @@ install: generate
 	@install -m644 "${SRCDIR}/build.py" "${DESTDIR}${PREFIX}/share/${NAME}/build.py"
 	@install -d "${DESTDIR}${PREFIX}/share/licenses/${NAME}"
 	@install -m644 "${ROOTDIR}/LICENSE" "${DESTDIR}${PREFIX}/share/licenses/${NAME}/LICENSE" || true
+
+scons:
+	@scons --version 2>/dev/null 1>/dev/null || (echo 'please install scons'; exit 1)
 
 uninstall:
 	@-rm -f "${DESTDIR}${PREFIX}/bin/${NAME}"
