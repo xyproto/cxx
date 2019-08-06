@@ -6,7 +6,7 @@ from __future__ import print_function
 import os
 import os.path
 import platform
-from commands import getstatusoutput
+from subprocess import getstatusoutput
 from glob import iglob
 from itertools import chain
 from multiprocessing import cpu_count
