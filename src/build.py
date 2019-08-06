@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -6,13 +6,21 @@ from __future__ import print_function
 import os
 import os.path
 import platform
-from subprocess import getstatusoutput
 from glob import iglob
 from itertools import chain
 from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import argv, exit, stdout
-from urllib import quote
+
+# Difference from Python 2 to Python 3.7
+try:
+    # Python 2
+    from urllib import quote
+    from commands import getstatusoutput
+except:
+    # Python 3.7
+    from urllib.parse import quote
+    from subprocess import getstatusoutput
 
 LOCAL_COMMON_PATHS = ["common", "Common", "../common", "../Common"]
 LOCAL_INCLUDE_PATHS = [".", "include", "Include", "..", "../include", "../Include"] + LOCAL_COMMON_PATHS
