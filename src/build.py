@@ -17,10 +17,19 @@ try:
     # Python 2
     from urllib import quote
     from commands import getstatusoutput
+    from os import popen2
 except:
     # Python 3.7
     from urllib.parse import quote
-    from subprocess import getstatusoutput
+    from subprocess import getstatusoutput, Popen, PIPE, getoutput
+    class Readable:
+        def __init__(self, s):
+            self.data = s 
+        def read(self):
+            return str(self.data)
+    def popen2(cmd, mode='t', bufsize=0):
+        return None, Readable(getoutput(cmd))
+
 
 LOCAL_COMMON_PATHS = ["common", "Common", "../common", "../Common"]
 LOCAL_INCLUDE_PATHS = [".", "include", "Include", "..", "../include", "../Include"] + LOCAL_COMMON_PATHS
@@ -198,7 +207,7 @@ def arch_recommend_package(missing_include):
         if which("pkgfile"):
             cmd = "LC_ALL=C pkgfile " + missing_include
             try:
-                packages = os.popen2(cmd)[1].read().strip().split("\n")
+                packages = popen2(cmd)[1].read().strip().split("\n")
             except OSError:
                 packages = []
             for package in packages:
@@ -229,7 +238,7 @@ def arch_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
     try:
-        package = os.popen2(cmd)[1].read().strip()
+        package = popen2(cmd)[1].read().strip()
     except OSError:
         package = ""
     if not package:
@@ -242,7 +251,7 @@ def arch_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
@@ -275,7 +284,7 @@ def arch_include_path_to_cxxflags(include_path):
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
-            cxxflags = os.popen2(cmd)[1].read().strip()
+            cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
         if not cxxflags:
@@ -305,7 +314,7 @@ def freebsd_recommend_package(missing_include):
             cmd = '/usr/local/bin/curl -s "http://www.secnetix.de/tools/porgle/porgle.py?plst=1&q=' + quote(last_part) + \
                 '&Search=Search" | grep "td " | grep small | cut -d">" -f4- | cut -d"-" -f1'
             try:
-                packages = [x.strip() for x in os.popen2(cmd)[1].read().strip().split("\n")
+                packages = [x.strip() for x in popen2(cmd)[1].read().strip().split("\n")
                             if x.strip() and x.strip() not in SKIP_PACKAGES]
             except OSError:
                 packages = []
@@ -329,7 +338,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg which -q ' + include_path + ' | cut -d- -f1-'
     try:
-        package = os.popen2(cmd)[1].read().strip()
+        package = popen2(cmd)[1].read().strip()
     except OSError:
         package = ""
     if not package:
@@ -342,7 +351,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     else:
         cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
         try:
-            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
@@ -370,7 +379,7 @@ def freebsd_include_path_to_cxxflags(include_path):
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
-            cxxflags = os.popen2(cmd)[1].read().strip()
+            cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             # Let cxxflags remain empty
             pass
@@ -400,7 +409,7 @@ def openbsd_include_path_to_cxxflags(include_path):
     # Find the package that owns the include directory in question
     cmd = '/usr/sbin/pkg_info -E ' + include_path + ' | head -1 | cut -d" " -f2 | cut -d- -f1'
     try:
-        package = os.popen2(cmd)[1].read().strip()
+        package = popen2(cmd)[1].read().strip()
     except OSError:
         package = ""
     if not package:
@@ -413,7 +422,7 @@ def openbsd_include_path_to_cxxflags(include_path):
     else:
         cmd = "/usr/sbin/pkg_info -L " + package + " | grep \"\\.pc\""
         try:
-            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
@@ -441,7 +450,7 @@ def openbsd_include_path_to_cxxflags(include_path):
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
-            cxxflags = os.popen2(cmd)[1].read().strip()
+            cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             # Let cxxflags remain empty
             pass
@@ -469,7 +478,7 @@ def deb_recommend_package(missing_include):
         if which("apt-file"):
             cmd = "LC_ALL=C apt-file find -Fl " + missing_include
             try:
-                package = os.popen2(cmd)[1].read().strip()
+                package = popen2(cmd)[1].read().strip()
             except OSError:
                 package = ""
             if package in SKIP_PACKAGES:
@@ -495,7 +504,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
     # Find the package that owns the include directory in question
     cmd = 'LC_ALL=C /usr/bin/dpkg-query -S ' + include_path + ' | /usr/bin/cut -d: -f1'
     try:
-        package = os.popen2(cmd)[1].read().strip()
+        package = popen2(cmd)[1].read().strip()
     except OSError:
         package = ""
     if not package:
@@ -508,12 +517,12 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
     if not pc_files:
-        machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
+        machine_name = popen2(cxx + " -dumpmachine")[1].read().strip()
         # Example: Extract "boost_filesystem" from "/usr/include/boost/filesystem.h"
         booststyle = os.path.splitext("_".join(include_path.split("/")[-2:]))[0]
         # If a library in one of the library paths matches the name of the package without .pc files, link with that
@@ -542,7 +551,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
-            cxxflags = os.popen2(cmd)[1].read().strip()
+            cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
         if not cxxflags:
@@ -597,7 +606,7 @@ def brew_include_path_to_cxxflags(include_path):
         pc_files = cached_pc_files[package]
     else:
         try:
-            pc_files = [x for x in os.popen2(cmd)[1].read().strip().split(os.linesep) if x]
+            pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
         except OSError:
             pc_files = []
@@ -626,7 +635,7 @@ def brew_include_path_to_cxxflags(include_path):
         # Get the cxxflags as defined by pkg-config
         cxxflags = ""
         try:
-            cxxflags = os.popen2(cmd)[1].read().strip()
+            cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
         if not cxxflags:
@@ -667,7 +676,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     cmd = "LC_CTYPE=C && LANG=C && sed 's/^#include/" + SPECIAL_SYMBOLS + "include/g' < \"" + \
         sourcefilename + "\" | cpp -E -P -w -pipe | sed 's/^" + SPECIAL_SYMBOLS + "include/#include/g'"
     try:
-        source_lines = os.popen2(cmd)[1].read().split(os.linesep)[:-1]
+        source_lines = popen2(cmd)[1].read().split(os.linesep)[:-1]
     except:
         print("WARNING: Command failed: " + cmd)
         return "", "", "", "", "", ""
@@ -756,7 +765,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                             first_word = include.split(os.path.sep)[0].lower()
                         cmd = "pkg-config --cflags --libs " + first_word + " 2>/dev/null"
                         try:
-                            new_flags = os.popen2(cmd)[1].read().strip()
+                            new_flags = popen2(cmd)[1].read().strip()
                         except OSError:
                             new_flags = ""
                         if new_flags:
@@ -855,7 +864,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
                 try:
-                    include_path = os.popen2(cmd)[1].read().strip()
+                    include_path = popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
                 if include_path:
@@ -890,7 +899,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
                 try:
-                    include_path = os.popen2(cmd)[1].read().strip()
+                    include_path = popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
                 if include_path:
@@ -923,7 +932,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
                 try:
-                    include_path = os.popen2(cmd)[1].read().strip()
+                    include_path = popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
                 if include_path:
@@ -956,7 +965,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -path "*' + \
                     include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
                 try:
-                    include_path = os.popen2(cmd)[1].read().strip()
+                    include_path = popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
                 include_path = os.path.dirname(include_path)
@@ -978,7 +987,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
             for system_include_dir in system_include_dirs:
                 cmd = 'find -s -L ' + system_include_dir + ' -type f -wholename "*' + include + '" -maxdepth 4 | tail -1'
                 try:
-                    include_path = os.popen2(cmd)[1].read().strip()
+                    include_path = popen2(cmd)[1].read().strip()
                 except OSError:
                     include_path = ""
                 if not include_path:
@@ -987,7 +996,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                     # sense to look for the latest framework version before searching all of them.
                     cmd = 'find /usr/local/Cellar/ -name Frameworks -type d -maxdepth 3 | sort -V'
                     try:
-                        framework_dirs = os.popen2(cmd)[1].read().strip().split(os.linesep)
+                        framework_dirs = popen2(cmd)[1].read().strip().split(os.linesep)
                     except OSError:
                         framework_dirs = []
                     # If directories named "Frameworks" were found, sort them by version number and then search
@@ -1004,7 +1013,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                         for framework_dir in framework_dict.values():
                             cmd = 'find -L "' + framework_dir + '" -type f -maxdepth 4 -name "' + include + '" | tail -1'
                             try:
-                                include_path = os.popen2(cmd)[1].read().strip()
+                                include_path = popen2(cmd)[1].read().strip()
                             except OSError:
                                 include_path = ""
                             if include_path:
@@ -1088,7 +1097,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs gl 2>/dev/null"
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1131,7 +1140,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 if also_glu:
                     cmd = cmd.replace(" gl ", " gl glu ")
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1182,7 +1191,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs openal 2>/dev/null"
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1210,7 +1219,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs " + word + " 2>/dev/null"
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1260,7 +1269,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # /usr/X11R7/lib, /usr/lib + machine_name, or /usr/pkg/lib; link with that
                 machine_name = ""
                 if cxx and which(cxx):
-                    machine_name = os.popen2(cxx + " -dumpmachine")[1].read().strip()
+                    machine_name = popen2(cxx + " -dumpmachine")[1].read().strip()
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/X11R7/lib", "/usr/lib/" + machine_name, "/usr/pkg/lib"]:
                     if os.path.exists(os.path.join(libpath, "libglut.so")):
                         new_flags = "-lglut"  # Only configuration required for ie. freeglut
@@ -1274,7 +1283,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glu 2>/dev/null"
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1287,7 +1296,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                     # Try pkg-config with freeglut and glut first. Needed on NetBSD.
                     cmd = "pkg-config --cflags --libs freeglut glut 2>/dev/null"
                     try:
-                        new_flags = os.popen2(cmd)[1].read().strip()
+                        new_flags = popen2(cmd)[1].read().strip()
                     except OSError:
                         new_flags = ""
                     if new_flags:
@@ -1300,7 +1309,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                         # Try pkg-config with just freeglut
                         cmd = "pkg-config --cflags --libs freeglut 2>/dev/null"
                         try:
-                            new_flags = os.popen2(cmd)[1].read().strip()
+                            new_flags = popen2(cmd)[1].read().strip()
                         except OSError:
                             new_flags = ""
                         if new_flags:
@@ -1325,7 +1334,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 # Try pkg-config
                 cmd = "pkg-config --cflags --libs glew 2>/dev/null"
                 try:
-                    new_flags = os.popen2(cmd)[1].read().strip()
+                    new_flags = popen2(cmd)[1].read().strip()
                 except OSError:
                     new_flags = ""
                 if new_flags:
@@ -1509,7 +1518,7 @@ def supported(cxx, std):
     # Tested with clang++ and g++-7
     cmd = "echo asdf | " + cxx + " -std=" + std + " -x c++ -E - 2>&1 | grep -q -v \"" + std + "\" && echo YES || echo NO"
     try:
-        return os.popen2(cmd)[1].read().strip() == "YES"
+        return popen2(cmd)[1].read().strip() == "YES"
     except OSError:
         # Assume that this is an unknown compiler and that it does support the given standard.
         # This lets the compiler fail by itself a bit further in the process, instead of stopping a working compiler from being used.
@@ -1731,7 +1740,7 @@ def cxx_main():
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
                 # Older versions of docker needs trickery with "sh -c" instead of just setting the working directory with "-w"
                 try:
-                    docker_major_version = int(os.popen2("docker --version")[1].read().split(" ")[2].split(".")[0])
+                    docker_major_version = int(popen2("docker --version")[1].read().split(" ")[2].split(".")[0])
                 except:
                     docker_major_version = 0
                 if docker_major_version >= 18:
@@ -1838,8 +1847,7 @@ def cxx_main():
         # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
         try:
-            compiler_includes = [line.strip().split()[0] for line in os.popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[
-                1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+            compiler_includes = [line.strip().split()[0] for line in popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
         except OSError:
             pass
 
@@ -1869,7 +1877,7 @@ def cxx_main():
         if os.path.exists("/usr/include"):
             system_include_dirs.append("/usr/include")
         if which(str(env["CXX"])):
-            machine_name = os.popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
+            machine_name = popen2(str(env["CXX"]) + " -dumpmachine")[1].read().strip()
             if os.path.exists("/usr/include/" + machine_name):
                 system_include_dirs.append("/usr/include/" + machine_name)
         # Set system_include_dir[0] to the given value, or keep it as /usr/include
@@ -1991,7 +1999,7 @@ def cxx_main():
             elif env['CXX'] in ('clang++', 'zapcc++'):
                 # if list(iglob("*.profraw")):
                     #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
-                    #output = os.popen2(cmd)[1].read().strip()
+                    #output = popen2(cmd)[1].read().strip()
                     # print(output)
                 if list(iglob("*.gcda")):
                     env.Append(CXXFLAGS=' -fprofile-use')
@@ -2108,7 +2116,7 @@ def cxx_main():
                 # check if boost_system is available from ldconfig before adding the lib
                 if which('ldconfig'):
                     cmd = 'ldconfig -p | grep boost_system'
-                    if "boost_system" in os.popen2(cmd)[1].read().strip():
+                    if "boost_system" in popen2(cmd)[1].read().strip():
                         env["LIBS"].append("boost_system")
                         break
                 # if ldconfig is not available, check if it is in /usr/lib
