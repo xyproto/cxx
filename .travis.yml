@@ -3,3 +3,4 @@ services:
 
 script:
   - tests/ubuntu/run.sh
+  - tests/arch/run.sh
