@@ -1,4 +1,4 @@
-FROM base/devel
+FROM archlinux/base
 
 ENV PACKAGE_SERVER_1 mirror.clarkson.edu/archlinux
 ENV PACKAGE_SERVER_2 mirror.pointysoftware.net/archlinux
