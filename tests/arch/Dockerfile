@@ -18,10 +18,8 @@ RUN echo -e '[ownstuff]\nSigLevel = Optional TrustAll\nServer = http://martchus.
 
 # Install cxx, but don't keep the git checkout in the docker image
 RUN git clone https://github.com/xyproto/cxx && \
-    make -C cxx install && cp -r cxx/{tests,examples} . && rm -rf cxx
+    cd cxx && \
+    make install
 
-# Build and run the hello_test in hello/common
-RUN cxx -C cxx/examples/hello/common test
-
-# Install mingw-w64-gcc. If it works out, run all tests. If not, run all tests except win64crate
-CMD pacman -Syu mingw-w64-gcc --noconfirm --needed && test/all.py || tests/all.py win64crate
+# Clean and build most examples
+CMD cxx/tests/all.py fastclean:build win64crate
