@@ -22,11 +22,14 @@ except:
     # Python 3.7
     from urllib.parse import quote
     from subprocess import getstatusoutput, Popen, PIPE, getoutput
+
     class Readable:
         def __init__(self, s):
-            self.data = s 
+            self.data = s
+
         def read(self):
             return str(self.data)
+
     def popen2(cmd, mode='t', bufsize=0):
         return None, Readable(getoutput(cmd))
 
@@ -1655,12 +1658,11 @@ def cxx_main():
         cmd = [x for x in argv if x != "test"] + [elf for elf in test_elves if elf != "test"]
         # Build the tests
         try:
-            output = check_output(cmd)
+            output = check_output(cmd).decode()
         except:
             #print("Could not run: " + " ".join(cmd))
             exit(1)
-        output = os.linesep.join([line for line in output.split(
-            os.linesep) if not "up to date" in line]).strip()
+        output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
         if output:
             print(output)
         # Run the tests
@@ -1683,12 +1685,11 @@ def cxx_main():
             exit(0)
         # Build main
         try:
-            output = check_output(cmd)
+            output = check_output(cmd).decode()
         except:
             #print("Could not run: " + " ".join(cmd))
             exit(1)
-        output = os.linesep.join([line for line in output.split(
-            os.linesep) if not "up to date" in line]).strip()
+        output = os.linesep.join([line for line in output.split(os.linesep) if "up to date" in line]).strip()
         if output:
             print(output)
             # Flush stdout
@@ -1847,7 +1848,8 @@ def cxx_main():
         # Use the selected C++ compiler to report back all system include paths it will search automatically
         compiler_includes = []
         try:
-            compiler_includes = [line.strip().split()[0] for line in popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
+            compiler_includes = [line.strip().split()[0] for line in popen2("echo | " + str(env["CXX"]) + " -E -Wp,-v - 2>&1")[
+                1].read().split("\n") if line.strip().startswith("/") and os.path.exists(line.strip().split()[0])]
         except OSError:
             pass
 
