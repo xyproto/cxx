@@ -324,7 +324,7 @@ script:
 ninja:
 	@test -f CMakeLists.txt || (echo 'error: Could not find CMakeLists.txt' && exit 1)
 	@-rm -rf build/
-	@mkdir -p build && cd build && which ccache >/dev/null 2>/dev/null && cmake .. -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -GNinja || cmake .. -GNinja
+	@mkdir -p build && cd build && which ccache >/dev/null 2>/dev/null && cmake -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -G Ninja .. >/dev/null || cmake -G Ninja .. > /dev/null
 	@ninja -C build
 
 ninja_install:
