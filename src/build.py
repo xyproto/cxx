@@ -11,6 +11,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from subprocess import check_output
 from sys import argv, exit, stdout
+from datetime import datetime
 
 # Difference from Python 2 to Python 3.7
 try:
@@ -2218,7 +2219,7 @@ def cxx_main():
         if os.path.exists("CMakeLists.txt"):
             print("Overwriting CMakeLists.txt")
         project_file = open("CMakeLists.txt", "w")
-        project_file.write("# Generated using cxx from https://github.com/xyproto/cxx\n")
+        project_file.write("# Generated using cxx from https://github.com/xyproto/cxx, " + datetime.now().isoformat()[:10] + "\n")
         project_file.write("cmake_minimum_required(VERSION 3.1)\n")
         project_file.write("project(" + name + ")\n")
         #project_file.write("set_property(GLOBAL PROPERTY CXX_STANDARD c++2a)\n")
