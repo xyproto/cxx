@@ -8,6 +8,9 @@ Make modern C++ easier to deal with.
 * `cxx fmt` formats the source code
 * `cxx debug` creates a debug build
 * `cxx pro` creates a project file that is compatible with QtCreator.
+* `cxx cmake` creates a `CMakeLists.txt` file that is compatible with many IDEs.
+* `cxx ninja` builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
+* `cxx cmake ninja` creates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
 
@@ -255,6 +258,7 @@ An alternative method to using defines (defined with `-D` when building) is to u
 * See the `hello` example in the `examples` directory for the suggested directory structure.
 * For now, *CXX* is only meant to be able to build executables, not libraries.
 * The dependency discovery is reasonably fast, the compilation itself still takes the longest. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
+* For now, the generated `CMakeLists.txt` file is only meant to be used on the system it was generated on, not shipped for many different systems.
 
 ## Suggested directory structure
 
@@ -490,6 +494,6 @@ Syntastic settings for ViM and NeoVim:
 
 ## General info
 
-* Version: 3.1.0
+* Version: 3.2.0
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
