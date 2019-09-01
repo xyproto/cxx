@@ -482,9 +482,9 @@ For OpenBSD, install g++ 8.3.0 and build with `cxx CXX=eg++`.
 
 Syntastic settings for ViM and NeoVim:
 
-    " C++17 by default
+    " Change 2a to "20" or "17" if that is what your compiler supports
     let g:syntastic_cpp_compiler = 'g++'
-    let g:syntastic_cpp_compiler_options = ' -std=c++17 -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
+    let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
 
     " Ignore some defines and warnings
