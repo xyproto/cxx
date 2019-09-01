@@ -1,6 +1,8 @@
 #!/bin/sh
 ver="$(grep -F '* Version: ' README.md | cut -d' ' -f3)"
 rm -rf cxx-$ver
+find . -name build -type d -exec rm -r "{}" \;
+find . -name CMakeLists.txt -type f -delete
 mkdir -p cxx-$ver
 cp -r Makefile LICENSE README.md examples src cxx-$ver/
 find cxx-$ver -type f -name "*.dblite" -delete
