@@ -62,3 +62,5 @@ examples/build-*-Debug/
 *.profdata
 
 examples/*/build.py
+
+CMakeLists.txt

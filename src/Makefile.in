@@ -83,10 +83,8 @@ opt:
 rec: clean
 	@scons ${SCONSFILEARG} -Q run clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=1 sloppy=${sloppy} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} run=1 args="${RUN_ARGS} $(strip $(subst --,,$(subst --no-print-directory,,${MAKEFLAGS})))" | sed 's/^scons: //g' | uniq
 
-
 small:
 	@scons ${SCONSFILEARG} -Q ${CMD} small=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
-
 
 tiny:
 	@scons ${SCONSFILEARG} -Q ${CMD} small=1 tiny=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
@@ -116,6 +114,9 @@ test:
 
 pro:
 	@scons ${SCONSFILEARG} -Q pro clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
+
+cmake:
+	@scons ${SCONSFILEARG} -Q cmake clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
 
 clang:
 	@scons ${SCONSFILEARG} -Q ${CMD} clang=1 std=${std} CXX=clang++ CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
@@ -323,7 +324,7 @@ script:
 ninja:
 	@test -f CMakeLists.txt || (echo 'error: Could not find CMakeLists.txt' && exit 1)
 	@-rm -rf build/
-	@mkdir -p build && cd build && cmake .. -GNinja
+	@mkdir -p build && cd build && which ccache >/dev/null 2>/dev/null && cmake .. -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -GNinja || cmake .. -GNinja
 	@ninja -C build
 
 ninja_install:
