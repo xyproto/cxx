@@ -2220,10 +2220,10 @@ def cxx_main():
             print("Overwriting CMakeLists.txt")
         project_file = open("CMakeLists.txt", "w")
         project_file.write("# Generated using cxx from https://github.com/xyproto/cxx, " + datetime.now().isoformat()[:10] + "\n")
-        project_file.write("cmake_minimum_required(VERSION 3.1)\n")
+        project_file.write("cmake_minimum_required(VERSION 3.12)\n")
         project_file.write("project(" + name + ")\n")
-        #project_file.write("set_property(GLOBAL PROPERTY CXX_STANDARD c++2a)\n")
-        project_file.write("set(TARGET " + name + " PROPERTY CXX_STANDARD c++2a)\n")
+        project_file.write("set(TARGET " + name + " PROPERTY CXX_STANDARD 20)\n")
+        project_file.write("set(TARGET " + name + " PROPERTY C_STANDARD 18)\n")
         project_file.write("set(SOURCES " + " ".join([main_source_file] + sorted(dep_src)) + ")\n")
         project_file.write("add_executable(" + name + " ${SOURCES})\n")
         if 'LIBS' in env:
@@ -2236,7 +2236,7 @@ def cxx_main():
             project_file.write("set(CMAKE_C_COMPILER " + env['CC'] + ")\n")
         if 'CXXFLAGS' in env:
             # Don't treat warnings as errors when using QtCreator, since it's good at highlighting warnings by itself
-            project_file.write("set(CMAKE_CXXFLAGS " + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + ")\n")
+            project_file.write("set(CMAKE_CXX_FLAGS \"" + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + "\")\n")
         if 'LINKFLAGS' in env:
             project_file.write("set(TARGET " + name + " PROPERTY LINK_FLAGS " + " ".join(env['LINKFLAGS']) + ")\n")
             # Also add linkflags with target_link_libraries
