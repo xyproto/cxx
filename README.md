@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Make modern C++ easier to deal with.
 
@@ -18,9 +18,9 @@ Ever had a single `main.cpp` file and just wanting to compile it, without any ha
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
-Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++17 or C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
+Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
 
-The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++17 or C++20, learn modern C++ or create a demoscene demo or a game.
+The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++20, learn modern C++ or create a demoscene demo or a game.
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are placed in the main source file, all dependencies, libraries and build flags should be handled automatically. If not, please file an issue.
 
@@ -416,6 +416,8 @@ Install build-essential, scons and pkg-config:
 
 FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc8 or later.
 
+gcc9 or later should provide support for C++20.
+
 Install pkg-conf, scons and gmake:
 
     pkg install pkgconf scons gmake
@@ -439,7 +441,7 @@ If possible, install *CXX* with the package manager that comes with your OS/dist
 #### Filenames
 
 * All include filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.h` or `.hpp`.
-* All C++17 source filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.cpp`, `.cc` or `.cxx`.
+* All C++ source filenames should contain no spaces or special characters (a-z, A-Z, 0-9) and end with `.cpp`, `.cc` or `.cxx`.
 * The main source file could be named `main.cpp` or `main.cc`, but it does not have to.
 * Files ending with `_test.*` are special, and will not be used when compiling the main executable(s).
 
@@ -455,13 +457,13 @@ The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Ar
 
 ## Source code formatting
 
-* `cxx fmt` will format C++17 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `cxx fmt` is optional.
+* `cxx fmt` will format C++20 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `cxx fmt` is optional.
 
 ## Feedback
 
-The goal is that every executable and project written in C++17 should be able to build with `cxx` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
+The goal is that every executable and project written in C++20 should be able to build with `cxx` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
-If you have a project written in C++17 that you think should build with `cxx`, but doesn't, please create an issue and include a link to your repository.
+If you have a project written in C++ that you think should be able to build with `cxx`, but doesn't, please create an issue and include a link to your repository.
 
 ## GNU Parallel
 
@@ -482,7 +484,7 @@ For OpenBSD, install g++ 8.3.0 and build with `cxx CXX=eg++`.
 
 Syntastic settings for ViM and NeoVim:
 
-    " Change 2a to "20" or "17" if that is what your compiler supports
+    " If your compiler supports it, change "2a" to "20". If the compiler only supports C++17, use "17".
     let g:syntastic_cpp_compiler = 'g++'
     let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
