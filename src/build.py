@@ -1787,7 +1787,7 @@ def cxx_main():
             found_cppstd = ""
 
             # Only check if the compiler supports the std if no "std=" is given
-            for std in "c++2a", "c++17", "c++14", "c++11":
+            for std in "c++20", "c++2a", "c++17", "c++14", "c++11":
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
                         found_compiler = compiler
@@ -1798,7 +1798,7 @@ def cxx_main():
                 if found_compiler:
                     break
             else:
-                print("WARNING: No compiler with support for C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
+                print("WARNING: No compiler with support for C++20, C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
                 exit(1)
 
             if found_compiler:
@@ -1946,7 +1946,7 @@ def cxx_main():
         # There is only basic support for C
         if main_source_file.endswith(".c"):
             env.Append(LINKFLAGS=' -lm')
-            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c11').replace('-fno-rtti', '')
+            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c18').replace('-fno-rtti', '')
             env.Append(CFLAGS=cxxflags_to_cflags)
             # Enable some macros
             if platform.system() == "Linux":
