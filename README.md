@@ -6,11 +6,11 @@ Make modern C++ easier to deal with.
 
 * `cxx` builds a project
 * `cxx fmt` formats the source code
-* `cxx debug` creates a debug build
-* `cxx pro` creates a project file that is compatible with QtCreator.
-* `cxx cmake` creates a `CMakeLists.txt` file that is compatible with many IDEs.
+* `cxx debug` performs a debug build
+* `cxx cmake` generates a `CMakeLists.txt` file that is compatible with many IDEs.
+* `cxx pro` generates a project file that is compatible with QtCreator.
 * `cxx ninja` builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
-* `cxx cmake ninja` creates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
+* `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
 
