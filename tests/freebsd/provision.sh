@@ -13,7 +13,7 @@ pkg-static upgrade -y
 pkg install -y bash git gmake pkgconf python3 scons
 
 # Install packages required for CXX and for building the examples
-pkg install -y figlet freeglut gcc8 glew glfw glm gtk3 libconfig sdl2 sdl2_mixer vulkan-headers vulkan-tools
+pkg install -y figlet freeglut gcc9 glew glfw glm gtk3 libconfig sdl2 sdl2_mixer vulkan-headers vulkan-tools
 
 #pkg install -y qt5
 
