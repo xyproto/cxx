@@ -4,7 +4,9 @@
 
 Make modern C++ easier to deal with.
 
-Ever had a single `main.cpp` file and just wanting to compile it, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
+Have you ever had a single `main.cpp` file that you just want to compile, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
+
+Using `cxx` is simple:
 
 * `cxx` builds a project
 * `cxx fmt` formats the source code
@@ -14,7 +16,7 @@ Ever had a single `main.cpp` file and just wanting to compile it, without any ha
 * `cxx ninja` builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
 * `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 
-No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
+No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a `cxx`-friendly directory structure.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
@@ -22,9 +24,9 @@ Several examples are included in the `examples` directory. These mostly center a
 
 The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++20, learn modern C++ or create a demoscene demo or a game.
 
-As much as possible is auto-detected. As long as the right packages are installed, and includes are placed in the main source file, all dependencies, libraries and build flags should be handled automatically. If not, please file an issue.
+As much as possible is auto-detected. As long as the right packages are installed, and includes are specified in the main source file, all dependencies, libraries and build flags should be handled automatically. If not, please file an issue.
 
-*CXX* provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+* CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 If you're a long time C or C++ user and wish to write and distribute a C++ library, CMake might be a better fit.
 
