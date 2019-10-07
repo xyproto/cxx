@@ -37,8 +37,8 @@ Using a package that comes with your distro is usually the best way, if possible
 First install CXX, so that `cxx` is in the path. Here is one way, using `git clone`, GNU Make and `sudo`:
 
     git clone https://github.com/xyproto/cxx
-    make -C cxx
-    sudo make -C cxx install
+    cd cxx
+    make && sudo make install
 
 ### Debian-based distros
 
