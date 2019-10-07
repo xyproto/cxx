@@ -4,6 +4,8 @@
 
 Make modern C++ easier to deal with.
 
+Ever had a single `main.cpp` file and just wanting to compile it, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
+
 * `cxx` builds a project
 * `cxx fmt` formats the source code
 * `cxx debug` performs a debug build
@@ -13,8 +15,6 @@ Make modern C++ easier to deal with.
 * `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a CXX-friendly directory structure.
-
-Ever had a single `main.cpp` file and just wanting to compile it, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
