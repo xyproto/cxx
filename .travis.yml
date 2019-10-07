@@ -2,5 +2,7 @@ services:
   - docker
 
 script:
+  - make && sudo make install
+  - cxx -C examples/hello
   - tests/ubuntu/run.sh
   - tests/arch/run.sh
