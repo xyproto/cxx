@@ -1,8 +1,18 @@
 services:
   - docker
 
+addons:
+  apt:
+    packages:
+      - python
+      - scons
+      - g++
+      - cmake
+      - ninja
+
 script:
   - make && sudo make install
   - cxx -C examples/hello
+  - cd examples/hello && cxx clean && cxx cmake ninja
   - tests/ubuntu/run.sh
   - tests/arch/run.sh
