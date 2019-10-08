@@ -8,7 +8,7 @@ addons:
       - python
       - scons
       - cmake
-      - ninja
+      - ninja-build
       - g++9
 
 script:
