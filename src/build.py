@@ -1885,7 +1885,11 @@ def cxx_main():
                 system_include_dirs.append("/usr/include/" + machine_name)
         # Set system_include_dir[0] to the given value, or keep it as /usr/include
         if ARGUMENTS.get('system_include_dir', ''):
-            system_include_dirs[0] = ARGUMENTS['system_include_dir']
+            if len(system_include_dirs) > 0:
+                # Replace the first element
+                system_include_dirs[0] = ARGUMENTS['system_include_dir']
+            else:
+                system_include_dirs.append(ARGUMENTS['system_include_dir'])
         if platform.system() == "OpenBSD" and os.path.exists("/usr/local/include"):
             system_include_dirs.append("/usr/local/include")
 
