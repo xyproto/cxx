@@ -1,15 +1,15 @@
 services:
   - docker
 
+language: cpp
 dist: bionic
 addons:
   apt:
     packages:
-      - python
       - scons
       - cmake
       - ninja-build
-      - g++9
+      - g++-9
 
 script:
   - make && sudo make install
