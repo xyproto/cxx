@@ -41,6 +41,8 @@ addons:
 
 script:
   - make && sudo make install
+  - export CC=gcc-9
+  - export CXX=g++-9
   - cxx -C examples/hello
   - cd examples/hello && cxx clean && cxx cmake ninja && cd ../..
   - tests/ubuntu/run.sh
