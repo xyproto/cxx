@@ -3,16 +3,41 @@ services:
 
 language: cpp
 dist: bionic
+osx_image: xcode10.3
+
+compiler:
+  - gcc
+  - clang
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
-      - gcc-9
-      - g++-9
-      - scons
-      - cmake
-      - ninja-build
+    - clang-9
+    - cmake
+    - gcc-9
+    - g++-9
+    - scons
+    - ninja-build
+    - libgoogle-perftools-dev
+    - libkyotocabinet-dev
+  homebrew:
+    packages:
+    - cmake
+    - crc32c
+    - gcc@9
+    - scons
+    - gperftools
+    - kyoto-cabinet
+    - llvm@9
+    - ninja
+    update: true
 
 script:
   - make && sudo make install
