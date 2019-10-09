@@ -5,11 +5,14 @@ language: cpp
 dist: bionic
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
+      - gcc-9
+      - g++-9
       - scons
       - cmake
       - ninja-build
-      - g++-9
 
 script:
   - make && sudo make install
