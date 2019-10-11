@@ -10,7 +10,6 @@ services:
 
 compiler:
   - gcc
-  - clang
 
 matrix:
   include:
@@ -26,7 +25,6 @@ addons:
       key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
     - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
-    - clang-9
     - cmake
     - gcc-9
     - g++-9
