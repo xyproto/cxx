@@ -43,6 +43,15 @@ addons:
     - llvm@9
     - ninja
     update: true
+  freebsd:
+    pacakges:
+    - gmake
+    - cmake
+    - ninja
+    - gcc9
+    - pkgconf
+    - python3
+    - scons
 
 script:
   - gmake --version && gmake || make
