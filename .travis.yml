@@ -47,7 +47,8 @@ addons:
     update: true
 
 script:
-  - make && sudo make install
+  - gmake --version && gmake || make
+  - gmake --version && sudo gmake install || sudo make install
   - export CC=gcc-9
   - export CXX=g++-9
   - cxx -C examples/hello
