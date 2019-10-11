@@ -54,8 +54,7 @@ addons:
     - scons
 
 script:
-  - gmake --version && gmake || make
-  - gmake --version && sudo gmake install || sudo make install
+  - which gmake && gmake && sudo gmake install || which make && make && sudo make install || true
   - export CC=gcc-9
   - export CXX=g++-9
   - cxx -C examples/hello
