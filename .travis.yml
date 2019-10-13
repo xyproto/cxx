@@ -62,6 +62,5 @@ script:
   - which gcc-9 && export CC=gcc-9 || true
   - which g++-9 && export CXX=g++-9 || true
   - cxx -C examples/hello
+  - export MACOSX_DEPLOYMENT_TARGET=10.14
   - cd examples/hello && cxx clean && cxx cmake ninja && cd ../..
-    #  - tests/ubuntu/run.sh
-    #  - tests/arch/run.sh
