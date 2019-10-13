@@ -48,15 +48,19 @@ addons:
     - gmake
     - cmake
     - ninja
+    - gcc
     - gcc9
     - pkgconf
     - python3
     - scons
 
 script:
-  - which gmake && gmake && sudo gmake install || which make && make && sudo make install || true
-  - export CC=gcc-9
-  - export CXX=g++-9
+  - which gmake && gmake || make
+  - which gmake && sudo gmake install || sudo make install
+  - which gcc9 && export CC=gcc9 || true
+  - which g++9 && export CXX=g++9 || true
+  - which gcc-9 && export CC=gcc-9 || true
+  - which g++-9 && export CXX=g++-9 || true
   - cxx -C examples/hello
   - cd examples/hello && cxx clean && cxx cmake ninja && cd ../..
     #  - tests/ubuntu/run.sh
