@@ -48,8 +48,8 @@ addons:
     - gmake
     - cmake
     - ninja
-    - gcc
     - gcc9
+    - gcc9-devel
     - pkgconf
     - python3
     - scons
