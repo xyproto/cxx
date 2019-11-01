@@ -55,15 +55,15 @@ addons:
     - scons
 
 before_script:
-  - which gcc || ln -s /usr/bin/gcc9 /usr/bin/gcc
-
-script:
-  - which gmake && gmake || make
-  - which gmake && sudo gmake install || sudo make install
+  - which gmake && export MAKE=gmake || export MAKE=make
   - which gcc9 && export CC=gcc9 || true
   - which g++9 && export CXX=g++9 || true
   - which gcc-9 && export CC=gcc-9 || true
   - which g++-9 && export CXX=g++-9 || true
-  - cxx -C examples/hello
   - export MACOSX_DEPLOYMENT_TARGET=10.14
-  - cd examples/hello && cxx clean && cxx cmake ninja && cd ../..
+
+# build and install cxx, test basic functionality then test for C++20 specific features
+script:
+  - $MAKE && sudo $MAKE install
+  - cd examples/hello && cxx && cxx clean && cxx cmake ninja && cd ../..
+  - cxx -C examples/designated
