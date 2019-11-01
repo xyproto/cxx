@@ -54,6 +54,9 @@ addons:
     - python3
     - scons
 
+before_script:
+  - which gcc || ln -s /usr/bin/gcc9 /usr/bin/gcc
+
 script:
   - which gmake && gmake || make
   - which gmake && sudo gmake install || sudo make install
