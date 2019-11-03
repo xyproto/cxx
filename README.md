@@ -32,7 +32,7 @@ If you're a long time C or C++ user and wish to write and distribute a C++ libra
 
 ## Installation
 
-Using a package that comes with your distro is usually the best way, if possible.
+If `cxx` is available by using your favorite package manager, that's usually the best way.
 
 ### Manual installation
 
