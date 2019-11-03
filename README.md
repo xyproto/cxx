@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.org/xyproto/cxx.svg?branch=master)](https://travis-ci.org/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.com/xyproto/cxx.svg?branch=master)](https://travis-ci.com/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Make modern C++ easier to deal with.
 
