@@ -2,7 +2,7 @@ class CXX < Formula
   desc "Configuration-free build system for C++20 executables"
   homepage "https://github.com/xyproto/cxx"
   url "https://github.com/xyproto/cxx.git",
-      :tag => "3.2.1",
+      :tag => "3.2.2",
       :revision => "asdf"
   sha256 "asdf"
   version_scheme 1
@@ -11,7 +11,7 @@ class CXX < Formula
   bottle do
     cellar :any_skip_relocation
     sha256 "asdf" => :high_sierra
-    sha256 "adsdf" => :sierra
+    sha256 "asdf" => :sierra
     sha256 "asdf" => :el_capitan
   end
 
