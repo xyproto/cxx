@@ -13,8 +13,8 @@ Using `cxx` is simple:
 * `cxx debug` performs a debug build
 * `cxx cmake` generates a `CMakeLists.txt` file that is compatible with many IDEs.
 * `cxx pro` generates a project file that is compatible with QtCreator.
-* `cxx ninja` builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
 * `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
+* `cxx ninja` just builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a `cxx`-friendly directory structure.
 
