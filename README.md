@@ -22,7 +22,7 @@ Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. 
 
 Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
 
-The target audience is programmers that don't want to fiddle with makefiles, cmake etc, but want to either try out a feature in C++20, learn modern C++ or create a demoscene demo or a game.
+The target audience is programmers that don't want to fiddle with makefiles, CMake etc, but want to either try out a feature in C++20, learn modern C++ or create a demoscene demo or a game.
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are specified in the main source file, all dependencies, libraries and build flags should be handled automatically. If not, please file an issue.
 
@@ -238,6 +238,8 @@ These defines are passed to the compiler, if the corresponding paths exist (or w
 * `RESOURCEDIR` is defined as `./resources` or `../resources` (when developing) and `$PREFIX/share/application_name/resources` (at installation time)
 * `RESDIR` is defined as `./res` or `../res` (when developing) and `$PREFIX/share/application_name/res` (at installation time)
 
+(`application_name` is just an example).
+
 This makes it easy to have an `img`, `data` or `resources` directory where files can be found and used both at development and at installation-time.
 
 See `examples/sdl2` and `examples/win64crate` for examples that uses `IMGDIR`.
@@ -251,9 +253,8 @@ An alternative method to using defines (defined with `-D` when building) is to u
 * **No configuration files are needed**, as long as the *CXX* directory structure is followed.
 * **Auto-detection** of include, define and library flags, based on which files are included from `/usr/include`, using **`pkg-config`**. It also uses system-specific ways of attempting to detect which packages provides which compilation flags. Not all libraries, include files and cxxflags can be auto-detected yet, but more are to be added.
 * Built-in support for testing, clang, debug builds and only rebuilding files that needs to be rebuilt.
-* Uses the caching that is supplied by SCons, no ccache is needed.
 * Does not use a `build` directory, it's okay that the `main` executable ends up in the root folder of the project. `main.cpp` can be placed in the root folder of the project, or in its own directory.
-* Only tested on Linux, FreeBSD and macOS. Should be easy to port to other systems that also has a package manager and pkg-config (or equivalent way to discover build flags).
+* Should be easy to port to other systems that also has a package manager and pkg-config (or equivalent way to discover build flags).
 * Your include files are expected to be found in `./include` or `../include`.
 * Source files used by multiple executables in your project are expected to be placed in `./common` or `../common`.
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
