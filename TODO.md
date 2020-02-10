@@ -2,6 +2,7 @@
 
 ### Priority 1
 
+- [ ] Add a way to compile static executables.
 - [ ] If the `.pc` file for ie. glm returns no flags, don't consider it an error.
 - [ ] Add `cxx optrec` and `cxx smallrec`, or find a better way.
 - [ ] Add a way to vendor a C++2a dependency via git from ie. GitHub.
