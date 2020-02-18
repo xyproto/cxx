@@ -1,7 +1,8 @@
 #include <cstdio>
+#include <filesystem>
+#include <iostream>
 #include <string>
 #include <vte/vte.h>
-#include <iostream>
 
 /*
  * A terminal emulator only for playing Dunnet.
@@ -28,15 +29,13 @@ auto new_color(std::string const& c)
     return colorstruct;
 }
 
-void eof() {
-    std::cout << "bye" << std::endl;
-}
+void eof() { std::cout << "bye" << std::endl; }
 
 int main(int argc, char* argv[])
 {
     // Initialize Gtk, the window and the terminal
     gtk_init(&argc, &argv);
-    auto window = new_window("Example Terminal"s);
+    auto window = new_window("Dunnet"s);
     auto terminal = vte_terminal_new();
 
     // Build an array of strings, which is the command to be run
@@ -46,6 +45,23 @@ int main(int argc, char* argv[])
     command[2] = "-l";
     command[3] = "dunnet";
     command[4] = nullptr;
+
+    using std::filesystem::exists;
+    using std::filesystem::perms;
+    using std::filesystem::status;
+
+    // Check if the executable exists
+    if (!exists(command[0])) {
+        std::cerr << command[0] << " does not exist" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    // Check if the executable is executable
+    const auto perm = status(command[0]).permissions();
+    if ((perm & perms::owner_exec) == perms::none) {
+        std::cerr << command[0] << " is not executable for this user" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // Spawn a terminal
 #pragma GCC diagnostic push
