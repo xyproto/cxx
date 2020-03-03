@@ -1110,8 +1110,8 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                     else:
                         flag_dict[include] = new_flags
 
-        # If one of the includes just mention something with OpenGL, or GLUT, add build flags for OpenGL
-        if ("opengl" in include.lower()) or include.startswith("GL/") or include.startswith("GLUT/"):
+        # If one of the includes just mention something with OpenGL, GLUT or GLFW: add build flags for OpenGL
+        if ("opengl" in include.lower()) or include.startswith("GL/") or include.startswith("GLUT/") or include.startswith("GLFW/"):
             # Also check if "glu" is mentioned in the sourcefile, since we'll also have to link with glu then
             also_glu = bool([line for line in source_lines if "glu" in line])
             new_flags = ""
