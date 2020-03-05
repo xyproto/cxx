@@ -44,9 +44,9 @@ int main()
 
     // Define the camera to look into our 3d world (position, target, up vector)
     Camera camera = { 0 };
-    camera.position = (Vector3) { 4.0f, 2.0f, 4.0f };
-    camera.target = (Vector3) { 0.0f, 1.8f, 0.0f };
-    camera.up = (Vector3) { 0.0f, 1.0f, 0.0f };
+    camera.position = Vector3 { 4.0f, 2.0f, 4.0f };
+    camera.target = Vector3 { 0.0f, 1.8f, 0.0f };
+    camera.up = Vector3 { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.type = CAMERA_PERSPECTIVE;
 
@@ -56,10 +56,11 @@ int main()
     Color colors[MAX_COLUMNS];
 
     for (int i = 0; i < MAX_COLUMNS; i++) {
-        heights[i] = (float)GetRandomValue(1, 12);
-        positions[i]
-            = (Vector3) { GetRandomValue(-15, 15), heights[i] / 2, GetRandomValue(-15, 15) };
-        colors[i] = (Color) { GetRandomValue(20, 255), GetRandomValue(10, 55), 30, 255 };
+        heights[i] = static_cast<float>(GetRandomValue(1, 12));
+        positions[i] = Vector3 { static_cast<float>(GetRandomValue(-15, 15)), heights[i] / 2,
+            static_cast<float>(GetRandomValue(-15, 15)) };
+        colors[i] = Color { static_cast<unsigned char>(GetRandomValue(20, 255)),
+            static_cast<unsigned char>(GetRandomValue(10, 55)), 30, 255 };
     }
 
     SetCameraMode(camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
@@ -84,10 +85,10 @@ int main()
         BeginMode3D(camera);
 
         DrawPlane(
-            (Vector3) { 0.0f, 0.0f, 0.0f }, (Vector2) { 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
-        DrawCube((Vector3) { -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE); // Draw a blue wall
-        DrawCube((Vector3) { 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME); // Draw a green wall
-        DrawCube((Vector3) { 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD); // Draw a yellow wall
+            Vector3 { 0.0f, 0.0f, 0.0f }, Vector2 { 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
+        DrawCube(Vector3 { -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE); // Draw a blue wall
+        DrawCube(Vector3 { 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME); // Draw a green wall
+        DrawCube(Vector3 { 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD); // Draw a yellow wall
 
         // Draw some cubes around
         for (int i = 0; i < MAX_COLUMNS; i++) {
