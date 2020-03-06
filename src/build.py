@@ -291,8 +291,9 @@ def arch_include_path_to_cxxflags(include_path):
             cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
-        if not cxxflags:
-            # pkg-config did not work! Print a warning and just guess the flag.
+        # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
+        if not cxxflags and pc_name != "glm":
+            # pkg-config did not work (or returned an empty string)! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
@@ -387,7 +388,8 @@ def freebsd_include_path_to_cxxflags(include_path):
         except OSError:
             # Let cxxflags remain empty
             pass
-        if not cxxflags:
+        # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
+        if not cxxflags and pc_name != "glm":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -458,7 +460,8 @@ def openbsd_include_path_to_cxxflags(include_path):
         except OSError:
             # Let cxxflags remain empty
             pass
-        if not cxxflags:
+        # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
+        if not cxxflags and pc_name != "glm":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -558,7 +561,8 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
             cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
-        if not cxxflags:
+        # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
+        if not cxxflags and pc_name != "glm":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -642,7 +646,8 @@ def brew_include_path_to_cxxflags(include_path):
             cxxflags = popen2(cmd)[1].read().strip()
         except OSError:
             pass
-        if not cxxflags:
+        # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
+        if not cxxflags and pc_name != "glm":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -2005,9 +2010,9 @@ def cxx_main():
                     env.Append(LINKFLAGS=' -fprofile-use -fprofile-correction')
             elif env['CXX'] in ('clang++', 'zapcc++'):
                 # if list(iglob("*.profraw")):
-                    #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
-                    #output = popen2(cmd)[1].read().strip()
-                    # print(output)
+                #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
+                #output = popen2(cmd)[1].read().strip()
+                # print(output)
                 if list(iglob("*.gcda")):
                     env.Append(CXXFLAGS=' -fprofile-use')
                     env.Append(LINKFLAGS=' -fprofile-use')
@@ -2223,7 +2228,8 @@ def cxx_main():
         if os.path.exists("CMakeLists.txt"):
             print("Overwriting CMakeLists.txt")
         project_file = open("CMakeLists.txt", "w")
-        project_file.write("# Generated using cxx from https://github.com/xyproto/cxx, " + datetime.now().isoformat()[:10] + "\n")
+        project_file.write("# Generated using cxx from https://github.com/xyproto/cxx, " +
+                           datetime.now().isoformat()[:10] + "\n")
         project_file.write("cmake_minimum_required(VERSION 3.12)\n")
         project_file.write("project(" + name + ")\n")
         project_file.write("set(TARGET " + name + " PROPERTY CXX_STANDARD 20)\n")
@@ -2231,7 +2237,8 @@ def cxx_main():
         project_file.write("set(SOURCES " + " ".join([main_source_file] + sorted(dep_src)) + ")\n")
         project_file.write("add_executable(" + name + " ${SOURCES})\n")
         if 'LIBS' in env:
-            project_file.write("target_link_libraries(" + name + " " + " ".join(["-l" + x for x in env['LIBS']]) + ")\n")
+            project_file.write("target_link_libraries(" + name + " " +
+                               " ".join(["-l" + x for x in env['LIBS']]) + ")\n")
         #project_file.write("include_directories(" + " ".join(sorted(new_includes)) + ")\n")
         project_file.write("target_include_directories(" + name + " PRIVATE " + " ".join(sorted(new_includes)) + ")\n")
         if 'CXX' in env:
@@ -2240,7 +2247,8 @@ def cxx_main():
             project_file.write("set(CMAKE_C_COMPILER " + env['CC'] + ")\n")
         if 'CXXFLAGS' in env:
             # Don't treat warnings as errors when using QtCreator, since it's good at highlighting warnings by itself
-            project_file.write("set(CMAKE_CXX_FLAGS \"" + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + "\")\n")
+            project_file.write(
+                "set(CMAKE_CXX_FLAGS \"" + " ".join(env['CXXFLAGS']).replace("-Wfatal-errors ", "") + "\")\n")
         if 'LINKFLAGS' in env:
             project_file.write("set(TARGET " + name + " PROPERTY LINK_FLAGS " + " ".join(env['LINKFLAGS']) + ")\n")
             # Also add linkflags with target_link_libraries
@@ -2251,7 +2259,8 @@ def cxx_main():
                 if "=" in define:
                     key, value = define.split("=", 1)
                     # '"img/"' -> "${CMAKE_CURRENT_SOURCE_DIR/img/"
-                    s += "-D" + key + '="' + value.replace("'\"", "${CMAKE_CURRENT_SOURCE_DIR}/").replace("\"'", "\"") + " "
+                    s += "-D" + key + '="' + \
+                        value.replace("'\"", "${CMAKE_CURRENT_SOURCE_DIR}/").replace("\"'", "\"") + " "
                 else:
                     s += "-D" + define + ' '
             project_file.write(s.strip() + ")\n")
