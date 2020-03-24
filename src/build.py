@@ -1742,6 +1742,8 @@ def cxx_main():
             # Assume that a Windows-related compiler is not specified
             if which("x86_64-w64-mingw32-g++"):
                 env.Replace(CXX="x86_64-w64-mingw32-g++")
+                if which("x86_64-w64-mingw32-gcc"):
+                    env.Replace(CC="x86_64-w64-mingw32-gcc")
             elif which("docker"):
                 docker_image = "jhasse/mingw:latest"
                 print("x86_64-w64-mingw32-g++ is missing from PATH, using this docker image instead: " + docker_image)
@@ -1755,12 +1757,19 @@ def cxx_main():
                     docker_cxx = "docker run -v \"" + \
                         os.path.abspath(os.path.curdir) + ":/home\" -w /home --rm " + \
                         docker_image + " x86_64-w64-mingw32-g++"
+                    docker_cc = "docker run -v \"" + \
+                        os.path.abspath(os.path.curdir) + ":/home\" -w /home --rm " + \
+                        docker_image + " x86_64-w64-mingw32-gcc"
                 else:
                     # For older versions of docker
                     docker_cxx = "docker run -v \"" + \
                         os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + \
                         ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-g++ $_"'
+                    docker_cc = "docker run -v \"" + \
+                        os.path.abspath(os.path.curdir) + ":/home\" --rm " + docker_image + \
+                        ' sh -c "cd /home; /usr/bin/x86_64-w64-mingw32-gcc $_"'
                 env.Replace(CXX=docker_cxx)
+                env.Replace(CC=docker_cc)
             else:
                 print("error: Could not find a compiler for producing 64-bit Windows executables. Neither x86_64-w64-mingw32-g++ nor docker were found.")
                 exit(1)
