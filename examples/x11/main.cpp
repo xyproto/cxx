@@ -31,7 +31,7 @@ auto main(int argc, char** argv) -> int
     win->SelectInput();
     win->MapWindow();
 
-    XEvent e;
+    XEvent event;
 
     signal(SIGINT, stop);
 
@@ -42,35 +42,37 @@ auto main(int argc, char** argv) -> int
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             continue;
         }
-        XNextEvent(win->GetDisplay(), &e);
-        switch (e.type) {
+        XNextEvent(win->GetDisplay(), &event);
+        switch (event.type) {
         case Expose:
             win->FillRectangle(10, 10, 20, 20);
             win->DrawString(10, 50, "Hello, World!"s);
             break;
         case KeyPress:
-            // TODO: Check for either Esc or "q"
-            std::cout << "KEYPRESS"s << std::endl;
-            running = false;
+            std::cout << "Key pressed: "s << event.xkey.keycode << std::endl;
+            // Check for Esc or 'q'
+            if (event.xkey.keycode == 0x09 || event.xkey.keycode == 0x18) {
+                running = false;
+            }
             break;
         case ButtonPress:
-            switch (e.xbutton.button) {
+            switch (event.xbutton.button) {
             case 1:
                 std::cout << "Left Click"s << std::endl;
-                auto x = e.xbutton.x;
-                auto y = e.xbutton.y;
+                auto x = event.xbutton.x;
+                auto y = event.xbutton.y;
                 win->FillRectangle(x, y, 20, 20);
                 break;
             }
             break;
         case ClientMessage:
-            std::cout << "CLIENT MESSAGES"s << std::endl;
-            for (const unsigned long& m : e.xclient.data.l) {
+            std::cout << "Client messages:"s << std::endl;
+            for (const unsigned long& m : event.xclient.data.l) {
                 if (win->WindowCloseMessage(m)) {
                     running = false;
-                    std::cout << "STOP"s << std::endl;
+                    std::cout << "  Stop"s << std::endl;
                 } else {
-                    std::cout << "MESSAGE "s << m << std::endl;
+                    std::cout << "  Message: "s << m << std::endl;
                 }
             }
             break;
