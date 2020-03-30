@@ -240,7 +240,7 @@ def arch_include_path_to_cxxflags(include_path):
     if not os.path.exists(include_path):
         return ""
     # Find the package that owns the include directory in question
-    cmd = 'LC_ALL=C /usr/bin/pacman -Qo ' + include_path + ' | /usr/bin/cut -d" " -f5'
+    cmd = 'LC_ALL=C /usr/bin/pacman -Qo -- ' + include_path + ' | /usr/bin/cut -d" " -f5'
     try:
         package = popen2(cmd)[1].read().strip()
     except OSError:
@@ -250,7 +250,7 @@ def arch_include_path_to_cxxflags(include_path):
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
-    cmd = '/usr/bin/pacman -Ql ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
+    cmd = '/usr/bin/pacman -Ql -- ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
