@@ -1,3 +1,4 @@
+// OpenGL ES 2.0 example
 // Thanks Ciro Santilli @ https://stackoverflow.com/a/39356268/131264
 
 #include <stdio.h>
