@@ -11,4 +11,4 @@ RUN git clone https://github.com/xyproto/cxx && \
     make install
 
 # Clean and build almost all of the examples
-CMD cxx/tests/all.py fastclean:build config win64crate notify entityx pytorch
+CMD cxx/tests/all.py fastclean:build config win64crate notify entityx

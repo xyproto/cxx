@@ -14,4 +14,4 @@ RUN git clone https://github.com/xyproto/cxx && \
     make install
 
 # Clean and build most examples
-CMD cxx/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx pytorch
+CMD cxx/tests/all.py fastclean:build vulkan vulkan_glfw fastcgi entityx
