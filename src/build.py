@@ -1819,7 +1819,7 @@ def cxx_main():
                 # Use the compiler if it exists in path and supports the standard
                 env.Replace(CXX=compiler)
             if found_cppstd and not ARGUMENTS.get('std', ''):
-                if not main_source_file.endswith(".c") and ("-std=" not in str(env["CXXFLAGS"])):
+                if not main_source_file.endswith(".c") and ("-std=" not in str(env["CXXFLAGS"])) and not win64:
                     env.Append(CXXFLAGS=' -std=' + found_cppstd)
 
             # clang is set?
