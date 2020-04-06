@@ -30,6 +30,10 @@ As much as possible is auto-detected. As long as the right packages are installe
 
 If you're a long time C or C++ user and wish to write and distribute a C++ library, CMake might be a better fit.
 
+## Packaging status
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/cxx.svg)](https://repology.org/project/cxx/versions)
+
 ## Installation
 
 If `cxx` is available by using your favorite package manager, that's usually the best way.
