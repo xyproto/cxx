@@ -1250,7 +1250,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                         break
 
         # If one of the includes just mention GLUT, add flags for GLUT or glu
-        if include.startswith("GLUT/") or include.endswith("/glut.h"):
+        if include.startswith("GLUT/") or include.endswith("/glut.h") or include.endswith("/freeglut.h"):
             new_flags = ""
             # Check if the macOS Frameworks path exists
             if os.path.exists("/Library/Frameworks") and not win64:
