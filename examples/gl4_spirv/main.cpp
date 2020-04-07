@@ -1,6 +1,3 @@
-#define GL_GLEXT_PROTOTYPES
-#define SPIRV
-
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -8,9 +5,14 @@
 #include <cstdlib>
 #include <cstring>
 
+#define GL_GLEXT_PROTOTYPES
+
 #include <GL/freeglut.h>
 #include <GL/glext.h>
 #include <GL/glx.h>
+
+#define M(i, j) (((i) << 2) + (j))
+#define SPIRV
 
 enum {
     UBLOCK_MATRIX,
@@ -40,40 +42,28 @@ struct matrix_state {
     float lpos[3];
 }; // __attribute__((packed));
 
+// Globals
+
+struct mesh torus;
+struct matrix_state matrix_state;
+
 unsigned int g_tex;
+unsigned int g_sdr;
+unsigned int ubo_matrix;
 
-int init(void);
-void cleanup(void);
-void display(void);
-void reshape(int x, int y);
-void keypress(unsigned char key, int x, int y);
-void mouse(int bn, int st, int x, int y);
-void motion(int x, int y);
-
-int gen_torus(struct mesh* mesh, float rad, float rrad, int usub, int vsub);
-void draw_mesh(struct mesh* mesh);
-unsigned int gen_texture(int width, int height);
-
-unsigned int load_shader(const char* fname, int type);
-unsigned int load_program(const char* vfname, const char* pfname);
-
-int link_program(unsigned int prog);
-
-void GLAPIENTRY gldebug(GLenum src, GLenum type, GLuint id, GLenum severity, GLsizei len,
-    const char* msg, const void* cls);
+static PFNGLSPECIALIZESHADERPROC gl_specialize_shader;
 
 float cam_theta, cam_phi = 25, cam_dist = 4;
 int prev_x, prev_y, bnstate[8];
 
-struct mesh torus;
+// Forward declarations
 
-unsigned int g_sdr;
+void draw_mesh(struct mesh* mesh);
+int link_program(unsigned int prog);
+void GLAPIENTRY gldebug(GLenum src, GLenum type, GLuint id, GLenum severity, GLsizei len,
+    const char* msg, const void* cls);
 
-struct matrix_state matrix_state;
-
-unsigned int ubo_matrix;
-
-static PFNGLSPECIALIZESHADERPROC gl_specialize_shader;
+// Functions
 
 void mat_identity(float* mat)
 {
@@ -83,7 +73,6 @@ void mat_identity(float* mat)
 
 void mat_copy(float* dest, float* src) { memcpy(dest, src, 16 * sizeof *dest); }
 
-#define M(i, j) (((i) << 2) + (j))
 void mat_mul(float* res, float* m2)
 {
     int i, j;
