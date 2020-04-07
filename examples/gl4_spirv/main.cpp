@@ -1,12 +1,12 @@
 // Based on https://github.com/hikiko/gl4 (public domain)
 // by Eleni Maria Stea <elene.mst@gmail.com>
 
-#include <cassert>
-#include <cmath>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <iostream>
+#include <string>
+
+#include <cassert> // for assert
+#include <cmath> // for M_PI
+#include <cstring> // for memset
 
 #define GL_GLEXT_PROTOTYPES
 
@@ -16,6 +16,8 @@
 
 #define M(i, j) (((i) << 2) + (j))
 #define SPIRV
+
+using namespace std::string_literals;
 
 enum {
     UBLOCK_MATRIX,
@@ -304,12 +306,14 @@ int gen_torus(struct mesh* mesh, float rad, float rrad, int usub, int vsub)
     mesh->icount = ntri * 3;
 
     if (!(mesh->varr = (vertex*)malloc(mesh->vcount * sizeof *mesh->varr))) {
-        fprintf(stderr, "failed to allocate vertex array for %d vertices\n", mesh->vcount);
+        std::cerr << "failed to allocate vertex array for "s << mesh->vcount << " vertices"s
+                  << std::endl;
         return -1;
     }
     vptr = mesh->varr;
     if (!(mesh->iarr = (unsigned int*)malloc(mesh->icount * sizeof *mesh->iarr))) {
-        fprintf(stderr, "failed to allocate index array for %d indices\n", mesh->icount);
+        std::cerr << "failed to allocate index array for "s << mesh->icount << " indices"s
+                  << std::endl;
         free(mesh->varr);
         mesh->varr = 0;
         return -1;
@@ -409,7 +413,7 @@ unsigned int gen_texture(int width, int height)
     return tex;
 }
 
-unsigned int load_shader(const char* fname, int type)
+unsigned int load_shader(const std::string fname, int type)
 {
     unsigned int sdr;
     int fsz;
@@ -417,8 +421,8 @@ unsigned int load_shader(const char* fname, int type)
     FILE* fp;
     int status, loglen;
 
-    if (!(fp = fopen(fname, "rb"))) {
-        fprintf(stderr, "failed to open shader: %s\n", fname);
+    if (!(fp = fopen(fname.c_str(), "rb"))) {
+        std::cerr << "failed to open shader: "s << fname << std::endl;
         return 0;
     }
     fseek(fp, 0, SEEK_END);
@@ -426,12 +430,12 @@ unsigned int load_shader(const char* fname, int type)
     rewind(fp);
 
     if (!(buf = (char*)malloc(fsz + 1))) {
-        fprintf(stderr, "failed to allocate %d bytes\n", fsz + 1);
+        std::cerr << "failed to allocate "s << fsz + 1 << " bytes"s << std::endl;
         fclose(fp);
         return 0;
     }
     if (fread(buf, 1, fsz, fp) < (size_t)fsz) {
-        fprintf(stderr, "failed to read shader: %s\n", fname);
+        std::cerr << "failed to read shader: "s << fname << std::endl;
         free(buf);
         fclose(fp);
         return 0;
@@ -452,16 +456,16 @@ unsigned int load_shader(const char* fname, int type)
 
     glGetShaderiv(sdr, GL_COMPILE_STATUS, &status);
     if (status) {
-        printf("successfully compiled shader: %s\n", fname);
+        std::cout << "successfully compiled shader: " << fname << std::endl;
     } else {
-        printf("failed to compile shader: %s\n", fname);
+        std::cerr << "failed to compile shader: " << fname << std::endl;
     }
 
     glGetShaderiv(sdr, GL_INFO_LOG_LENGTH, &loglen);
     if (loglen > 0 && (buf = (char*)malloc(loglen + 1))) {
         glGetShaderInfoLog(sdr, loglen, 0, buf);
         buf[loglen] = 0;
-        printf("%s\n", buf);
+        std::cout << std::string(buf) << std::endl;
         free(buf);
     }
 
@@ -472,7 +476,7 @@ unsigned int load_shader(const char* fname, int type)
     return sdr;
 }
 
-unsigned int load_program(const char* vfname, const char* pfname)
+unsigned int load_program(const std::string vfname, const std::string pfname)
 {
     unsigned int vs, ps, prog;
 
@@ -510,68 +514,69 @@ int link_program(unsigned int prog)
 
     glGetProgramiv(prog, GL_LINK_STATUS, &status);
     if (status) {
-        printf("successfully linked shader program\n");
+        std::cout << "successfully linked shader program"s << std::endl;
     } else {
-        printf("failed to link shader program\n");
+        std::cerr << "failed to link shader program"s << std::endl;
     }
 
     glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &loglen);
     if (loglen > 0 && (buf = (char*)malloc(loglen + 1))) {
         glGetProgramInfoLog(prog, loglen, 0, buf);
         buf[loglen] = 0;
-        printf("%s\n", buf);
+        std::cout << std::string(buf) << std::endl;
         free(buf);
     }
 
     return status ? 0 : -1;
 }
 
-const char* gldebug_srcstr(unsigned int src)
+const std::string gldebug_srcstr(unsigned int src)
 {
     switch (src) {
     case GL_DEBUG_SOURCE_API:
-        return "api";
+        return "api"s;
     case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-        return "wsys";
+        return "wsys"s;
     case GL_DEBUG_SOURCE_SHADER_COMPILER:
-        return "sdrc";
+        return "sdrc"s;
     case GL_DEBUG_SOURCE_THIRD_PARTY:
-        return "3rdparty";
+        return "3rdparty"s;
     case GL_DEBUG_SOURCE_APPLICATION:
-        return "app";
+        return "app"s;
     case GL_DEBUG_SOURCE_OTHER:
-        return "other";
+        return "other"s;
     default:
         break;
     }
-    return "unknown";
+    return "unknown"s;
 }
 
-const char* gldebug_typestr(unsigned int type)
+const std::string gldebug_typestr(unsigned int type)
 {
     switch (type) {
     case GL_DEBUG_TYPE_ERROR:
-        return "error";
+        return "error"s;
     case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        return "deprecated";
+        return "deprecated"s;
     case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        return "undefined behavior";
+        return "undefined behavior"s;
     case GL_DEBUG_TYPE_PORTABILITY:
-        return "portability";
+        return "portability"s;
     case GL_DEBUG_TYPE_PERFORMANCE:
-        return "performance";
+        return "performance"s;
     case GL_DEBUG_TYPE_OTHER:
-        return "other";
+        return "other"s;
     default:
         break;
     }
-    return "unknown";
+    return "unknown"s;
 }
 
 void GLAPIENTRY gldebug(GLenum src, GLenum type, GLuint id, GLenum severity, GLsizei len,
     const char* msg, const void* cls)
 {
-    printf("[GLDEBUG] (%s) %s: %s\n", gldebug_srcstr(src), gldebug_typestr(type), msg);
+    std::cout << "[GLDEBUG] (" << gldebug_srcstr(src) << ") " << gldebug_typestr(type) << ": "
+              << msg << std::endl;
 }
 
 int init(void)
@@ -583,7 +588,7 @@ int init(void)
     gl_specialize_shader
         = (PFNGLSPECIALIZESHADERPROC)glXGetProcAddress((unsigned char*)"glSpecializeShaderARB");
     if (!gl_specialize_shader) {
-        fprintf(stderr, "failed to load glSpecializeShaderARB entry point\n");
+        std::cerr << "failed to load glSpecializeShaderARB entry point"s << std::endl;
         return -1;
     }
 
