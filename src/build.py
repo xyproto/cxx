@@ -292,7 +292,7 @@ def arch_include_path_to_cxxflags(include_path):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
             # pkg-config did not work (or returned an empty string)! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -389,7 +389,7 @@ def freebsd_include_path_to_cxxflags(include_path):
             # Let cxxflags remain empty
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -461,7 +461,7 @@ def openbsd_include_path_to_cxxflags(include_path):
             # Let cxxflags remain empty
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -562,7 +562,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -647,7 +647,7 @@ def brew_include_path_to_cxxflags(include_path):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -1290,6 +1290,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                         break
             if has_pkg_config:
                 # Try pkg-config
+
                 cmd = "pkg-config --cflags --libs glu 2>/dev/null"
                 try:
                     new_flags = popen2(cmd)[1].read().strip()
@@ -1443,6 +1444,10 @@ def get_main_source_file(test_sources=None):
                 return fname
             elif "\nmain(" in data:
                 return fname
+            elif " SDL_main(" in data:
+                return fname
+            elif "\nSDL_main(" in data:
+                return fname
         except:
             print("Could not read " + fname)
             exit(1)
@@ -1451,7 +1456,14 @@ def get_main_source_file(test_sources=None):
     # Multiple candidates for the main source file, use the one that contains " main("
     for fname in all_sources:
         try:
-            if " main(" in open(fname).read():
+            source = open(fname).read()
+            if " main(" in source:
+                return fname
+            elif "\nmain(" in source:
+                return fname
+            elif " SDL_main(" in source:
+                return fname
+            elif "\nSDL_main(" in source:
                 return fname
         except:
             print("Could not read " + fname)
