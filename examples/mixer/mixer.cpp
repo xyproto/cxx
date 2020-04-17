@@ -15,10 +15,10 @@
 #define MUS_PATH RESOURCEDIR "HR2_Friska.ogg"
 
 // Wave file
-Mix_Chunk* wave = NULL;
+Mix_Chunk* wave = nullptr;
 
 // Music file
-Mix_Music* music = NULL;
+Mix_Music* music = nullptr;
 
 // Interrupted?
 bool interrupted = false;
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     sigIntHandler.sa_flags = 0;
 
     // Set up a signal handler for ctrl-c
-    sigaction(SIGINT, &sigIntHandler, NULL);
+    sigaction(SIGINT, &sigIntHandler, nullptr);
 
     // Initialize SDL_mixer
     if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
@@ -50,13 +50,13 @@ int main(int argc, char* argv[])
 
     // Load the sound effect sample
     wave = Mix_LoadWAV(WAV_PATH);
-    if (wave == NULL) {
+    if (wave == nullptr) {
         return -1;
     }
 
     // Load the music sample
     music = Mix_LoadMUS(MUS_PATH);
-    if (music == NULL) {
+    if (music == nullptr) {
         return -1;
     }
 

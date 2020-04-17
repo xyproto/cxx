@@ -294,18 +294,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = 0;
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wndclass.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+    wndclass.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wndclass.hbrBackground = 0;
-    wndclass.lpszMenuName = NULL;
+    wndclass.lpszMenuName = nullptr;
     wndclass.lpszClassName = szAppName;
 
     RegisterClass(&wndclass);
     hwnd = CreateWindow(szAppName, szAppName, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, 0, 0,
-        WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
+        WIN_WIDTH, WIN_HEIGHT, nullptr, nullptr, hInstance, nullptr);
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -337,7 +337,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         pbmi->bmiHeader.biClrUsed = 0;
         pbmi->bmiHeader.biClrImportant = 0;
 
-        SetTimer(hwnd, ID_TIMER, 40, NULL);
+        SetTimer(hwnd, ID_TIMER, 40, nullptr);
 
         loadImg(CRATEIMG, (char*)IMGDIR "crate.bmp");
 
@@ -413,7 +413,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         clearCanvas();
         objsToCanvas(); // draw objects to screen
 
-        InvalidateRect(hwnd, NULL, TRUE);
+        InvalidateRect(hwnd, nullptr, TRUE);
         UpdateWindow(hwnd);
 
         hdc = GetDC(hwnd);
