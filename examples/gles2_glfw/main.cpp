@@ -1,36 +1,44 @@
 // OpenGL ES 2.0 example
 // Thanks Ciro Santilli @ https://stackoverflow.com/a/39356268/131264
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #define GLFW_INCLUDE_ES2
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 static const GLuint WIDTH = 800;
 static const GLuint HEIGHT = 600;
 
-static const GLchar* g_vertex_shader_source =
-    "#version 100\n"
-    "attribute vec3 position;\n"
-    "void main() {\n"
-    "   gl_Position = vec4(position, 1.0);\n"
-    "}\n";
+static const GLchar* g_vertex_shader_source = R"(
+    #version 100
+    attribute vec3 position;
+    void main() {
+       gl_Position = vec4(position, 1.0);
+    }
+)";
 
-static const GLchar* g_fragment_shader_source =
-    "#version 100\n"
-    "void main() {\n"
-    "   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-    "}\n";
+static const GLchar* g_fragment_shader_source = R"(
+    #version 100
+    void main() {
+       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+)";
 
 static const GLfloat vertices[] = {
-     0.0f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
+    0.0f,
+    0.5f,
+    0.0f,
+    0.5f,
+    -0.5f,
+    0.0f,
+    -0.5f,
+    -0.5f,
+    0.0f,
 };
 
-GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
-    enum Consts {INFOLOG_LEN = 512};
+GLint common_get_shader_program(
+    const char* vertex_shader_source, const char* fragment_shader_source)
+{
+    enum Consts { INFOLOG_LEN = 512 };
     GLchar infoLog[INFOLOG_LEN];
     GLint fragment_shader;
     GLint shader_program;
@@ -39,22 +47,24 @@ GLint common_get_shader_program(const char *vertex_shader_source, const char *fr
 
     /* Vertex shader */
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &g_vertex_shader_source, NULL);
+    glShaderSource(vertex_shader, 1, &g_vertex_shader_source, nullptr);
     glCompileShader(vertex_shader);
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(vertex_shader, INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+        glGetShaderInfoLog(vertex_shader, INFOLOG_LEN, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED" << std::endl
+                  << infoLog << std::endl;
     }
 
     /* Fragment shader */
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &g_fragment_shader_source, NULL);
+    glShaderSource(fragment_shader, 1, &g_fragment_shader_source, nullptr);
     glCompileShader(fragment_shader);
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(fragment_shader, INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+        glGetShaderInfoLog(fragment_shader, INFOLOG_LEN, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << std::endl
+                  << infoLog << std::endl;
     }
 
     /* Link shaders */
@@ -64,8 +74,8 @@ GLint common_get_shader_program(const char *vertex_shader_source, const char *fr
     glLinkProgram(shader_program);
     glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shader_program, INFOLOG_LEN, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+        glGetProgramInfoLog(shader_program, INFOLOG_LEN, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED" << std::endl << infoLog << std::endl;
     }
 
     glDeleteShader(vertex_shader);
@@ -73,7 +83,8 @@ GLint common_get_shader_program(const char *vertex_shader_source, const char *fr
     return shader_program;
 }
 
-int main(void) {
+int main(void)
+{
     GLuint shader_program, vbo;
     GLint pos;
     GLFWwindow* window;
@@ -82,11 +93,11 @@ int main(void) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    window = glfwCreateWindow(WIDTH, HEIGHT, __FILE__, NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL ES 2 + GLFW", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
-    printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
-    printf("GL_RENDERER : %s\n", glGetString(GL_RENDERER) );
+    std::cout << "GL_VERSION  : " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GL_RENDERER : " << glGetString(GL_RENDERER) << std::endl;
 
     shader_program = common_get_shader_program(g_vertex_shader_source, g_fragment_shader_source);
     pos = glGetAttribLocation(shader_program, "position");
