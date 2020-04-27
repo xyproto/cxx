@@ -1071,6 +1071,11 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
     # This must come last.
     for include in includes:
 
+        # Check if backslash was used in the include path
+        if "\\" in include:
+            # Replace "\" with "/" in the includes
+            include = include.replace("\\", "/")
+
         # SFML on macOS, add OpenGL and if clang/zapcc, add -stdlib=libc++
         if include.split(os.path.sep)[0].strip().lower() == "sfml":
             new_flags = ""
@@ -2076,7 +2081,7 @@ def cxx_main():
 
         # if sloppy is set, just try to build the damn thing
         if int(ARGUMENTS.get('sloppy', 0)):
-            env.Append(CXXFLAGS=' -fpermissive -w')
+            env.Append(CXXFLAGS=' -fpermissive -fms-extensions -w')
             # Don't assume the compiler knows about any include directories
             compiler_includes = []
         else:
