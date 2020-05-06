@@ -2047,8 +2047,8 @@ def cxx_main():
         if win64:
             env.Append(CXXFLAGS=' -Wno-unused-variable')
             if not main_source_file.endswith(".c"):
-                env.Append(CPPFLAGS=' -mwindows')
-                env.Append(LINKFLAGS=' -mwindows')
+                env.Append(CPPFLAGS=' -mwindows -fms-extensions')
+                env.Append(LINKFLAGS=' -mwindows -fms-extensions')
             env.Append(CPPFLAGS=' -lm')
             env.Append(LINKFLAGS=' -lm')
             # This could also work, for automatically adding ".exe":
