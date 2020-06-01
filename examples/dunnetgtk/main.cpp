@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     free(green);
 
     // Set font
-    auto font_desc = pango_font_description_from_string("monospace bold 12");
+    auto font_desc = pango_font_description_from_string("courier bold 16");
     vte_terminal_set_font(VTE_TERMINAL(terminal), font_desc);
 
     // Set cursor shape to UNDERLINE
