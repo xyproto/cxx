@@ -1554,7 +1554,7 @@ def supported(cxx, std):
 def cxx_main():
     """The main function"""
 
-    # Make sure to use the --compress or --tmpdir flag when using GNU parallel
+    # Make sure to use the --compress and/or --tmpdir flag when using GNU parallel
     SConsignFile("/tmp/cxx")  # will be stored as /tmp/cxx.dblite
 
     # Include paths on the system, as reported by the compiler
