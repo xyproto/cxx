@@ -1851,7 +1851,7 @@ def cxx_main():
     if not cleaning:  # ) and (not main_source_file.endswith(".c")):
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest possible C++ standard flag
-            if "-std=" not in str(env["CXXFLAGS"]):
+            if not win64 and "-std=" not in str(env["CXXFLAGS"]):
                 env.Append(CXXFLAGS=' -std=c++2a')
         elif not int(ARGUMENTS.get('zap', 0)):
             # if std is something else, use that
@@ -1980,9 +1980,19 @@ def cxx_main():
 
         # There is only basic support for C
         if main_source_file.endswith(".c"):
-            env.Append(LINKFLAGS=' -lm')
-            cxxflags_to_cflags = str(env['CXXFLAGS']).replace('-std=c++2a', '-std=c18').replace('-fno-rtti', '')
-            env.Append(CFLAGS=cxxflags_to_cflags)
+            cxx_to_cflags = str(env['CXXFLAGS'])
+            cxx_to_cflags = cxx_to_cflags.replace('-fno-rtti', '')
+            if win64:
+                # Use -std=c11 when mingw32-g++ is being used for compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c11')
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c11')
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c11')
+            else:
+                # Use -std=c18 when compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c18')
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c18')
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c18')
+            env.Append(CFLAGS=cxx_to_cflags)
             # Enable some macros
             if platform.system() == "Linux":
                 #env.Append(CFLAGS=' -D_GNU_SOURCE')
@@ -1993,6 +2003,8 @@ def cxx_main():
             else:
                 #env.Append(CFLAGS=' -D_XOPEN_SOURCE=700')
                 env.Append(CPPDEFINES=["_XOPEN_SOURCE=700"])
+        elif win64:
+            cxx_to_cflags = str(env['CXXFLAGS'])
 
         if os.path.exists("lib"):
             env.Append(LINKFLAGS=' -Llib -Wl,-rpath ./lib')
