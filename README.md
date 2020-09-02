@@ -26,7 +26,7 @@ The target audience is programmers that don't want to fiddle with makefiles, CMa
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are specified in the main source file, all dependencies, libraries and build flags should be handled automatically.
 
-* CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 If you're a long time C or C++ user and wish to write and distribute a C++ library, plain CMake might be a better fit.
 
@@ -264,7 +264,7 @@ An alternative method to using defines (defined with `-D` when building) is to u
 * Tests are expected to end with `_test.cpp` and will be ignored when building `main.cpp`.
 * See the `hello` example in the `examples` directory for the suggested directory structure.
 * For now, *CXX* is only meant to be able to build executables, not libraries.
-* The dependency discovery is reasonably fast, the compilation itself still takes the longest. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
+* The dependency discovery is reasonably fast, the compilation itself still takes the longest time. Not to speak of the time it can take to discover build flags for some C++ libraries and features manually.
 * For now, the generated `CMakeLists.txt` file is only meant to be used on the system it was generated on, not shipped for many different systems.
 
 ## Suggested directory structure
