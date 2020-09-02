@@ -503,6 +503,6 @@ Syntastic settings for ViM and NeoVim:
 
 ## General info
 
-* Version: 3.2.2
+* Version: 3.2.3
 * License: MIT
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
