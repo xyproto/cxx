@@ -1555,7 +1555,7 @@ def cxx_main():
     """The main function"""
 
     # Make sure to use the --compress and/or --tmpdir flag when using GNU parallel
-    SConsignFile("/tmp/cxx")  # will be stored as /tmp/cxx.dblite
+    SConsignFile("/tmp/cxx" + os.environ['LOGNAME'])  # will be stored as /tmp/cxx_$LOGNAME.dblite
 
     # Include paths on the system, as reported by the compiler
     compiler_includes = []
