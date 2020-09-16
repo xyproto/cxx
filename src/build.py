@@ -53,11 +53,11 @@ NOTE: On macOS, include GLUT/glut.h instead of GL/glut.h.
 
 Suggested code:
 
-    #ifdef __APPLE__
-    #include <GLUT/glut.h>
-    #else
-    #include <GL/glut.h>
-    #endif
+    # ifdef __APPLE__
+    # include <GLUT/glut.h>
+    # else
+    # include <GL/glut.h>
+    # endif
 """)
     if platform.system() == "Darwin" and "GL/gl.h" in missing_includes:
         print("""
@@ -65,11 +65,11 @@ NOTE: On macOS, include OpenGL/gl.h instead of GL/gl.h.
 
 Suggested code:
 
-    #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #else
-    #include <GL/gl.h>
-    #endif
+    # ifdef __APPLE__
+    # include <OpenGL/gl.h>
+    # else
+    # include <GL/gl.h>
+    # endif
 """)
 
 
@@ -1226,6 +1226,16 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                             flag_dict[include] = new_flags
                         break
 
+        # If one of the includes mentions "gtk/gtk.h", add "--export-dynamic" (previously "-rydnamic")
+        if include.startswith("gtk/gtk.h"):
+            new_flags = "-Wl,-export-dynamic"
+            if new_flags:
+                if include in flag_dict:
+                    if new_flags not in flag_dict[include]:
+                        flag_dict[include] += " " + new_flags
+                elif new_flags not in flag_dict.values():
+                    flag_dict[include] = new_flags
+
         # If one of the includes mentions "SDL2/SDL_*", add flags for "SDL2_*"
         if include.startswith("SDL2/SDL_"):
             word = "SDL2_" + include[9:].split(".")[0]
@@ -1242,6 +1252,7 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                             flag_dict[include] += " " + new_flags
                     elif new_flags not in flag_dict.values():
                         flag_dict[include] = new_flags
+
             else:
                 # if the SDL2_* library is in /usr/lib, /usr/lib/x86_64-linux-gnu, /usr/local/lib or /usr/pkg/lib, link with that
                 for libpath in ["/usr/lib", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib", "/usr/pkg/lib"]:
@@ -1683,7 +1694,7 @@ def cxx_main():
         try:
             output = check_output(cmd).decode()
         except:
-            #print("Could not run: " + " ".join(cmd))
+            # print("Could not run: " + " ".join(cmd))
             exit(1)
         output = os.linesep.join([line for line in output.split(os.linesep) if not "up to date" in line]).strip()
         if output:
@@ -1710,7 +1721,7 @@ def cxx_main():
         try:
             output = check_output(cmd).decode()
         except:
-            #print("Could not run: " + " ".join(cmd))
+            # print("Could not run: " + " ".join(cmd))
             exit(1)
         output = os.linesep.join([line for line in output.split(os.linesep) if "up to date" in line]).strip()
         if output:
@@ -1995,13 +2006,13 @@ def cxx_main():
             env.Append(CFLAGS=cxx_to_cflags)
             # Enable some macros
             if platform.system() == "Linux":
-                #env.Append(CFLAGS=' -D_GNU_SOURCE')
+                # env.Append(CFLAGS=' -D_GNU_SOURCE')
                 env.Append(CPPDEFINES=["_GNU_SOURCE"])
             elif 'bsd' in platform.system().lower():
-                #env.Append(CFLAGS=' -D_BSD_SOURCE')
+                # env.Append(CFLAGS=' -D_BSD_SOURCE')
                 env.Append(CPPDEFINES=["_BSD_SOURCE"])
             else:
-                #env.Append(CFLAGS=' -D_XOPEN_SOURCE=700')
+                # env.Append(CFLAGS=' -D_XOPEN_SOURCE=700')
                 env.Append(CPPDEFINES=["_XOPEN_SOURCE=700"])
         elif win64:
             cxx_to_cflags = str(env['CXXFLAGS'])
@@ -2048,8 +2059,8 @@ def cxx_main():
                     env.Append(LINKFLAGS=' -fprofile-use -fprofile-correction')
             elif env['CXX'] in ('clang++', 'zapcc++'):
                 # if list(iglob("*.profraw")):
-                #cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
-                #output = popen2(cmd)[1].read().strip()
+                # cmd = "llvm-profdata merge -output=default.profdata default-*.profraw"
+                # output = popen2(cmd)[1].read().strip()
                 # print(output)
                 if list(iglob("*.gcda")):
                     env.Append(CXXFLAGS=' -fprofile-use')
@@ -2277,7 +2288,7 @@ def cxx_main():
         if 'LIBS' in env:
             project_file.write("target_link_libraries(" + name + " " +
                                " ".join(["-l" + x for x in env['LIBS']]) + ")\n")
-        #project_file.write("include_directories(" + " ".join(sorted(new_includes)) + ")\n")
+        # project_file.write("include_directories(" + " ".join(sorted(new_includes)) + ")\n")
         project_file.write("target_include_directories(" + name + " PRIVATE " + " ".join(sorted(new_includes)) + ")\n")
         if 'CXX' in env:
             project_file.write("set(CMAKE_CXX_COMPILER " + env['CXX'] + ")\n")
