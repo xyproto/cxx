@@ -64,3 +64,5 @@ examples/build-*-Debug/
 examples/*/build.py
 
 CMakeLists.txt
+
+src/__pycache__
