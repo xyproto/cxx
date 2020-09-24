@@ -297,7 +297,7 @@ def arch_include_path_to_cxxflags(include_path):
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
-            print("warning: this command failed to run:\n" + cmd)
+            print("warning: this command gave no results:\n" + cmd)
             # Just guess the library flag
             cxxflags = "-l" + pc_name
         if cxxflags:
@@ -394,7 +394,7 @@ def freebsd_include_path_to_cxxflags(include_path):
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
-            print("warning: this command failed to run:\n" + cmd)
+            print("warning: this command gave no results:\n" + cmd)
             # Just guess the library flag
             cxxflags = "-l" + pc_name
         if cxxflags:
@@ -466,7 +466,7 @@ def openbsd_include_path_to_cxxflags(include_path):
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
-            print("warning: this command failed to run:\n" + cmd)
+            print("warning: this command gave no results:\n" + cmd)
             # Just guess the library flag
             cxxflags = "-l" + pc_name
         if cxxflags:
@@ -567,7 +567,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
-            print("warning: this command failed to run:\n" + cmd)
+            print("warning: this command gave no results:\n" + cmd)
             # Just guess the library flag
             cxxflags = "-l" + pc_name
         if cxxflags:
@@ -652,7 +652,7 @@ def brew_include_path_to_cxxflags(include_path):
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
             # Output the pkg-config command
-            print("warning: this command failed to run:\n" + cmd)
+            print("warning: this command gave no results:\n" + cmd)
             # Just guess the library flag
             cxxflags = "-l" + pc_name
         if cxxflags:
