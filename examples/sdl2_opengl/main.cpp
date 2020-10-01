@@ -32,6 +32,7 @@ static SDL_Window* mainWindow;
 // Our opengl context handle
 static SDL_GLContext mainContext;
 
+// Forward declarations
 bool SetOpenGLAttributes();
 void Print_OpenGL_Version();
 void CheckSDLError(int line);
