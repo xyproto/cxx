@@ -34,6 +34,7 @@ auto main() -> int
 <html>
   <head>
     <title>FastCGI</title>
+    <style>body { margin: 3em; }</style>
   </head>
   <body>
     <h1>FastCGI works</h1>
