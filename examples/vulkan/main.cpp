@@ -1,3 +1,5 @@
+// Based on the example from the Vulkan tutorial at vulkan-tutorial.com
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
