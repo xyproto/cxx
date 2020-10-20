@@ -710,12 +710,13 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
 
     # Flags for standard includes must come before the skiplist check below.
 
-    # Add -pthread for thread-related includes from stdlib (POSIX threads)
+    # Add -pthread and -ldl for thread-related includes from stdlib (POSIX threads)
     # The list of includes to be checked for here is from:
     # http://en.cppreference.com/w/cpp/thread
+    # + dlfcn.h
     for include in includes:
-        if include.strip() in ("condition_variable", "future", "mutex", "new", "pthread.h", "thread"):
-            new_flags = "-pthread -lpthread"
+        if include.strip() in ("condition_variable", "future", "mutex", "new", "pthread.h", "thread", "dlfcn.h"):
+            new_flags = "-ldl -pthread -lpthread"
             if include in flag_dict:
                 flag_dict[include] += " " + new_flags
             else:
