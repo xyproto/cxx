@@ -907,12 +907,19 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 continue
             # Search the system include dir
             for system_include_dir in system_include_dirs:
-                cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*' + \
-                    include + '" | /usr/bin/sort -V | /usr/bin/tail -1'
-                try:
-                    include_path = popen2(cmd)[1].read().strip()
-                except OSError:
-                    include_path = ""
+                if os.path.exists(os.path.join(system_include_dir, include)):
+                    include_path = os.path.join(system_include_dir, include)
+                    break
+                else:
+                    cmd = '/usr/bin/find ' + system_include_dir + ' -maxdepth 3 -type f -wholename "*/' + include + '" | /usr/bin/sort -V'
+                    try:
+                        possible_include_paths = sorted(popen2(cmd)[1].read().splitlines())
+                        include_path = ""
+                        for possible_include_path in possible_include_paths[::-1]:
+                            include_path = possible_include_path.strip()
+                            break
+                    except OSError:
+                        include_path = ""
                 if include_path:
                     new_flags = arch_include_path_to_cxxflags(include_path)
                     if new_flags:
