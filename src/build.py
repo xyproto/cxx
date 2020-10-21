@@ -1906,7 +1906,7 @@ def cxx_main():
             pass
 
         # imgdir/datadir/shaderdir/sharedir/resourcedir is set?
-        for dirname in ["img", "data", "shader", "share", "resource"]:
+        for dirname in ["img", "data", "shader", "share", "resource", "script"]:
             if ARGUMENTS.get(dirname + 'dir', ""):
                 # only add system directories that have local equivalents (same or parent directory, singular or plural)
                 if os.path.exists(dirname) or os.path.exists(os.path.join("..", dirname)) or os.path.exists(dirname + "s") or os.path.exists(os.path.join("..", dirname + "s")):
@@ -2120,7 +2120,7 @@ def cxx_main():
             # if sloppy is not set, add various warnings:
 
             # pretty strict + fail at first error
-            env.Append(CXXFLAGS=' -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla')
+            env.Append(CXXFLAGS=' -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla -Wignored-qualifiers')
 
             # if strict is set, enable even more warnings
             if int(ARGUMENTS.get('strict', 0)):

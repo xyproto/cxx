@@ -152,7 +152,7 @@ run:
 rebuild: clean build
 
 main: $(wildcard main.c*)
-	@scons ${SCONSFILEARG} -Q clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}" resourcedir="${PREFIX}/share/${NAME}/resources" resdir="${PREFIX}/share/${NAME}/res" | sed 's/^scons: //g' | uniq
+	@scons ${SCONSFILEARG} -Q clang=${clang} zap=${zap} win64=${win64} strict=${strict} debug=${debug} opt=${opt} rec=${rec} sloppy=${sloppy} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir="${system_include_dir}" imgdir="${PREFIX}/share/${NAME}/img" datadir="${PREFIX}/share/${NAME}/data" shaderdir="${PREFIX}/share/${NAME}/shaders" sharedir="${PREFIX}/share/${NAME}" resourcedir="${PREFIX}/share/${NAME}/resources" resdir="${PREFIX}/share/${NAME}/res" scriptdir="${PREFIX}/share/${NAME}/scripts" | sed 's/^scons: //g' | uniq
 
 # Change the img, data or resource paths in main.cpp, main.cc or main.cxx to point to the system directories before compiling and installing on the system
 #
@@ -162,23 +162,25 @@ main: $(wildcard main.c*)
 # ../shaders
 # ../resources
 # ../res
+# ../scripts
 # ./img
 # ./data
 # ./shaders
 # ./resources
 # ./res
+# ./scripts
 # "img/
 # "data/
 # "shaders/
 # "resources/
 # "res/
-#
+# "scripts/
 patch:
 	@if [ ${patch_paths} = 1 ]; then \
 	  for ext in cpp cc cxx; do \
 	    test -f main.$$ext && \
-		cp -f -v main.$$ext main.$$ext.bak && \
-		sed "s:\.\./img:${PREFIX}/share/${NAME}/img:g;s:\./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:\.\./data:${PREFIX}/share/${NAME}/data:g;s:\./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:\.\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\"shaders/:\"${PREFIX}/share/${NAME}/shaders/:g;s:\.\./resources:${PREFIX}/share/${NAME}/resources:g;s:\./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g;s:\.\./res:${PREFIX}/share/${NAME}/res:g;s:\./res:${PREFIX}/share/${NAME}/res:g;s:\"res/:\"${PREFIX}/share/${NAME}/res/:g" < main.$$ext.bak > main.$$ext; \
+	    cp -f -v main.$$ext main.$$ext.bak && \
+	    sed "s:\.\./img:${PREFIX}/share/${NAME}/img:g;s:\./img:${PREFIX}/share/${NAME}/img:g;s:\"img/:\"${PREFIX}/share/${NAME}/img/:g;s:\.\./data:${PREFIX}/share/${NAME}/data:g;s:\./data:${PREFIX}/share/${NAME}/data:g;s:\"data/:\"${PREFIX}/share/${NAME}/data/:g;s:\.\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\./shaders:${PREFIX}/share/${NAME}/shaders:g;s:\"shaders/:\"${PREFIX}/share/${NAME}/shaders/:g;s:\.\./resources:${PREFIX}/share/${NAME}/resources:g;s:\./resources:${PREFIX}/share/${NAME}/resources:g;s:\"resources/:\"${PREFIX}/share/${NAME}/resources/:g;s:\.\./res:${PREFIX}/share/${NAME}/res:g;s:\./res:${PREFIX}/share/${NAME}/res:g;s:\"res/:\"${PREFIX}/share/${NAME}/res/:g;s:\.\./scripts:${PREFIX}/share/${NAME}/scripts:g;s:\./scripts:${PREFIX}/share/${NAME}/scripts:g;s:\"scripts/:\"${PREFIX}/share/${NAME}/scripts/:g" < main.$$ext.bak > main.$$ext; \
 	  done || \
 	  true; \
 	fi
@@ -187,12 +189,12 @@ unpatch:
 	@if [ ${patch_paths} = 1 ]; then \
 	  for ext in cpp cc cxx; do \
 	    test -f main.$$ext.bak && \
-		mv -v -f main.$$ext.bak main.$$ext || \
-		true; \
+	    mv -v -f main.$$ext.bak main.$$ext || \
+	    true; \
 	  done; \
 	fi
 
-# install the executable, data/*, img/*, shaders/*, resources/*, res/* or share/* into a shared directory, also install the license, if available
+# install the executable, data/*, img/*, shaders/*, resources/*, res/*, scripts/* or share/* into a shared directory, also install the license, if available
 install: patch main unpatch
 	@install -d "${DESTDIR}${PREFIX}/bin"
 	@if [ ${win64} = 0 ]; then \
@@ -241,6 +243,10 @@ install: patch main unpatch
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/res" && \
 	  cp -r res/* "${DESTDIR}${PREFIX}/share/${NAME}/res/" || \
 	  true
+	@test -d scripts && \
+	  install -d "${DESTDIR}${PREFIX}/share/${NAME}/scripts" && \
+	  cp -r res/* "${DESTDIR}${PREFIX}/share/${NAME}/scripts/" || \
+	  true
 	@test -d share && \
 	  install -d "${DESTDIR}${PREFIX}/share/${NAME}" && \
 	  cp -r share/* "${DESTDIR}${PREFIX}/share/${NAME}/" || \
@@ -288,8 +294,8 @@ fmt:
 	@-for ext in cpp cc cxx h hpp hh h++; do \
 	  for dir in . include common; do \
 	    for f in $$dir/*.$$ext; do \
-		  test -f "$$f" && \
-		  clang-format -style='{BasedOnStyle: Webkit, ColumnLimit: 99}' -i "$$f" ; \
+	      test -f "$$f" && \
+	      clang-format -style='{BasedOnStyle: Webkit, ColumnLimit: 99}' -i "$$f" ; \
 	    done ; \
 	  done ; \
 	done || true
