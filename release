@@ -1,5 +1,6 @@
 #!/bin/sh
 ver="$(grep -F '* Version: ' README.md | cut -d' ' -f3)"
+rm -rf src/__pycache__
 rm -rf cxx-$ver
 find . -name build -type d -exec rm -r "{}" \;
 find . -name CMakeLists.txt -type f -delete
@@ -13,3 +14,4 @@ make -C cxx-$ver clean
 find cxx-$ver
 tar zcf cxx-$ver.tar.gz cxx-$ver
 rm -rf cxx-$ver
+echo 'consider if git clean -xdff should be run first'
