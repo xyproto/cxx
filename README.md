@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.com/xyproto/cxx.svg?branch=master)](https://travis-ci.com/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![Build Status](https://travis-ci.com/xyproto/cxx.svg?branch=main)](https://travis-ci.com/xyproto/cxx) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Make modern C++ easier to deal with.
 
@@ -69,7 +69,7 @@ Then as root:
 One way of installing CXX and also the libraries needed by most of the example projects:
 
     pkgin -y install bash git gmake pkgconf python37 SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freeglut gcc7 glew glm glut openal qt5 scons boost fcgi
-    test -d cxx && (cd cxx; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/cxx'
+    test -d cxx && (cd cxx; git -c http.sslVerify=false pull origin main) || git -c http.sslVerify=false clone 'https://github.com/xyproto/cxx'
     gmake -C cxx install
 
 ### Void Linux

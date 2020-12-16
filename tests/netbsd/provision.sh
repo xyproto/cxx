@@ -19,7 +19,7 @@ sudo pkgin -y install SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf docker freegl
 # gtk3 libconfig sfml
 
 # Clone or pull cxx
-test -d cxx && (cd cxx; git -c http.sslVerify=false pull origin master) || git -c http.sslVerify=false clone 'https://github.com/xyproto/cxx'
+test -d cxx && (cd cxx; git -c http.sslVerify=false pull origin main) || git -c http.sslVerify=false clone 'https://github.com/xyproto/cxx'
 
 # Fix permissions
 #chown -R vagrant:users .
