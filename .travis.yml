@@ -2,8 +2,8 @@ language: cpp
 
 os:
   - linux
-  - osx
-    #  - freebsd
+  #- osx
+  #- freebsd
 
 services:
   - docker
