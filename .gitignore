@@ -66,3 +66,4 @@ examples/*/build.py
 CMakeLists.txt
 
 src/__pycache__
+__pycache__
