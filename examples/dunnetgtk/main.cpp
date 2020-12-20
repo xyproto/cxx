@@ -38,23 +38,44 @@ int main(int argc, char* argv[])
     auto window = new_window("Dunnet"s);
     auto terminal = vte_terminal_new();
 
+    using std::filesystem::exists;
+    using std::filesystem::path;
+    using std::filesystem::perms;
+    using std::filesystem::status;
+
+    // Search for the emacs executable in $PATH
+    // Thanks https://stackoverflow.com/a/14571264
+    // TODO: Extract to a "which" function
+    char* dup = strdup(getenv("PATH"));
+    char* s = dup;
+    char* p = nullptr;
+    path found { "emacs"s }; // name of executable to search for, may be mutated
+    do {
+        p = strchr(s, ':');
+        if (p != nullptr) {
+            p[0] = 0;
+        }
+        if (exists(path(s) / found)) {
+            found = path(s) / found;
+            break;
+        }
+        s = p + 1;
+    } while (p != nullptr);
+    free(dup);
+
+    // Check again if the executable exists
+    if (found == "emacs"s) {
+        std::cerr << found << " does not exist in PATH" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // Build an array of strings, which is the command to be run
     const char* command[5];
-    command[0] = "/usr/bin/emacs";
+    command[0] = found.c_str();
     command[1] = "-batch";
     command[2] = "-l";
     command[3] = "dunnet";
     command[4] = nullptr;
-
-    using std::filesystem::exists;
-    using std::filesystem::perms;
-    using std::filesystem::status;
-
-    // Check if the executable exists
-    if (!exists(command[0])) {
-        std::cerr << command[0] << " does not exist" << std::endl;
-        return EXIT_FAILURE;
-    }
 
     // Check if the executable is executable
     const auto perm = status(command[0]).permissions();
