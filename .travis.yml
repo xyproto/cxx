@@ -2,8 +2,6 @@ language: cpp
 
 os:
   - linux
-  #- osx
-  #- freebsd
 
 services:
   - docker
@@ -15,8 +13,6 @@ matrix:
   include:
     - os: linux
       dist: bionic
-    - os: osx
-      dist: xcode11
 
 addons:
   apt:
@@ -32,17 +28,6 @@ addons:
     - ninja-build
     - libgoogle-perftools-dev
     - libkyotocabinet-dev
-  homebrew:
-    packages:
-    - cmake
-    - crc32c
-    - gcc@9
-    - scons
-    - gperftools
-    - kyoto-cabinet
-    - llvm@9
-    - ninja
-    update: true
   freebsd:
     pacakges:
     - gmake
@@ -60,7 +45,6 @@ before_script:
   - which g++9 && export CXX=g++9 || true
   - which gcc-9 && export CC=gcc-9 || true
   - which g++-9 && export CXX=g++-9 || true
-  - export MACOSX_DEPLOYMENT_TARGET=10.14
 
 # build and install cxx, test basic functionality then test for C++20 specific features
 script:
