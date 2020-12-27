@@ -1,0 +1,27 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: make && make install
+          name: Setup
+      - run:
+          command: cd examples/hello && cxx && cxx clean && cxx cmake ninja && cd ../..
+          name: Hello
+      -run:
+          command: cxx -C examples/designated
+          name: C++20
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
