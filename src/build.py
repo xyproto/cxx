@@ -1997,6 +1997,9 @@ def cxx_main():
         # Don't use the flags when in small mode.
         if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)) and not int(ARGUMENTS.get('small', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
+            if int(ARGUMENTS.get('strict', 0)):
+                env.Append(
+                    CXXFLAGS=' -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wignored-qualifiers -Wextra -Wconversion -Wparentheses -Wunused-function')
 
         # There is only basic support for C
         if main_source_file.endswith(".c"):
@@ -2124,7 +2127,7 @@ def cxx_main():
 
             # if strict is set, enable even more warnings
             if int(ARGUMENTS.get('strict', 0)):
-                env.Append(CXXFLAGS=' -Wextra -Wconversion -Wparentheses -Weffc++')
+                env.Append(CXXFLAGS=' -Wextra -Wconversion -Wparentheses -Weffc++ -Wunused-function')
 
         # Append any given CXXFLAGS after the other flags, to be able to override them
         if 'CXXFLAGS' in ARGUMENTS:
