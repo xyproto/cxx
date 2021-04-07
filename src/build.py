@@ -292,7 +292,7 @@ def arch_include_path_to_cxxflags(include_path):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd" and pc_name != "RapidJSON":
             # pkg-config did not work (or returned an empty string)! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -389,7 +389,7 @@ def freebsd_include_path_to_cxxflags(include_path):
             # Let cxxflags remain empty
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd" and pc_name != "RapidJSON":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -461,7 +461,7 @@ def openbsd_include_path_to_cxxflags(include_path):
             # Let cxxflags remain empty
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd" and pc_name != "RapidJSON":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -562,7 +562,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd" and pc_name != "RapidJSON":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]
@@ -647,7 +647,7 @@ def brew_include_path_to_cxxflags(include_path):
         except OSError:
             pass
         # TODO: Do a better check for if pkg-config returns an empty string, for the case of glm this is correct
-        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd":
+        if not cxxflags and pc_name != "glm" and pc_name != "libglvnd" and pc_name != "RapidJSON":
             # pkg-config did not work! Print a warning and just guess the flag.
             if cmd.endswith("2>/dev/null"):
                 cmd = cmd[:-11]

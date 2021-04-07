@@ -2,6 +2,7 @@
 
 ### Priority 1
 
+- [ ] Detect libraries without .so files, like RapidJSON, correctly.
 - [ ] Add a way to compile static executables.
 - [ ] If the `.pc` file for ie. glm returns no flags, don't consider it an error.
 - [ ] Add `cxx optrec` and `cxx smallrec`, or find a better way.
