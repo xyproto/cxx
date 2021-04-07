@@ -2287,7 +2287,8 @@ def cxx_main():
         if name.endswith(".exe"):
             name = name[:-4]
         if os.path.exists("CMakeLists.txt"):
-            print("Overwriting CMakeLists.txt")
+            print("Not overwriting existing CMakeLists.txt")
+            exit(1)
         project_file = open("CMakeLists.txt", "w")
         project_file.write("# Generated using cxx from https://github.com/xyproto/cxx, " +
                            datetime.now().isoformat()[:10] + "\n")
