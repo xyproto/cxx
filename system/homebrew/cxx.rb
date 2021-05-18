@@ -2,7 +2,7 @@ class CXX < Formula
   desc "Configuration-free build system for C++20 executables"
   homepage "https://github.com/xyproto/cxx"
   url "https://github.com/xyproto/cxx.git",
-      :tag => "3.2.7",
+      :tag => "3.2.8",
       :revision => "asdf"
   sha256 "asdf"
   version_scheme 1
