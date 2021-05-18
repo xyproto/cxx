@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://opensource.org/licenses/BSD)
+[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-BSD-3-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 Make modern C++ easier to deal with.
 
