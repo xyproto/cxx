@@ -1,6 +1,6 @@
 # CXX
 
-[![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Standard](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 Make modern C++ easier to deal with.
 
@@ -20,9 +20,9 @@ No configuration files are needed, but the projects needs to either be very simp
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
-Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++20: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
+Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++23: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
 
-The target audience is programmers that don't want to fiddle with makefiles, CMake etc, but want to either try out a feature in C++20, learn modern C++ or create a demoscene demo or a game.
+The target audience is programmers that don't want to fiddle with makefiles, CMake etc, but want to either try out a feature in C++23, learn modern C++ or create a demoscene demo or a game.
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are specified in the main source file, all dependencies, libraries and build flags should be handled automatically.
 
@@ -85,7 +85,7 @@ Just install `cxx` from AUR.
 
 ## Example Use
 
-### Try out CXX and a small program that uses features from C++20
+### Try out CXX and a small program that uses features from C++23
 
 Create a **main.cpp** file:
 
@@ -373,12 +373,12 @@ void equal(T a, T b)
 
 * `scons`
 * `make`
-* `g++` with support for `-std=c++2a`.
+* `g++` with support for `-std=c++2b`.
 * `pkg-config`, for systems where pkg-config is available
 
 #### Optional requirements
 
-* `clang++` with support for `-std=c++2a` (build with `cxx clang`).
+* `clang++` with support for `-std=c++2b` (build with `cxx clang`).
 * `lldb` or `gdb` for debugging
 * `pkgfile` on Arch Linux, for faster dependency discovery.
 * `apt-file` on Debian/Ubuntu, for faster dependency discovery.
@@ -393,37 +393,37 @@ void equal(T a, T b)
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
 * `clang-format` for `cxx fmt`.
 
-## C++20 on macOS
+## C++23 on macOS
 
-For installing a recent enough version of C++ on macOS, installing gcc 8 with `brew` is one possible approach:
+For installing a recent enough version of C++ on macOS, installing gcc 11 with `brew` is one possible approach:
 
-    brew install gcc@8
+    brew install gcc@11
 
 The other requirements can be installed with:
 
     brew install scons make pkg-config
 
-## C++20 on Arch Linux
+## C++23 on Arch Linux
 
-g++ with support for `-std=c++2a` should already be installed.
+g++ with support for `-std=c++2b` should already be installed.
 
 Install scons and base-devel, if needed:
 
     pacman -S scons base-devel --needed
 
-## C++20 on Debian or Ubuntu
+## C++23 on Debian or Ubuntu
 
-You might need to install GCC 8 from the testing repository, or from a PPA.
+You might need to install GCC 11 from the testing repository, or from a PPA.
 
 Install build-essential, scons and pkg-config:
 
     apt install build-essential scons pkg-config
 
-## C++20 on FreeBSD
+## C++23 on FreeBSD
 
-FreeBSD 11.1 comes with C++17 support, but you may wish to install gcc8 or later.
+FreeBSD 11.1 comes with C++17 support, but you may wish to install GCC 11 or later.
 
-gcc9 or later should provide support for C++20.
+gcc11 or later should provide support for C++23.
 
 Install pkg-conf, scons and gmake:
 
@@ -464,11 +464,11 @@ The generated qmake/QtCreator project files were tested with QtCreator 4.6 on Ar
 
 ## Source code formatting
 
-* `cxx fmt` will format C++20 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `cxx fmt` is optional.
+* `cxx fmt` will format C++23 source code in a single, fixed, formatting style (clang-format "Webkit"-style), which is not configurable, on purpose. Using `cxx fmt` is optional.
 
 ## Feedback
 
-The goal is that every executable and project written in C++20 should be able to build with `cxx` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
+The goal is that every executable and project written in C++23 should be able to build with `cxx` on a modern Linux distro, FreeBSD or macOS system (with Homebrew), without any additional configuration.
 
 If you have a project written in C++ that you think should be able to build with `cxx`, but doesn't, please create an issue and include a link to your repository.
 
@@ -485,15 +485,15 @@ Example build target in a Makefile, for using `parallel` and `cxx`, while disabl
 
 ## OpenBSD
 
-For OpenBSD, install g++ 8.3.0 and build with `cxx CXX=eg++`.
+For OpenBSD, install g++ 11 and build with `cxx CXX=eg++`.
 
 ## Editor Configuration
 
 Syntastic settings for ViM and NeoVim:
 
-    " If your compiler supports it, change "2a" to "20". If the compiler only supports C++17, use "17".
+    " If your compiler supports it, change "2b" to "23". If the compiler only supports C++17, use "17".
     let g:syntastic_cpp_compiler = 'g++'
-    let g:syntastic_cpp_compiler_options = ' -std=c++2a -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
+    let g:syntastic_cpp_compiler_options = ' -std=c++2b -pipe -fPIC -fno-plt -fstack-protector-strong -Wall -Wshadow -Wpedantic -Wno-parentheses -Wfatal-errors -Wvla'
     let g:syntastic_cpp_include_dirs = ['../common', './common', '../include', './include']
 
     " Ignore some defines and warnings

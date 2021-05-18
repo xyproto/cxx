@@ -1839,7 +1839,7 @@ def cxx_main():
             found_cppstd = ""
 
             # Only check if the compiler supports the std if no "std=" is given
-            for std in "c++2a", "c++17", "c++14", "c++11":
+            for std in "c++2b", "c++2a", "c++17", "c++14", "c++11":
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
                         found_compiler = compiler
@@ -1873,7 +1873,7 @@ def cxx_main():
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest possible C++ standard flag
             if not win64 and "-std=" not in str(env["CXXFLAGS"]):
-                env.Append(CXXFLAGS=' -std=c++2a')
+                env.Append(CXXFLAGS=' -std=c++2b')
         elif not int(ARGUMENTS.get('zap', 0)):
             # if std is something else, use that
             args = []
@@ -2008,11 +2008,13 @@ def cxx_main():
             cxx_to_cflags = cxx_to_cflags.replace('-fno-rtti', '')
             if win64:
                 # Use -std=c11 when mingw32-g++ is being used for compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++2b', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c11')
             else:
                 # Use -std=c18 when compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++2b', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c18')
@@ -2255,7 +2257,7 @@ def cxx_main():
             print("overwriting " + name + ".pro")
         project_file = open(name + ".pro", "w")
         project_file.write("TEMPLATE = app\n\n")
-        project_file.write("CONFIG += c++2a\n")
+        project_file.write("CONFIG += c++2b\n")
         project_file.write("CONFIG -= console\n")
         project_file.write("CONFIG -= app_bundle\n")
         project_file.write("CONFIG -= qt\n\n")
