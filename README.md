@@ -2,8 +2,6 @@
 
 [![Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-
-
 Make modern C++ easier to deal with.
 
 Have you ever had a single `main.cpp` file that you just want to compile, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
@@ -506,5 +504,5 @@ Syntastic settings for ViM and NeoVim:
 ## General info
 
 * Version: 3.2.6
-* License: MIT
+* License: BSD-3
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
