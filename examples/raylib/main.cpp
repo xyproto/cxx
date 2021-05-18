@@ -13,8 +13,7 @@
  *   will the authors be held liable for any damages arising from the use of this software.
  *
  *   Permission is granted to anyone to use this software for any purpose, including commercial
- *   applications, and to alter it and redistribute it freely, subject to the following
- *restrictions:
+ *   applications, and to alter it and redistribute it freely, subject to the following restrictions:
  *
  *     1. The origin of this software must not be misrepresented; you must not claim that you
  *     wrote the original software. If you use this software in a product, an acknowledgment
@@ -48,7 +47,6 @@ int main()
     camera.target = Vector3 { 0.0f, 1.8f, 0.0f };
     camera.up = Vector3 { 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
-    camera.type = CAMERA_PERSPECTIVE;
 
     // Generates some random columns
     float heights[MAX_COLUMNS];
