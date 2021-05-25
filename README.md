@@ -4,7 +4,8 @@
 
 Make modern C++ easier to deal with.
 
-Have you ever had a single `main.cpp` file that you just want to compile, without any hassle? `cxx` may fit your use case, provided you have all required libraries installed.
+Have you ever had a single `main.cpp` file that you just want to compile, without any hassle?
+`cxx` may fit your use case, provided you have all required libraries installed.
 
 Using `cxx` is simple:
 
