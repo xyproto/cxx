@@ -5,6 +5,7 @@
 Make modern C++ easier to deal with.
 
 Have you ever had a single `main.cpp` file that you just want to compile, without any hassle?
+
 `cxx` may fit your use case, provided you have all required libraries installed.
 
 Using `cxx` is simple:
@@ -18,6 +19,8 @@ Using `cxx` is simple:
 * `cxx ninja` just builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a `cxx`-friendly directory structure.
+
+The auto-detection of external libraries and headers relies on them being included in the main source file.
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
