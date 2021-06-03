@@ -89,7 +89,7 @@ Just install `cxx` from AUR.
 
 ## Example Use
 
-### Try out CXX and a small program that uses features from C++23
+### Try out CXX and a small program that uses features from C++20
 
 Create a **main.cpp** file:
 
