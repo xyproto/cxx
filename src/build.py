@@ -2297,7 +2297,7 @@ def cxx_main():
                            datetime.now().isoformat()[:10] + "\n")
         project_file.write("cmake_minimum_required(VERSION 3.12)\n")
         project_file.write("project(" + name + ")\n")
-        project_file.write("set(TARGET " + name + " PROPERTY CXX_STANDARD 20)\n")
+        project_file.write("set(TARGET " + name + " PROPERTY CXX_STANDARD 23)\n")
         project_file.write("set(TARGET " + name + " PROPERTY C_STANDARD 18)\n")
         project_file.write("set(SOURCES " + " ".join([main_source_file] + sorted(dep_src)) + ")\n")
         project_file.write("add_executable(" + name + " ${SOURCES})\n")
