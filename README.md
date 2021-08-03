@@ -24,7 +24,7 @@ The auto-detection of external libraries and headers relies on them being includ
 
 Tested on Arch Linux, FreeBSD, Ubuntu, macOS w/Homebrew, Void Linux and NetBSD. Docker images and Vagrant configuration files are available in the `tests` directory. Please submit a pull request if you have improvements for your platform!
 
-Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++23: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for Gtk3, Qt5, X11 and Windows (the example should build and run on Linux, using `wine`).
+Several examples are included in the `examples` directory. These mostly center around everything you would need to create a game in C++23: OpenGL, SDL2, Vulkan, Audio etc, but also includes examples for GTK 4, Qt 6, X11 and Windows (the example should build and run on Linux, using `wine`).
 
 The target audience is programmers that don't want to fiddle with makefiles, CMake etc, but want to either try out a feature in C++23, learn modern C++ or create a demoscene demo or a game.
 
