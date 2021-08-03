@@ -494,6 +494,7 @@ For OpenBSD, install g++ 11 and build with `cxx CXX=eg++`.
 ## GTK and Qt
 
 * Only the latest version of GTK and Qt are supported. Currently, that's GTK+4 and Qt6. Please create an issue or submit a pull request if there are new releases of GTK or Qt.
+* The GTK and Qt examples are currently only tested on Arch Linux.
 
 ## Editor Configuration
 
