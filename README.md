@@ -4,7 +4,7 @@
 
 Make modern C++ easier to deal with.
 
-Have you ever had a single `main.cpp` file that you just want to compile, without any hassle?
+Have you ever had a single `main.cpp` file that you just want to compile, without having to make sure the order of flags are correct and ideally without having to provide any flags at all?
 
 `cxx` may fit your use case, provided you have all required libraries installed.
 
@@ -393,7 +393,7 @@ void equal(T a, T b)
 * `gprof2dot` and `dot`, for producing a graph from the information produced by valgrind.
 * `vagrant`, for testing *cxx* on other operating systems.
 * `figlet`, for nicer output when running the `tests/build_all.sh` script, for building all the examples.
-* Development packages for `SDL2`, `OpenGL`, `glut`, `glfw`, `sfml`, `GTK+3` and `Qt5`, for building and running the examples.
+* Development packages for `SDL2`, `OpenGL`, `glut`, `glfw`, `sfml`, `GTK+4`, `Qt6` and `Vulkan`, for building and running the examples.
 * `x86_64-w64-mingw32-g++` or `docker` is needed for building the `win64crate` example.
 * `clang-format` for `cxx fmt`.
 
