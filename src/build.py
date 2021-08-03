@@ -281,7 +281,7 @@ def arch_include_path_to_cxxflags(include_path):
                     retval += " -l" + possible_lib_name + "++"
                 return retval
         # Did not find a suitable library file, nor .pc file
-        if package != "boost":  # boost is "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -377,7 +377,7 @@ def freebsd_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package != "boost":  # boost is "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -449,7 +449,7 @@ def openbsd_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package != "boost":  # boost is "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -551,7 +551,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
                         retval += " -l" + possible_lib_name + "++"
                     return retval
         # Did not find a suitable library file, nor .pc file
-        if package != "boost":  # boost is "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -635,7 +635,7 @@ def brew_include_path_to_cxxflags(include_path):
                         return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                     return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package != "boost":  # boost is "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -1413,8 +1413,9 @@ def get_buildflags(sourcefilename, system_include_dirs, win64, compiler_includes
                 flag_dict[include] = new_flags
 
     # List includes that were not found. "linux" is sometimes replaced with "1", which may cause issues.
+    # Qt includes are special.
     missing_includes = [
-        include for include in includes if include not in flag_dict and include not in global_flag_dict and not include.startswith("1/")]
+        include for include in includes if include not in flag_dict and include not in global_flag_dict and not include.startswith("1/") and not include.startswith("Q")]
 
     if missing_includes:
         hints(missing_includes)
@@ -1584,6 +1585,11 @@ def supported(cxx, std):
         return True
 
 
+# Only support Qt6 in /usr/include/qt6 and /usr/lib, for now
+qt6_cxx_flags = "-I/usr/include/qt6 -I/usr/include/qt6/Qt3DAnimation -I/usr/include/qt6/Qt3DCore -I/usr/include/qt6/Qt3DExtras -I/usr/include/qt6/Qt3DInput -I/usr/include/qt6/Qt3DLogic -I/usr/include/qt6/Qt3DQuick -I/usr/include/qt6/Qt3DQuickAnimation -I/usr/include/qt6/Qt3DQuickExtras -I/usr/include/qt6/Qt3DQuickInput -I/usr/include/qt6/Qt3DQuickRender -I/usr/include/qt6/Qt3DQuickScene2D -I/usr/include/qt6/Qt3DRender -I/usr/include/qt6/QtConcurrent -I/usr/include/qt6/QtCore -I/usr/include/qt6/QtCore5Compat -I/usr/include/qt6/QtDBus -I/usr/include/qt6/QtDesigner -I/usr/include/qt6/QtDesignerComponents -I/usr/include/qt6/QtDeviceDiscoverySupport -I/usr/include/qt6/QtEglFSDeviceIntegration -I/usr/include/qt6/QtEglFsKmsGbmSupport -I/usr/include/qt6/QtEglFsKmsSupport -I/usr/include/qt6/QtFbSupport -I/usr/include/qt6/QtGui -I/usr/include/qt6/QtHelp -I/usr/include/qt6/QtInputSupport -I/usr/include/qt6/QtKmsSupport -I/usr/include/qt6/QtLabsAnimation -I/usr/include/qt6/QtLabsFolderListModel -I/usr/include/qt6/QtLabsQmlModels -I/usr/include/qt6/QtLabsSettings -I/usr/include/qt6/QtLabsSharedImage -I/usr/include/qt6/QtLabsWavefrontMesh -I/usr/include/qt6/QtNetwork -I/usr/include/qt6/QtNetworkAuth -I/usr/include/qt6/QtOpenGL -I/usr/include/qt6/QtOpenGLWidgets -I/usr/include/qt6/QtPacketProtocol -I/usr/include/qt6/QtPrintSupport -I/usr/include/qt6/QtQml -I/usr/include/qt6/QtQmlCompiler -I/usr/include/qt6/QtQmlDebug -I/usr/include/qt6/QtQmlDom -I/usr/include/qt6/QtQmlLocalStorage -I/usr/include/qt6/QtQmlModels -I/usr/include/qt6/QtQmlWorkerScript -I/usr/include/qt6/QtQuick -I/usr/include/qt6/QtQuick3D -I/usr/include/qt6/QtQuick3DAssetImport -I/usr/include/qt6/QtQuick3DIblBaker -I/usr/include/qt6/QtQuick3DParticles -I/usr/include/qt6/QtQuick3DRuntimeRender -I/usr/include/qt6/QtQuick3DUtils -I/usr/include/qt6/QtQuickControls2 -I/usr/include/qt6/QtQuickControls2Impl -I/usr/include/qt6/QtQuickLayouts -I/usr/include/qt6/QtQuickParticles -I/usr/include/qt6/QtQuickShapes -I/usr/include/qt6/QtQuickTemplates2 -I/usr/include/qt6/QtQuickTest -I/usr/include/qt6/QtQuickWidgets -I/usr/include/qt6/QtShaderTools -I/usr/include/qt6/QtSql -I/usr/include/qt6/QtSvg -I/usr/include/qt6/QtSvgWidgets -I/usr/include/qt6/QtTest -I/usr/include/qt6/QtTools -I/usr/include/qt6/QtUiPlugin -I/usr/include/qt6/QtUiTools -I/usr/include/qt6/QtWaylandClient -I/usr/include/qt6/QtWaylandCompositor -I/usr/include/qt6/QtWidgets -I/usr/include/qt6/QtXml"
+qt6_link_flags = "-lQt6Concurrent -lQt6Core -lQt6DBus -lQt6EglFSDeviceIntegration -lQt6EglFsKmsGbmSupport -lQt6EglFsKmsSupport -lQt6Gui -lQt6Network -lQt6OpenGL -lQt6OpenGLWidgets -lQt6PrintSupport -lQt6Sql -lQt6Test -lQt6Widgets -lQt6XcbQpa -lQt6Xml"
+
+
 def cxx_main():
     """The main function"""
 
@@ -1608,6 +1614,7 @@ def cxx_main():
     boost = False
     filesystem = False
     mathlib = False
+    qt6 = False
     try:
         for line in open(main_source_file).read().split(os.linesep):
             # Check if "#include <windows.h>" exists in the main source file
@@ -1624,6 +1631,9 @@ def cxx_main():
             # Check if boost is included
             if "#include <boost/" in line:
                 boost = True
+            # Check if QApplication is included
+            if "#include <QApplication" in line:
+                qt6 = True
             # Check if filesystem is included
             if "#include <filesystem>" in line:
                 filesystem = True
@@ -2121,9 +2131,14 @@ def cxx_main():
 
         # Boost thread related build flags
         if boost:
-            env.Append(LINKFLAGS=' -pthread -lpthread')
             # Needed on NetBSD when using boost_thread
             env.Append(CXXFLAGS=' -Wno-unknown-pragmas')
+            env.Append(LINKFLAGS=' -pthread -lpthread')
+
+        # Qt6 related build flags
+        if qt6:
+            env.Append(CXXFLAGS=' '+qt6_cxx_flags)
+            env.Append(LINKFLAGS=' '+qt6_link_flags)
 
         # GLFW + Vulkan related build flags
         if glfw_vulkan:
