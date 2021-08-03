@@ -67,7 +67,7 @@ auto main(int argc, char** argv) -> int
             break;
         case ClientMessage:
             std::cout << "Client messages:"s << std::endl;
-            for (const unsigned long& m : event.xclient.data.l) {
+            for (const unsigned long m : event.xclient.data.l) {
                 if (win->WindowCloseMessage(m)) {
                     running = false;
                     std::cout << "  Stop"s << std::endl;
