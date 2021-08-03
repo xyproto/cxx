@@ -1,7 +1,7 @@
 .PHONY: clean generate uninstall scons src/Makefile src/cxx
 
 NAME := cxx
-ALIAS := sm
+ALIAS := autocompile
 
 # the directory of this Makefile
 ROOTDIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
