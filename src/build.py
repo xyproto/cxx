@@ -157,9 +157,13 @@ def split_cxxflags(given_cxxflags, win64):
             # related to warnings
             if " " + flag + " " not in other:
                 other += flag + " "
+        elif flag.startswith("-m"):
+            # related to machines, like -msse2 or -mfpmath=sse
+            if " " + flag + " " not in other:
+                other += flag + " "
         else:
             # Only includes, defines, libraries, library paths and linkflags are supported
-            print("WARNING: Unsupported flag for configuring packages: " + flag)
+            print("cxx: warning: unrecognized flag from pkg-config: " + flag)
             continue
     # Other CXXFLAGS can be returned as the final value here
     return includes.strip(), defines.strip(), libs.strip(), libpaths.strip(), linkflags.strip(), other.strip()
@@ -1474,6 +1478,10 @@ def get_main_source_file(test_sources=None):
                 return fname
             elif "\nSDL_main(" in data:
                 return fname
+            elif " main (" in data:
+                return fname
+            elif "\nmain (" in data:
+                return fname
         except:
             print("Could not read " + fname)
             exit(1)
@@ -1490,6 +1498,10 @@ def get_main_source_file(test_sources=None):
             elif " SDL_main(" in source:
                 return fname
             elif "\nSDL_main(" in source:
+                return fname
+            elif " main (" in source:
+                return fname
+            elif "\nmain (" in source:
                 return fname
         except:
             print("Could not read " + fname)
