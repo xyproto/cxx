@@ -491,6 +491,10 @@ Example build target in a Makefile, for using `parallel` and `cxx`, while disabl
 
 For OpenBSD, install g++ 11 and build with `cxx CXX=eg++`.
 
+## GTK and Qt
+
+* Only the latest version of GTK and Qt are supported. Currently, that's GTK+4 and Qt6. Please create an issue or submit a pull request if there are new releases of GTK or Qt.
+
 ## Editor Configuration
 
 Syntastic settings for ViM and NeoVim:
