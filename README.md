@@ -512,6 +512,6 @@ Syntastic settings for ViM and NeoVim:
 
 ## General info
 
-* Version: 3.3.0
+* Version: 3.3.1
 * License: BSD-3
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
