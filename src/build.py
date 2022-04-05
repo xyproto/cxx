@@ -2020,7 +2020,7 @@ def cxx_main():
         # Don't use the flags if building for win64 with mingw.
         # Don't use the flags when in sloppy mode.
         # Don't use the flags when in small mode.
-        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)) and not int(ARGUMENTS.get('small', 0)):
+        if not win64 and (platform.system() == "Linux") and not int(ARGUMENTS.get('sloppy', 0)) and not int(ARGUMENTS.get('zap', 0)) and not int(ARGUMENTS.get('small', 0)) and not int(ARGUMENTS.get('debug', 0)):
             env.Append(CXXFLAGS=' -fno-plt -fstack-protector-strong')
             if int(ARGUMENTS.get('strict', 0)):
                 env.Append(
