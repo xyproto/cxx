@@ -281,7 +281,7 @@ def arch_include_path_to_cxxflags(include_path):
                     retval += " -l" + possible_lib_name + "++"
                 return retval
         # Did not find a suitable library file, nor .pc file
-        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]:  # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -377,7 +377,7 @@ def freebsd_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]:  # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -449,7 +449,7 @@ def openbsd_include_path_to_cxxflags(include_path):
                     return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                 return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]:  # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -551,7 +551,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
                         retval += " -l" + possible_lib_name + "++"
                     return retval
         # Did not find a suitable library file, nor .pc file
-        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]:  # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
@@ -635,7 +635,7 @@ def brew_include_path_to_cxxflags(include_path):
                         return "-l" + possible_lib_name + " -I" + os.path.dirname(include_path)
                     return "-l" + possible_lib_name
         # Did not find a suitable library file, nor .pc file
-        if package not in ["boost", "qt5-base", "qt6-base"]: # these are "special"
+        if package not in ["boost", "qt5-base", "qt6-base"]:  # these are "special"
             print("WARNING: No pkg-config files for: " + package)
         return ""
     # TODO: Consider interpreting the .pc files directly, for speed
