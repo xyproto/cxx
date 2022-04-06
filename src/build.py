@@ -1973,7 +1973,7 @@ def cxx_main():
 
         # debug is set?
         if int(ARGUMENTS.get('debug', 0)):
-            env.Append(CXXFLAGS=' -Og -g -fno-omit-frame-pointer -fsanitize=address')
+            env.Append(CXXFLAGS=' -O0 -g -fno-omit-frame-pointer -fsanitize=address')
             if platform.system() != "Darwin":
                 if env['CXX'] in ('clang++', 'zapcc++'):
                     # ie. Linux, clang, debug mode
@@ -2381,5 +2381,3 @@ def cxx_main():
 
 
 cxx_main()
-
-# vim: ts=4 sw=4 et:
