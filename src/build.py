@@ -1973,15 +1973,17 @@ def cxx_main():
 
         # debug is set?
         if int(ARGUMENTS.get('debug', 0)):
-            env.Append(CXXFLAGS=' -O0 -g -fno-omit-frame-pointer -fsanitize=address')
-            if platform.system() != "Darwin":
-                if env['CXX'] in ('clang++', 'zapcc++'):
-                    # ie. Linux, clang, debug mode
-                    env.Append(CXXFLAGS=' -static-libsan')
-                else:
-                    # ie. Linux, gcc, debug mode
-                    env.Append(CXXFLAGS=' -static-libasan')
-            env.Append(LINKFLAGS=' -fsanitize=address')
+            env.Append(CXXFLAGS=' -O0 -g -fno-omit-frame-pointer')
+            # nosan is set?
+            if not int(ARGUMENTS.get('nosan', 1)):
+                env.Append(LINKFLAGS=' -fsanitize=address')
+                if platform.system() != "Darwin":
+                    if env['CXX'] in ('clang++', 'zapcc++'):
+                        # ie. Linux, clang, debug mode
+                        env.Append(CXXFLAGS=' -static-libsan')
+                    else:
+                        # ie. Linux, gcc, debug mode
+                        env.Append(CXXFLAGS=' -static-libasan')
         # small is set?
         elif int(ARGUMENTS.get('small', 0)):
             env.Append(CXXFLAGS=' -Os -ffunction-sections -fdata-sections')

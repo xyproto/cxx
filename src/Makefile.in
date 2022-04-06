@@ -11,6 +11,7 @@ win64 ?= $(shell grep -q -F '\#include <windows.h>' main.* 2>/dev/null && echo 1
 patch_paths ?= 0
 run ?= 0
 wayland ?= 0
+nosan ?= 0
 
 std ?= c++2b
 MAKE ?= @@MAKE@@
@@ -141,6 +142,9 @@ clangrebuild: clean clang
 
 debugbuild:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
+
+debugnosan:
+	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 nosan=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
 
 debug:
 	@scons ${SCONSFILEARG} -Q ${CMD} debug=1 clang=${clang} zap=${zap} win64=${win64} std=${std} CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" system_include_dir=${system_include_dir} | sed 's/^scons: //g' | uniq
