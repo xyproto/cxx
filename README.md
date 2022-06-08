@@ -32,7 +32,7 @@ As much as possible is auto-detected. As long as the right packages are installe
 
 CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-If you're a long time C or C++ user and wish to write and distribute a C++ library, plain CMake might be a better fit.
+If you're a long time C or C++ user and wish to write and distribute a C++ **library**, CMake might be a better fit.
 
 ## Packaging status
 
