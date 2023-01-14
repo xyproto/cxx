@@ -8,6 +8,8 @@ Have you ever had a single `main.cpp` file that you just want to compile, withou
 
 `cxx` may fit your use case, provided you have all required libraries installed.
 
+This repository was created three years before [dtolnay/cxx](https://github.com/dtolnay/cxx).
+
 Using `cxx` is simple:
 
 * `cxx` builds a project
