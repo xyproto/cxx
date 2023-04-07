@@ -1,13 +1,14 @@
+#include <array>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
-#include <cmath>
 
 /* My second OpenGL exercise
  * Copyright (c) 1992,2019 Joel Yliluoma - https://iki.fi/bisqwit/
  * First published at: https://youtube.com/Bisqwit
  * Source code license: MIT
  * Compile with (example):
- *   g++ 75000.cc -Wall -Wextra -Ofast -std=c++17 $(pkg-config sfml-graphics --libs --cflags) -lGL
+ *   g++ 75000.cc -Wall -Wextra -Ofast -std=c++20 $(pkg-config sfml-graphics --libs --cflags) -lGL
  */
 
 static const char recipe[] =
