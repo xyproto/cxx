@@ -2239,7 +2239,7 @@ def cxx_main():
             env["LIBS"] = ['m']
 
     # Linking with libstdc++fs must come last!
-    if filesystem and ((platform.system() != "Darwin") or ("BSD" in platform.system())):
+    if filesystem and (platform.system() == "Linux"):
         if "LIBS" in env:
             env["LIBS"].append('stdc++fs')
         else:
