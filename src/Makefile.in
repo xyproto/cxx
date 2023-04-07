@@ -13,7 +13,7 @@ run ?= 0
 wayland ?= 0
 nosan ?= 0
 
-std ?= c++2b
+std ?= c++20
 MAKE ?= @@MAKE@@
 PREFIX ?= @@PREFIX@@
 system_include_dir ?= ${PREFIX}/include

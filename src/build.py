@@ -1861,8 +1861,8 @@ def cxx_main():
             found_cppstd = ""
 
             # Only check if the compiler supports the std if no "std=" is given
-            for std in "c++2b", "c++2a", "c++17", "c++14", "c++11":
-                if win64 and std in ["c++2b", "c++2a"]:
+            for std in "c++20", "c++2b", "c++2a", "c++17", "c++14", "c++11":
+                if win64 and std in ["c++20", "c++2b", "c++2a"]:
                     continue
                 for compiler in compiler_binaries:
                     if which(compiler) and supported(compiler, std):
@@ -1874,7 +1874,7 @@ def cxx_main():
                 if found_compiler:
                     break
             else:
-                print("WARNING: No compiler with support for C++2b, C++2a, C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
+                print("WARNING: No compiler with support for C++20, C++2b, C++2a, C++17, C++14 or C++11 was found, tried these: " + str(compiler_binaries))
                 exit(1)
 
             if found_compiler:
@@ -1897,7 +1897,7 @@ def cxx_main():
         if not bool(ARGUMENTS.get('std', '')):
             # std is not set, use the latest possible C++ standard flag
             if not win64 and "-std=" not in str(env["CXXFLAGS"]):
-                env.Append(CXXFLAGS=' -std=c++2b')
+                env.Append(CXXFLAGS=' -std=c++20')
         elif not int(ARGUMENTS.get('zap', 0)):
             # if std is something else, use that
             args = []
@@ -2034,15 +2034,15 @@ def cxx_main():
             cxx_to_cflags = cxx_to_cflags.replace('-fno-rtti', '')
             if win64:
                 # Use -std=c11 when mingw32-g++ is being used for compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2b', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c11')
-                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c11')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c11')
             else:
                 # Use -std=c18 when compiling C
+                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2b', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++2a', '-std=c18')
-                cxx_to_cflags = cxx_to_cflags.replace('-std=c++20', '-std=c18')
                 cxx_to_cflags = cxx_to_cflags.replace('-std=c++17', '-std=c18')
             env.Append(CFLAGS=cxx_to_cflags)
             # Enable some macros
@@ -2288,7 +2288,7 @@ def cxx_main():
             print("overwriting " + name + ".pro")
         project_file = open(name + ".pro", "w")
         project_file.write("TEMPLATE = app\n\n")
-        project_file.write("CONFIG += c++2b\n")
+        project_file.write("CONFIG += c++20\n")
         project_file.write("CONFIG -= console\n")
         project_file.write("CONFIG -= app_bundle\n")
         project_file.write("CONFIG -= qt\n\n")
