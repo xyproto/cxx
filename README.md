@@ -10,6 +10,8 @@ Have you ever had a single `main.cpp` file that you just want to compile, withou
 
 Consider compiling the examples in the `examples` directory just by typing `cxx` in each directory.
 
+Note for macOS: `cxx` needs a fix to be fully usable on the latest version of macOS, since it can't find for instance the SDL2 headers automatically any more. As a workaround, adding a symlink from the system include directory to an `include` link in the same directory as the source code might work out.
+
 Using `cxx` is simple:
 
 * `cxx` builds a project
