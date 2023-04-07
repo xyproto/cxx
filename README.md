@@ -4,13 +4,11 @@
 
 Make modern C++ easier to deal with.
 
-Consider compiling the examples in the `examples` directory just by typing `cxx` in each directory.
-
 Have you ever had a single `main.cpp` file that you just want to compile, without having to make sure the order of flags are correct and ideally without having to provide any flags at all?
 
 `cxx` may fit your use case, provided you have all required libraries installed.
 
-This repository was created three years before [dtolnay/cxx](https://github.com/dtolnay/cxx).
+Consider compiling the examples in the `examples` directory just by typing `cxx` in each directory.
 
 Using `cxx` is simple:
 
@@ -37,6 +35,8 @@ As much as possible is auto-detected. As long as the right packages are installe
 CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
 If you're an experienced C or C++ user and wish to write and distribute a C++ **library**, CMake might be a better fit.
+
+(This repository was created three years before [dtolnay/cxx](https://github.com/dtolnay/cxx)).
 
 ## Packaging status
 
