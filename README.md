@@ -4,6 +4,8 @@
 
 Make modern C++ easier to deal with.
 
+Consider checking out the examples in the `examples` directory, and compile them by only typing `cxx` in each directory.
+
 Have you ever had a single `main.cpp` file that you just want to compile, without having to make sure the order of flags are correct and ideally without having to provide any flags at all?
 
 `cxx` may fit your use case, provided you have all required libraries installed.
