@@ -8,7 +8,7 @@ Have you ever had a single `main.cpp` file that you just want to compile, withou
 
 `cxx` may fit your use case, provided you have all required libraries installed.
 
-It should be possible to compile all the examples in the `examples` directory, just by running `cxx` in each directory.
+It should be possible to compile most of the examples in the `examples` directory, simply by running `cxx` in each directory.
 
 Using `cxx` is simple:
 
