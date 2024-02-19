@@ -66,11 +66,12 @@ For FreeBSD, here is one way of installing only the basic dependencies and CXX:
 
     pkg install -y bash git gmake pkgconf python3 scons
     git clone https://github.com/xyproto/cxx
-    gmake -C cxx
+    cd cxx
+    gmake
 
 Then as root:
 
-    gmake -C cxx install
+    gmake install
 
 ### NetBSD
 
