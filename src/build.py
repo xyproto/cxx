@@ -254,7 +254,7 @@ def arch_include_path_to_cxxflags(include_path):
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
-    cmd = '/usr/bin/pacman -Ql -- ' + package + ' | /usr/bin/grep "\.pc$" | /usr/bin/cut -d" " -f2-'
+    cmd = fr'/usr/bin/pacman -Ql -- {package} | /usr/bin/grep "\\.pc$" | /usr/bin/cut -d" " -f2-'
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
@@ -358,7 +358,7 @@ def freebsd_include_path_to_cxxflags(include_path):
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        cmd = "/usr/sbin/pkg list " + package + " | /usr/bin/grep '\.pc$'"
+        cmd = fr"/usr/sbin/pkg list {package} | /usr/bin/grep '\.pc$'"
         try:
             pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
@@ -430,7 +430,7 @@ def openbsd_include_path_to_cxxflags(include_path):
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
-        cmd = "/usr/sbin/pkg_info -L " + package + " | grep \"\\.pc\""
+        cmd = fr"/usr/sbin/pkg_info -L {package} | grep '\.pc$'"
         try:
             pc_files = [x for x in popen2(cmd)[1].read().strip().split(os.linesep) if x]
             cached_pc_files[package] = pc_files
@@ -523,7 +523,7 @@ def deb_include_path_to_cxxflags(include_path, cxx="g++"):
         exit(1)
     if package in SKIP_PACKAGES:
         return ""
-    cmd = 'LC_ALL=C /usr/bin/dpkg-query -L ' + package + ' | /bin/grep "\.pc$"'
+    cmd = fr"LC_ALL=C /usr/bin/dpkg-query -L {package} | /bin/grep '\.pc$'"
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
@@ -613,7 +613,7 @@ def brew_include_path_to_cxxflags(include_path):
 
     # Get all .pc files that belong to the same package,
     # this also tests if it's a valid package name
-    cmd = 'LC_ALL=C brew ls --verbose ' + package + " | grep '\.pc$'"
+    cmd = fr"LC_ALL=C brew ls --verbose {package} | grep '\.pc$'"
     if package in cached_pc_files:
         pc_files = cached_pc_files[package]
     else:
