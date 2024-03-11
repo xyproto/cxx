@@ -6,7 +6,7 @@ Make modern C++ easier to deal with.
 
 Have you ever had a single `main.cpp` file that you just want to compile, without having to make sure the order of flags are correct and ideally without having to provide any flags at all?
 
-`cxx` may fit your use case, provided you have all required libraries installed.
+`cxx` may fit your use case, provided you have `scons`, `python` and all required libraries for your project installed.
 
 It should be possible to compile most of the examples in the `examples` directory, simply by running `cxx` in each directory.
 
@@ -19,6 +19,7 @@ Using `cxx` is simple:
 * `cxx pro` generates a project file that is compatible with QtCreator.
 * `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 * `cxx ninja` just builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
+* `cxx export` generates build files for users without cxx.
 
 No configuration files are needed, but the projects needs to either be very simple (a single `main.cpp`) or have a `cxx`-friendly directory structure.
 
