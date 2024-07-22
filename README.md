@@ -33,9 +33,9 @@ The target audience is programmers that don't want to fiddle with makefiles, CMa
 
 As much as possible is auto-detected. As long as the right packages are installed, and includes are specified in the main source file, all dependencies, libraries and build flags should be handled automatically.
 
-CXX provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
+`cxx` provides a way to structure your C++ code, test and debug your source files. It also makes it easy for Linux (or Homebrew) packagers to package your project, and for users to build and install it.
 
-If you're an experienced C or C++ user and wish to write and distribute a C++ **library**, CMake might be a better fit.
+If you're an experienced C or C++ user and wish to write and distribute a C++ **library** (as opposed to an executable), just using CMake might be a better fit.
 
 (This repository was created three years before [dtolnay/cxx](https://github.com/dtolnay/cxx)).
 
@@ -49,11 +49,12 @@ If `cxx` is available by using your favorite package manager, that's usually the
 
 ### Manual installation
 
-First install CXX, so that `cxx` is in the path. Here is one way, using `git clone`, GNU Make and `sudo`:
+First install `cxx`, so that it is in the path. Here is one way, using `git clone`, GNU Make and `sudo`:
 
     git clone https://github.com/xyproto/cxx
     cd cxx
-    make && sudo make install
+    make
+    sudo make install
 
 ### Debian-based distros
 
@@ -160,7 +161,7 @@ Rebuilding can be done with:
 
     cxx rebuild
 
-While building and running can be done with:
+Both building and running can be done with:
 
     cxx run
 
