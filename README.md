@@ -15,7 +15,7 @@ Using `cxx` is simple:
 * `cxx` builds a project
 * `cxx fmt` formats the source code
 * `cxx debug` performs a debug build
-* `cxx cmake` generates a `CMakeLists.txt` file that is compatible with many IDEs.
+* `cxx cmake` generates a (platform specific) `CMakeLists.txt` file that is compatible with many IDEs.
 * `cxx pro` generates a project file that is compatible with QtCreator.
 * `cxx cmake ninja` generates a `CMakeLists.txt` file and then builds the project using `ninja` (and `ccache`, if available).
 * `cxx ninja` just builds the project using a `CMakeLists.txt` file and `ninja` (and `ccache`, if available).
