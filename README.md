@@ -10,6 +10,8 @@ Have you ever had a single `main.cpp` file that you just want to compile, withou
 
 It should be possible to compile most of the examples in the `examples` directory, simply by running `cxx` in each directory.
 
+There is also a Go port here: [xyproto/orchideous](https://github.com/xyproto/orchideous)
+
 Using `cxx` is simple:
 
 * `cxx` builds a project
