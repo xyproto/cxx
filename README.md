@@ -4,13 +4,15 @@
 
 Make modern C++ easier to deal with.
 
+## NOTE: This project now continues here, as a Go project, without depending on SCons: [xyproto/orchideous](https://github.com/xyproto/orchideous)
+
+---
+
 Have you ever had a single `main.cpp` file that you just want to compile, without having to make sure the order of flags are correct and ideally without having to provide any flags at all?
 
 `cxx` may fit your use case, provided you have `scons`, `python` and all required libraries for your project installed.
 
 It should be possible to compile most of the examples in the `examples` directory, simply by running `cxx` in each directory.
-
-There is also a Go port here: [xyproto/orchideous](https://github.com/xyproto/orchideous)
 
 Using `cxx` is simple:
 
